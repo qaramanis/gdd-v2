@@ -46,29 +46,25 @@ export function Home() {
   ];
 
   // Create overlay content for each document
-  const renderOverlayContent = (doc: {
-    id?: number;
-    title: any;
-    date: any;
-    color: any;
-    textColor: any;
-  }) => (
-    <div className="w-full h-full flex flex-col p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[15px] shadow-sm">
-      <div className={`h-1.5 w-full ${doc.color} rounded-sm mb-3`}></div>
-      <div>
-        <h3 className={`${doc.textColor} font-medium text-lg mb-1`}>
-          {doc.title}
-        </h3>
-        <p className="text-sm text-muted-foreground">{doc.date}</p>
-      </div>
-      <div className="mt-auto flex justify-end">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          Open
-        </Button>
+  const renderOverlayContent = (doc: { id?: number; title: any; date: any; color: any; textColor: any; }) => (
+    <div className="w-full h-full flex flex-col">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-[15px] shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className={`h-1.5 w-full ${doc.color} rounded-sm mb-3`}></div>
+        <div>
+          <h3 className={`${doc.textColor} font-medium text-lg mb-1`}>
+            {doc.title}
+          </h3>
+          <p className="text-sm text-muted-foreground">{doc.date}</p>
+        </div>
+        <div className="mt-6 flex justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            Open
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -87,43 +83,51 @@ export function Home() {
         </Button>
       </div>
 
-      {/* Document Cards */}
+      {/* Document Cards using TiltedCard */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mx-8 my-10">
         {documents.map((doc) => (
-          <div
-            key={doc.id}
-            className="flex flex-col transform hover:rotate-2 hover:scale-105 transition-transform"
-          >
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm w-[180px]">
-              <div className={`h-1 ${doc.color} rounded-t-lg`}></div>
-              <div className="p-4">
-                <h3 className={`${doc.textColor} font-medium mb-1`}>
-                  {doc.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">{doc.date}</p>
-                <div className="mt-4">
-                  <button className="text-xs text-muted-foreground hover:text-foreground">
-                    Open
-                  </button>
-                </div>
-              </div>
-            </div>
+          <div key={doc.id} className="flex justify-center">
+            <TiltedCard
+              imageSrc="/api/placeholder/220/280"
+              altText={doc.title}
+              captionText={doc.title}
+              containerHeight="280px"
+              containerWidth="220px"
+              imageHeight="280px"
+              imageWidth="220px"
+              showTooltip={true}
+              displayOverlayContent={true}
+              overlayContent={renderOverlayContent(doc)}
+            />
           </div>
         ))}
 
         {/* New Document Card */}
-        <div className="flex flex-col transform hover:-rotate-2 hover:scale-105 transition-transform">
-          <div className="bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg w-[180px]">
-            <div className="p-4 flex flex-col items-center justify-center h-full">
-              <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-3 mb-3">
-                <Plus className="size-4 text-muted-foreground" />
+        <div className="flex justify-center">
+          <TiltedCard
+            imageSrc="/api/placeholder/220/280"
+            altText="Create new document"
+            captionText="Create new document"
+            containerHeight="280px"
+            containerWidth="220px"
+            imageHeight="280px"
+            imageWidth="220px"
+            showTooltip={true}
+            displayOverlayContent={true}
+            overlayContent={
+              <div className="w-full h-full flex flex-col">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-[15px] border border-dashed border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center h-full">
+                  <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-3 mb-3">
+                    <Plus className="size-4 text-muted-foreground" />
+                  </div>
+                  <p className="font-medium text-center">Create new document</p>
+                  <p className="text-xs text-muted-foreground mt-1 text-center">
+                    Start from scratch
+                  </p>
+                </div>
               </div>
-              <p className="font-medium text-center">Create new document</p>
-              <p className="text-xs text-muted-foreground mt-1 text-center">
-                Start from scratch
-              </p>
-            </div>
-          </div>
+            }
+          />
         </div>
       </div>
     </div>
