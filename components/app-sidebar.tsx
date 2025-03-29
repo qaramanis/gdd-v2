@@ -26,6 +26,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NewDocument } from "./new-document";
+import { HomeButton } from "./home-button";
 
 const data = {
   user: {
@@ -55,7 +56,7 @@ const data = {
       title: "Playground",
       url: "#",
       icon: SquareTerminal,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: "History",
@@ -163,6 +164,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <DocumentSwitcher docs={data.docs} />
       </SidebarHeader>
       <NewDocument />
+      <HomeButton />
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
