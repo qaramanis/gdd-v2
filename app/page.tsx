@@ -1,4 +1,5 @@
 import Dashboard from "@/components/dashboard/dashboard";
+import { ThemeProvider } from "next-themes";
 
 export default function Home() {
   return (
