@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { ChevronRight, ChevronsUpDown, FolderOpen, Plus } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -19,7 +19,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-export function TeamSwitcher({
+export function DocumentSwitcher({
   docs,
 }: {
   docs: {
@@ -76,6 +76,15 @@ export function TeamSwitcher({
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
+            <DropdownMenuItem className="gap-2 p-2">
+              <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+                <FolderOpen className="size-4" />
+              </div>
+              <div className="text-muted-foreground font-medium">View all</div>
+              <DropdownMenuShortcut>
+                <ChevronRight />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2">
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
