@@ -21,9 +21,9 @@ export function NewDocument() {
         <Button
           variant="ghost"
           className={cn(
-            "w-auto justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
-            "bg-black/80 hover:bg-black/70",
-            "dark:bg-gray-300 dark:hover:bg-gray-400 text-white",
+            "w-auto rounded-full justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
+            "bg-black hover:bg-black/80",
+            "dark:bg-white dark:hover:bg-white text-white",
             "[&>svg]:text-white dark:[&>svg]:text-black"
           )}
         >

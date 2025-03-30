@@ -4,131 +4,134 @@ import React from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TiltedCard from "../tilted-card";
+import { cn } from "@/lib/utils";
 
 export function Home() {
-  // Sample document data
   const documents = [
     {
       id: 1,
-      title: "Product Roadmap",
-      date: "Edited 2 days ago",
-      color: "bg-blue-500",
-      textColor: "text-blue-500",
+      title: "Grand Theft Auto V",
+      image:
+        "https://image.api.playstation.com/vulcan/ap/rnd/202101/2019/JdvqcPlTYMxXrA1QQJm6TbDX.png?w=230&thumb=false",
     },
     {
       id: 2,
-      title: "Marketing Strategy",
-      date: "Edited yesterday",
-      color: "bg-purple-500",
-      textColor: "text-purple-500",
+      title: "Bioshock 2",
+      image:
+        "https://image.api.playstation.com/vulcan/img/cfn/11307iHrR0st30ikbq2Ed2zG2gSIk6YJQoUUl0BDPNWTaFNcAXnCbaZVojki47m1NwHMw42vdb-xdEJDyqAcfXsbsGU6P7a1.png?w=230&thumb=false",
     },
     {
       id: 3,
-      title: "Design System",
-      date: "Edited 5 days ago",
-      color: "bg-green-500",
-      textColor: "text-green-500",
+      title: "Civilization 6",
+      image:
+        "https://image.api.playstation.com/vulcan/ap/rnd/202107/0117/b79fQ20GVAQjRF9fAPVd7TsF.png?w=230&thumb=false",
     },
     {
       id: 4,
-      title: "Financial Report",
-      date: "Edited 1 week ago",
-      color: "bg-amber-500",
-      textColor: "text-amber-500",
+      title: "Rust",
+      image:
+        "https://image.api.playstation.com/vulcan/ap/rnd/202103/1501/enihR6QwSYiWCNl2HdPfV6R6.png?w=230&thumb=false",
     },
     {
       id: 5,
-      title: "Team Onboarding",
-      date: "Edited 3 days ago",
-      color: "bg-red-500",
-      textColor: "text-red-500",
+      title: "Cities Skylines",
+      image:
+        "https://image.api.playstation.com/vulcan/img/rnd/202009/3007/n0VP0Z8M5gB93kWKt7Zz2Wrw.png?w=230&thumb=false",
+    },
+    {
+      id: 6,
+      title: "The Witcher 3: Wild Hunt",
+      image:
+        "https://image.api.playstation.com/vulcan/ap/rnd/202211/0711/kh4MUIuMmHlktOHar3lVl6rY.png",
+    },
+    {
+      id: 7,
+      title: "Red Dead Redemption 2",
+      image:
+        "https://image.api.playstation.com/cdn/UP1004/CUSA03041_00/Hpl5MtwQgOVF9vJqlfui6SDB5Jl4oBSq.png?w=230&thumb=false",
+    },
+    {
+      id: 8,
+      title: "Elden Ring",
+      image:
+        "https://image.api.playstation.com/vulcan/ap/rnd/202110/2000/phvVT0qZfcRms5qDAk0SI3CM.png",
+    },
+    {
+      id: 9,
+      title: "Cyberpunk 2077",
+      image:
+        "https://image.api.playstation.com/vulcan/ap/rnd/202306/0116/e22efe5995a1271bc407b45e7d4a1b64bb3d9adae88b1887.png?w=230&thumb=false",
+    },
+    {
+      id: 10,
+      title: "Horizon Forbidden West",
+      image:
+        "https://image.api.playstation.com/vulcan/ap/rnd/202107/3100/HO8vkO9pfXhwbHi5WHECQJdN.png",
     },
   ];
 
-  // Create overlay content for each document
-  const renderOverlayContent = (doc: { id?: number; title: any; date: any; color: any; textColor: any; }) => (
-    <div className="w-full h-full flex flex-col">
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-[15px] shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className={`h-1.5 w-full ${doc.color} rounded-sm mb-3`}></div>
-        <div>
-          <h3 className={`${doc.textColor} font-medium text-lg mb-1`}>
-            {doc.title}
-          </h3>
-          <p className="text-sm text-muted-foreground">{doc.date}</p>
-        </div>
-        <div className="mt-6 flex justify-end">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            Open
-          </Button>
-        </div>
+  const renderSimpleOverlay = (title: string) => (
+    <div className="w-full h-full flex items-start">
+      <div className="bg-black/70 text-white px-3 py-2 rounded-lg m-3 max-w-full">
+        {title}
       </div>
     </div>
   );
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">All Documents</h1>
         <Button
-          variant="default"
-          className="rounded-full gap-2 bg-black text-white dark:bg-white dark:text-black"
+          variant="ghost"
+          className={cn(
+            "w-auto rounded-full justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
+            "bg-black hover:bg-black/80",
+            "dark:bg-white dark:hover:bg-white text-white",
+            "[&>svg]:text-white dark:[&>svg]:text-black"
+          )}
         >
           <Plus className="size-4" />
-          New Document
+          <span className="flex text-white dark:text-black items-center group-data-[collapsible=icon]:hidden">
+            <span>New Document</span>
+          </span>
         </Button>
       </div>
 
-      {/* Document Cards using TiltedCard */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mx-8 my-10">
         {documents.map((doc) => (
           <div key={doc.id} className="flex justify-center">
             <TiltedCard
-              imageSrc="/api/placeholder/220/280"
+              imageSrc={doc.image}
               altText={doc.title}
               captionText={doc.title}
-              containerHeight="280px"
-              containerWidth="220px"
-              imageHeight="280px"
-              imageWidth="220px"
               showTooltip={true}
+              scaleOnHover={1.1}
               displayOverlayContent={true}
-              overlayContent={renderOverlayContent(doc)}
+              overlayContent={renderSimpleOverlay(doc.title)}
+              showMobileWarning={false}
             />
           </div>
         ))}
 
         {/* New Document Card */}
-        <div className="flex justify-center">
+        {/* <div className="flex justify-center">
           <TiltedCard
-            imageSrc="/api/placeholder/220/280"
+            imageSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e2e8f0'/%3E%3C/svg%3E"
             altText="Create new document"
             captionText="Create new document"
-            containerHeight="280px"
-            containerWidth="220px"
-            imageHeight="280px"
-            imageWidth="220px"
             showTooltip={true}
             displayOverlayContent={true}
             overlayContent={
-              <div className="w-full h-full flex flex-col">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-[15px] border border-dashed border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center h-full">
-                  <div className="bg-gray-100 dark:bg-gray-700 rounded-full p-3 mb-3">
-                    <Plus className="size-4 text-muted-foreground" />
-                  </div>
-                  <p className="font-medium text-center">Create new document</p>
-                  <p className="text-xs text-muted-foreground mt-1 text-center">
-                    Start from scratch
-                  </p>
+              <div className="w-full h-full flex items-start justify-between flex-col">
+                <div className="bg-black/70 text-white px-3 py-2 rounded-lg m-3 max-w-full">
+                  Create new document
                 </div>
               </div>
             }
+            showMobileWarning={false}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

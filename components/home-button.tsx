@@ -9,7 +9,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 
 export function HomeButton() {
   const { state, isMobile } = useSidebar();
@@ -23,7 +22,7 @@ export function HomeButton() {
           className="m-2 w-auto transition-all cursor-pointer justify-start group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center"
           onClick={() => (window.location.href = "/")}
         >
-          <Home size={16} className="mr-2" />
+          <Home size={16} className={isCollapsed ? "" : "mr-2"} />
           {!isCollapsed && <span>Home</span>}
         </Button>
       </TooltipTrigger>
