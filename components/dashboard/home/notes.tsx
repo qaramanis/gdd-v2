@@ -1,4 +1,3 @@
-// components/dashboard/home/notes.tsx
 "use client";
 
 import { useState } from "react";

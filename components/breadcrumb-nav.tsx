@@ -20,7 +20,7 @@ interface BreadcrumbItem {
 
 export function BreadcrumbNav() {
   const pathname = usePathname();
-  const isHomePage = pathname === "/dashboard/home";
+  const isHomePage = pathname === "/home";
   const hideFromBreadcrumbs = ["/dashboard"];
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     if (pathname === "/" || isHomePage) return [];
@@ -58,7 +58,7 @@ export function BreadcrumbNav() {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard/home">Home</BreadcrumbLink>
+          <BreadcrumbLink href="/home">Home</BreadcrumbLink>
         </BreadcrumbItem>
 
         {breadcrumbs.length > 0 && (

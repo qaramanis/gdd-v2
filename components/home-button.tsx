@@ -22,7 +22,7 @@ export function HomeButton() {
         <Button
           variant="ghost"
           className="m-2 w-auto transition-all cursor-pointer justify-start group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center"
-          onClick={() => router.push("/dashboard/home")}
+          onClick={() => router.push("/home")}
         >
           <Home size={16} className={isCollapsed ? "" : "mr-2"} />
           {!isCollapsed && <span>Home</span>}
