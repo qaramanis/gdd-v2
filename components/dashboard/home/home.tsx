@@ -1,19 +1,17 @@
+// components/dashboard/home/home.tsx
 "use client";
 
 import React from "react";
-import {
-  ArrowRightIcon,
-  Shield,
-  RefreshCw,
-  Download,
-  Terminal,
-} from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import TiltedCard from "@/components/tilted-card";
 import { useRouter } from "next/navigation";
 import QuickActions from "./quick-actions";
 import RecentActivity from "./recent-activity";
+// Import the chart components
+import { Component as PieChart } from "@/components/charts/pie-chart";
+import { Component as BarChart } from "@/components/charts/bar-chart-mixed";
 
 export default function Home() {
   const router = useRouter();
@@ -55,7 +53,7 @@ export default function Home() {
   );
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
+    <div className="flex flex-col gap-6 p-4 pt-0">
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">Your Games</h2>
@@ -86,9 +84,14 @@ export default function Home() {
           ))}
         </div>
       </div>
-
       <div className="flex flex-col md:flex-row gap-6 mt-4">
-        <RecentActivity />
+        <div className="md:min-w-4/5 flex flex-col gap-6">
+          <RecentActivity />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <PieChart />
+            <BarChart />
+          </div>
+        </div>
         <QuickActions />
       </div>
     </div>
