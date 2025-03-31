@@ -60,15 +60,15 @@ const data = {
       items: [
         {
           title: "History",
-          url: "#",
+          url: "/dashboard/playground/history",
         },
         {
           title: "Starred",
-          url: "#",
+          url: "/dashboard/playground/starred",
         },
         {
           title: "Settings",
-          url: "#",
+          url: "/dashboard/playground/settings",
         },
       ],
     },
@@ -79,15 +79,15 @@ const data = {
       items: [
         {
           title: "Genesis",
-          url: "#",
+          url: "/dashboard/models/genesis",
         },
         {
           title: "Explorer",
-          url: "#",
+          url: "/dashboard/models/explorer",
         },
         {
           title: "Quantum",
-          url: "#",
+          url: "/dashboard/models/quantum",
         },
       ],
     },
@@ -98,19 +98,19 @@ const data = {
       items: [
         {
           title: "Introduction",
-          url: "#",
+          url: "/dashboard/documentation/introduction",
         },
         {
           title: "Get Started",
-          url: "#",
+          url: "/dashboard/documentation/getting-started",
         },
         {
           title: "Tutorials",
-          url: "#",
+          url: "/dashboard/documentation/tutorials",
         },
         {
           title: "Changelog",
-          url: "#",
+          url: "/dashboard/documentation/changelog",
         },
       ],
     },
@@ -121,19 +121,19 @@ const data = {
       items: [
         {
           title: "General",
-          url: "#",
+          url: "/dashboard/settings",
         },
         {
           title: "Team",
-          url: "#",
+          url: "/dashboard/settings/team",
         },
         {
           title: "Billing",
-          url: "#",
+          url: "/dashboard/settings/billing",
         },
         {
           title: "Limits",
-          url: "#",
+          url: "/dashboard/settings/limits",
         },
       ],
     },

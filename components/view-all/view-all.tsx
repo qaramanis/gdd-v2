@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import TiltedCard from "../tilted-card";
 import { cn } from "@/lib/utils";
 
-export function Home() {
+export function ViewAll() {
   const documents = [
     {
       id: 1,
@@ -101,6 +101,7 @@ export function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 select-none">
         {documents.map((doc) => (
           <TiltedCard
+            key={doc.id}
             imageSrc={doc.image}
             altText={doc.title}
             captionText={doc.title}

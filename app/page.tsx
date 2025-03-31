@@ -1,10 +1,10 @@
 import Dashboard from "@/components/dashboard/dashboard";
-import { ThemeProvider } from "next-themes";
+import { ViewAll } from "@/components/view-all/view-all";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <Dashboard />
-    </main>
+    <Dashboard>
+      <ViewAll />
+    </Dashboard>
   );
 }
