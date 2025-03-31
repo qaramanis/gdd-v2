@@ -43,7 +43,7 @@ export function NotesSearch({
           placeholder="Search notes..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pl-10 border-white/80"
         />
         {searchTerm && (
           <Button
