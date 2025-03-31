@@ -1,5 +1,6 @@
+// components/notes/notes-card.tsx
 import React from "react";
-import { Edit2, GamepadIcon, Save, Trash2 } from "lucide-react";
+import { Edit2, GamepadIcon, Save, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ interface NotesCardProps {
   onEdit: () => void;
   onSave: () => void;
   onDelete: () => void;
+  onDiscard: () => void; // New prop for discarding changes
   setSelectedGame: (game: string | null) => void;
   setSelectedTag: (tag: string | null) => void;
 }
@@ -31,6 +33,7 @@ export function NotesCard({
   onEdit,
   onSave,
   onDelete,
+  onDiscard, // Add to function params
   setSelectedGame,
   setSelectedTag,
 }: NotesCardProps) {
@@ -82,7 +85,7 @@ export function NotesCard({
         <p className="text-xs text-gray-500 mt-1">
           {formatDate(note.createdAt)}
         </p>
-        <Separator className=" bg-gray-200 dark:bg-gray-700" />
+        <Separator className="bg-gray-200 dark:bg-gray-700" />
       </CardHeader>
 
       <CardContent className="p-4 pt-3">
@@ -91,6 +94,7 @@ export function NotesCard({
             content={editContent}
             setContent={setEditContent}
             onSave={onSave}
+            onDiscard={onDiscard} // Pass to edit component
           />
         ) : (
           <NoteContent
@@ -108,12 +112,14 @@ interface EditNoteContentProps {
   content: string;
   setContent: (content: string) => void;
   onSave: () => void;
+  onDiscard: () => void; // Add to props
 }
 
 function EditNoteContent({
   content,
   setContent,
   onSave,
+  onDiscard, // Add to function params
 }: EditNoteContentProps) {
   return (
     <div className="space-y-4">
@@ -122,9 +128,13 @@ function EditNoteContent({
         onChange={(e) => setContent(e.target.value)}
         className="w-full p-2 min-h-24 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
       />
-      <div className="flex justify-end">
-        <Button onClick={onSave} className="cursor-pointer rounded-full">
-          <Save className="size-4 mr-2" />
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={onDiscard} className="rounded-full">
+          <X className="size-4" />
+          Discard
+        </Button>
+        <Button onClick={onSave} className="rounded-full">
+          <Save className="size-4 mr-1" />
           Save
         </Button>
       </div>

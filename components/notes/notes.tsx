@@ -66,6 +66,10 @@ export default function NotesPage() {
     setEditingId(null);
   };
 
+  const handleDiscard = () => {
+    setEditingId(null);
+  };
+
   const handleDelete = (id: string) => {
     setNotes(notes.filter((note) => note.id !== id));
     if (editingId === id) setEditingId(null);
@@ -178,6 +182,7 @@ export default function NotesPage() {
             onEdit={() => handleEdit(note)}
             onSave={() => handleSave(note.id)}
             onDelete={() => handleDelete(note.id)}
+            onDiscard={handleDiscard} // Add this line
             setSelectedGame={setSelectedGame}
             setSelectedTag={setSelectedTag}
           />

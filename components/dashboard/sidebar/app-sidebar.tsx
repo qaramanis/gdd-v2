@@ -54,7 +54,7 @@ const data = {
   navMain: [
     {
       title: "Playground",
-      url: "#",
+      url: "",
       icon: SquareTerminal,
       isActive: false,
       items: [
@@ -74,7 +74,7 @@ const data = {
     },
     {
       title: "Models",
-      url: "#",
+      url: "",
       icon: Bot,
       items: [
         {
@@ -93,7 +93,7 @@ const data = {
     },
     {
       title: "Documentation",
-      url: "#",
+      url: "",
       icon: BookOpen,
       items: [
         {
@@ -116,7 +116,7 @@ const data = {
     },
     {
       title: "Settings",
-      url: "#",
+      url: "",
       icon: Settings2,
       items: [
         {
@@ -141,17 +141,17 @@ const data = {
   projects: [
     {
       name: "Design Engineering",
-      url: "#",
+      url: "",
       icon: Frame,
     },
     {
       name: "Sales & Marketing",
-      url: "#",
+      url: "",
       icon: PieChart,
     },
     {
       name: "Travel",
-      url: "#",
+      url: "",
       icon: Map,
     },
   ],
