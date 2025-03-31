@@ -1,11 +1,19 @@
 "use client";
 
 import React from "react";
-import { ArrowRightIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  Shield,
+  RefreshCw,
+  Download,
+  Terminal,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import TiltedCard from "@/components/tilted-card";
 import { useRouter } from "next/navigation";
+import QuickActions from "./quick-actions";
+import RecentActivity from "./recent-activity";
 
 export default function Home() {
   const router = useRouter();
@@ -79,28 +87,9 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="bg-primary/5 p-6 rounded-lg mt-4">
-        <h2 className="text-xl font-bold mb-3">Recent Activity</h2>
-        <div className="space-y-2">
-          <div className="p-3 bg-white dark:bg-gray-800 rounded-md flex justify-between items-center">
-            <div>
-              <p className="font-medium">Elden Ring</p>
-              <p className="text-sm text-gray-500">Updated 2 hours ago</p>
-            </div>
-            <Button variant="ghost" size="sm">
-              Open
-            </Button>
-          </div>
-          <div className="p-3 bg-white dark:bg-gray-800 rounded-md flex justify-between items-center">
-            <div>
-              <p className="font-medium">Horizon Forbidden West</p>
-              <p className="text-sm text-gray-500">Updated yesterday</p>
-            </div>
-            <Button variant="ghost" size="sm">
-              Open
-            </Button>
-          </div>
-        </div>
+      <div className="flex flex-col md:flex-row gap-6 mt-4">
+        <RecentActivity />
+        <QuickActions />
       </div>
     </div>
   );
