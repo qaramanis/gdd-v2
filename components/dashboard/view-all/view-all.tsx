@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import TiltedCard from "@/components/tilted-card";
 import { supabase } from "@/database/supabase";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Game {
   id: number;
@@ -63,8 +64,14 @@ export default function ViewAll() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <p className="text-lg">Loading games...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          {[...Array(8)].map((_, index) => (
+            <div key={index} className="flex flex-col">
+              <Skeleton className="w-full h-64 rounded-lg" />
+              <Skeleton className="w-3/4 h-6 mt-3 rounded-md" />
+              <Skeleton className="w-1/2 h-4 mt-2 rounded-md" />
+            </div>
+          ))}
         </div>
       ) : error ? (
         <div className="flex justify-center items-center h-64">

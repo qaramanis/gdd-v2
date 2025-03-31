@@ -25,8 +25,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { NewDocument } from "./new-document";
-import { HomeButton } from "./home-button";
+import { NewDocument } from "@/components/new-document";
+import { HomeButton } from "@/components/home-button";
 
 const data = {
   user: {
