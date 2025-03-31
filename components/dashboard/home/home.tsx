@@ -12,6 +12,7 @@ import RecentActivity from "./recent-activity";
 // Import the chart components
 import { Component as PieChart } from "@/components/charts/pie-chart";
 import { Component as BarChart } from "@/components/charts/bar-chart-mixed";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   const router = useRouter();
@@ -59,7 +60,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold">Your Games</h2>
           <Button
             variant="ghost"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 rounded-full dark:hover:bg-sky-600/80"
             onClick={() => router.push("/dashboard/view-all")}
           >
             View all <ArrowRightIcon className="size-4" />
@@ -84,8 +85,9 @@ export default function Home() {
           ))}
         </div>
       </div>
+      <Separator className="bg-black dark:bg-white" />
       <div className="flex flex-col md:flex-row gap-6 mt-4">
-        <div className="md:w-auto flex flex-col gap-6">
+        <div className="md:w-auto md:flex-1 flex flex-col gap-6">
           <RecentActivity />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <PieChart />

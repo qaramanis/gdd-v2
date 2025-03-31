@@ -3,7 +3,7 @@ import { Download, RefreshCw, Settings, Shield } from "lucide-react";
 
 export default function QuickActions() {
   return (
-    <div className="bg-primary/5 p-6 rounded-lg md:w-auto md:aspect-square flex flex-col dark:bg-gray-900/60">
+    <div className="bg-primary/5 p-6 rounded-lg md:w-128 md:h-128 flex flex-col dark:bg-gray-900/60 md:flex-shrink-0">
       <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
       <div className="grid grid-cols-2 gap-4 flex-1">
         <Button

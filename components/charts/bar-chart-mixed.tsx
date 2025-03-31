@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, XAxis, YAxis, Cell, LabelList } from "recharts";
 
 import {
   Card,
@@ -17,6 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+
 const chartData = [
   { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
   { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
@@ -52,42 +53,72 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function Component() {
+  // Format browser name for display inside bar
+  const formatBrowserName = (value: string): string => {
+    return (
+      chartConfig[value as keyof typeof chartConfig]?.label?.toString() || value
+    );
+  };
+
+  // Custom label renderer to show browser name inside the bar
+  const renderCustomizedLabel = (props: any) => {
+    const { x, y, width, height, value, index } = props;
+    const browser = chartData[index].browser;
+    const browserName = formatBrowserName(browser);
+
+    return (
+      <text
+        x={x + 10}
+        y={y + height / 2}
+        fill="white"
+        textAnchor="start"
+        dominantBaseline="middle"
+        className="text-xs font-medium"
+      >
+        {browserName}
+      </text>
+    );
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Bar Chart - Mixed</CardTitle>
+    <Card className="bg-primary/5 dark:bg-gray-900/60 border-none shadow-none">
+      <CardHeader className="pb-2">
+        <CardTitle>Browser Usage</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pb-0">
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
             data={chartData}
             layout="vertical"
             margin={{
-              left: 0,
+              left: 10,
+              right: 10,
+              top: 10,
+              bottom: 10,
             }}
+            barSize={75}
           >
-            <YAxis
-              dataKey="browser"
-              type="category"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value: string | number | symbol) =>
-                chartConfig[value as keyof typeof chartConfig]?.label
-              }
-            />
-            <XAxis dataKey="visitors" type="number" hide />
+            <YAxis dataKey="browser" type="category" hide={true} />
+            <XAxis dataKey="visitors" type="number" hide={true} />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="visitors" layout="vertical" radius={5} />
+            <Bar dataKey="visitors" layout="vertical" radius={5}>
+              {chartData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={`hsl(var(--chart-${index + 1}))`}
+                />
+              ))}
+              <LabelList dataKey="browser" content={renderCustomizedLabel} />
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
+      <CardFooter className="flex-col items-start gap-2 text-sm pt-4">
         <div className="flex gap-2 font-medium leading-none">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
