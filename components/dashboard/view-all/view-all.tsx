@@ -1,74 +1,46 @@
+// components/dashboard/view-all/view-all.tsx
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import TiltedCard from "@/components/tilted-card";
+import { supabase } from "@/database/supabase";
+
+interface Game {
+  id: number;
+  name: string;
+  image_url: string;
+}
 
 export default function ViewAll() {
-  const documents = [
-    {
-      id: 1,
-      title: "Grand Theft Auto V",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202101/2019/JdvqcPlTYMxXrA1QQJm6TbDX.png",
-    },
-    {
-      id: 2,
-      title: "Bioshock 2",
-      image:
-        "https://image.api.playstation.com/vulcan/img/cfn/11307iHrR0st30ikbq2Ed2zG2gSIk6YJQoUUl0BDPNWTaFNcAXnCbaZVojki47m1NwHMw42vdb-xdEJDyqAcfXsbsGU6P7a1.png",
-    },
-    {
-      id: 3,
-      title: "Civilization 6",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202107/0117/b79fQ20GVAQjRF9fAPVd7TsF.png",
-    },
-    {
-      id: 4,
-      title: "Rust",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202103/1501/enihR6QwSYiWCNl2HdPfV6R6.png",
-    },
-    {
-      id: 5,
-      title: "Cities Skylines",
-      image:
-        "https://image.api.playstation.com/vulcan/img/rnd/202009/3007/n0VP0Z8M5gB93kWKt7Zz2Wrw.png",
-    },
-    {
-      id: 6,
-      title: "The Witcher 3: Wild Hunt",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202211/0711/kh4MUIuMmHlktOHar3lVl6rY.png",
-    },
-    {
-      id: 7,
-      title: "Red Dead Redemption 2",
-      image:
-        "https://image.api.playstation.com/cdn/UP1004/CUSA03041_00/Hpl5MtwQgOVF9vJqlfui6SDB5Jl4oBSq.png",
-    },
-    {
-      id: 8,
-      title: "Elden Ring",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202110/2000/phvVT0qZfcRms5qDAk0SI3CM.png",
-    },
-    {
-      id: 9,
-      title: "Cyberpunk 2077",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202306/0116/e22efe5995a1271bc407b45e7d4a1b64bb3d9adae88b1887.png",
-    },
-    {
-      id: 10,
-      title: "Horizon Forbidden West",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202107/3100/HO8vkO9pfXhwbHi5WHECQJdN.png",
-    },
-  ];
+  const [documents, setDocuments] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchGames() {
+      try {
+        setLoading(true);
+
+        let { data: games, error } = await supabase.from("games").select("*");
+
+        if (error) {
+          throw error;
+        }
+
+        setDocuments(games || []);
+      } catch (err) {
+        console.error("Error fetching games:", err);
+        setError("Failed to load games. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGames();
+  }, []);
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -90,23 +62,39 @@ export default function ViewAll() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 select-none">
-        {documents.map((doc) => (
-          <TiltedCard
-            key={doc.id}
-            imageSrc={doc.image}
-            altText={doc.title}
-            captionText={doc.title}
-            showTooltip={true}
-            scaleOnHover={1}
-            containerWidth="auto"
-            imageWidth="100%"
-            displayOverlayContent={true}
-            overlayContent={doc.title}
-            showMobileWarning={false}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-lg">Loading games...</p>
+        </div>
+      ) : error ? (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-lg text-red-500">{error}</p>
+        </div>
+      ) : documents.length === 0 ? (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-lg">
+            No games found. Add some games to get started.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 select-none">
+          {documents.map((doc) => (
+            <TiltedCard
+              key={doc.id}
+              imageSrc={doc.image_url}
+              altText={doc.name}
+              captionText={doc.name}
+              showTooltip={true}
+              scaleOnHover={1}
+              containerWidth="auto"
+              imageWidth="100%"
+              displayOverlayContent={true}
+              overlayContent={doc.name}
+              showMobileWarning={false}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

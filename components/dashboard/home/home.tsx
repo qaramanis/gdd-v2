@@ -53,7 +53,7 @@ export default function Home() {
             className="flex items-center gap-2 rounded-full dark:hover:bg-sky-600/80"
             onClick={() => router.push("/dashboard/view-all")}
           >
-            Home <ArrowRightIcon className="size-4" />
+            View All <ArrowRightIcon className="size-4" />
           </Button>
         </div>
 
