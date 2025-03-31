@@ -72,7 +72,7 @@ export default function ViewAll() {
 
   const renderSimpleOverlay = (title: string) => (
     <div className="w-full h-full flex items-start">
-      <div className="bg-black/80 text-white dark:bg-white/80 dark:text-black px-3 py-2 rounded-lg mx-6 my-5 max-w-full">
+      <div className="dark:bg-black/80 dark:text-white bg-white/80 text-black px-3 py-2 rounded-lg mx-6 my-5 max-w-full">
         {title}
       </div>
     </div>
@@ -110,7 +110,7 @@ export default function ViewAll() {
             containerWidth="auto"
             imageWidth="100%"
             displayOverlayContent={true}
-            overlayContent={renderSimpleOverlay(doc.title)}
+            overlayContent={doc.title}
             showMobileWarning={false}
           />
         ))}

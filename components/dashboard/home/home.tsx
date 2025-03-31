@@ -45,14 +45,6 @@ export default function Home() {
     },
   ];
 
-  const renderSimpleOverlay = (title: string) => (
-    <div className="w-full h-full flex items-start">
-      <div className="bg-black/80 text-white dark:bg-white/80 dark:text-black px-3 py-2 rounded-lg mx-6 my-5 max-w-full">
-        {title}
-      </div>
-    </div>
-  );
-
   return (
     <div className="flex flex-col gap-6 p-4 pt-0">
       <div className="flex flex-col gap-4">
@@ -79,14 +71,15 @@ export default function Home() {
               containerWidth="auto"
               imageWidth="100%"
               displayOverlayContent={true}
-              overlayContent={renderSimpleOverlay(game.title)}
+              overlayContent={game.title}
               showMobileWarning={false}
             />
           ))}
         </div>
       </div>
-      <Separator className="bg-black dark:bg-white" />
-      <div className="flex flex-col md:flex-row gap-6 mt-4">
+      {/* <Separator className="bg-black/20 dark:bg-white/20" /> */}
+      <Separator className="bg-primary/10 dark:bg-gray-400/20 m-2" />
+      <div className="flex flex-col md:flex-row gap-6">
         <div className="md:w-auto md:flex-1 flex flex-col gap-6">
           <RecentActivity />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -1,6 +1,7 @@
 import type { SpringOptions } from "framer-motion";
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface TiltedCardProps {
   imageSrc: React.ComponentProps<"img">["src"];
@@ -126,9 +127,31 @@ export default function TiltedCard({
           }}
         />
 
-        {displayOverlayContent && overlayContent && (
-          <motion.div className="absolute top-0 left-0 z-[2] will-change-transform [transform:translateZ(30px)]">
-            {overlayContent}
+        {displayOverlayContent && (
+          <motion.div className="absolute top-0 left-0 z-[2] will-change-transform [transform:translateZ(30px)] w-full h-full">
+            {overlayContent ? (
+              <div className="w-full h-full flex items-start">
+                <div
+                  className={cn(
+                    "px-3 py-2 rounded-lg mx-6 my-5 max-w-full",
+                    "dark:bg-black/80 dark:text-white bg-white/80 text-black"
+                  )}
+                >
+                  {overlayContent}
+                </div>
+              </div>
+            ) : captionText ? (
+              <div className="w-full h-full flex items-start">
+                <div
+                  className={cn(
+                    "px-3 py-2 rounded-lg mx-6 my-5 max-w-full",
+                    "bg-black/80 text-white dark:bg-white/80 dark:text-black"
+                  )}
+                >
+                  {captionText}
+                </div>
+              </div>
+            ) : null}
           </motion.div>
         )}
       </motion.div>
