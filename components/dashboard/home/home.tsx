@@ -85,7 +85,7 @@ export default function Home() {
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-6 mt-4">
-        <div className="md:min-w-4/5 flex flex-col gap-6">
+        <div className="md:w-auto flex flex-col gap-6">
           <RecentActivity />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <PieChart />
