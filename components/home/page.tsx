@@ -72,7 +72,7 @@ export function Home() {
 
   const renderSimpleOverlay = (title: string) => (
     <div className="w-full h-full flex items-start">
-      <div className="bg-black/70 text-white px-3 py-2 rounded-lg m-3 max-w-full">
+      <div className="bg-black/80 text-white dark:bg-white/80 dark:text-black px-3 py-2 rounded-lg mx-6 my-5 max-w-full">
         {title}
       </div>
     </div>
@@ -98,14 +98,14 @@ export function Home() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 select-none">
         {documents.map((doc) => (
           <TiltedCard
             imageSrc={doc.image}
             altText={doc.title}
             captionText={doc.title}
             showTooltip={true}
-            scaleOnHover={1.1}
+            scaleOnHover={1.05}
             containerWidth="auto"
             imageWidth="100%"
             displayOverlayContent={true}
