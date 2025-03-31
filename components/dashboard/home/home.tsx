@@ -1,7 +1,7 @@
 // components/dashboard/home/home.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TiltedCard from "@/components/tilted-card";
@@ -11,37 +11,42 @@ import RecentActivity from "./recent-activity";
 import { Component as PieChart } from "@/components/charts/pie-chart";
 import { Component as BarChart } from "@/components/charts/bar-chart-mixed";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/database/supabase";
+
+interface Game {
+  id: number;
+  name: string;
+  image_url: string;
+}
 
 export default function Home() {
   const router = useRouter();
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Get a subset of games from the same data used in view-all.tsx
-  const featuredGames = [
-    {
-      id: 2,
-      title: "Bioshock 2",
-      image:
-        "https://image.api.playstation.com/vulcan/img/cfn/11307iHrR0st30ikbq2Ed2zG2gSIk6YJQoUUl0BDPNWTaFNcAXnCbaZVojki47m1NwHMw42vdb-xdEJDyqAcfXsbsGU6P7a1.png",
-    },
-    {
-      id: 6,
-      title: "The Witcher 3: Wild Hunt",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202211/0711/kh4MUIuMmHlktOHar3lVl6rY.png",
-    },
-    {
-      id: 8,
-      title: "Elden Ring",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202110/2000/phvVT0qZfcRms5qDAk0SI3CM.png",
-    },
-    {
-      id: 10,
-      title: "Horizon Forbidden West",
-      image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202107/3100/HO8vkO9pfXhwbHi5WHECQJdN.png",
-    },
-  ];
+  useEffect(() => {
+    async function fetchGames() {
+      try {
+        setLoading(true);
+
+        let { data: games, error } = await supabase.from("games").select("*");
+
+        if (error) {
+          throw error;
+        }
+
+        setGames(games || []);
+      } catch (err) {
+        console.error("Error fetching games:", err);
+        setError("Failed to load games. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGames();
+  }, []);
 
   return (
     <div className="flex flex-col gap-6 p-4 pt-0">
@@ -58,18 +63,18 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 select-none">
-          {featuredGames.map((game) => (
+          {games.map((game) => (
             <TiltedCard
               key={game.id}
-              imageSrc={game.image}
-              altText={game.title}
-              captionText={game.title}
+              imageSrc={game.image_url}
+              altText={game.name}
+              captionText={game.name}
               showTooltip={true}
               scaleOnHover={1}
               containerWidth="auto"
               imageWidth="100%"
               displayOverlayContent={true}
-              overlayContent={game.title}
+              overlayContent={game.name}
               showMobileWarning={false}
             />
           ))}

@@ -15,7 +15,7 @@ interface Game {
 }
 
 export default function ViewAll() {
-  const [documents, setDocuments] = useState<Game[]>([]);
+  const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +30,7 @@ export default function ViewAll() {
           throw error;
         }
 
-        setDocuments(games || []);
+        setGames(games || []);
       } catch (err) {
         console.error("Error fetching games:", err);
         setError("Failed to load games. Please try again later.");
@@ -70,7 +70,7 @@ export default function ViewAll() {
         <div className="flex justify-center items-center h-64">
           <p className="text-lg text-red-500">{error}</p>
         </div>
-      ) : documents.length === 0 ? (
+      ) : games.length === 0 ? (
         <div className="flex justify-center items-center h-64">
           <p className="text-lg">
             No games found. Add some games to get started.
@@ -78,18 +78,18 @@ export default function ViewAll() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 select-none">
-          {documents.map((doc) => (
+          {games.map((game) => (
             <TiltedCard
-              key={doc.id}
-              imageSrc={doc.image_url}
-              altText={doc.name}
-              captionText={doc.name}
+              key={game.id}
+              imageSrc={game.image_url}
+              altText={game.name}
+              captionText={game.name}
               showTooltip={true}
               scaleOnHover={1}
               containerWidth="auto"
               imageWidth="100%"
               displayOverlayContent={true}
-              overlayContent={doc.name}
+              overlayContent={game.name}
               showMobileWarning={false}
             />
           ))}
