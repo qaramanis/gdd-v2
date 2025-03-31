@@ -4,12 +4,10 @@
 import React from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import TiltedCard from "@/components/tilted-card";
 import { useRouter } from "next/navigation";
 import QuickActions from "./quick-actions";
 import RecentActivity from "./recent-activity";
-// Import the chart components
 import { Component as PieChart } from "@/components/charts/pie-chart";
 import { Component as BarChart } from "@/components/charts/bar-chart-mixed";
 import { Separator } from "@/components/ui/separator";
@@ -67,7 +65,7 @@ export default function Home() {
               altText={game.title}
               captionText={game.title}
               showTooltip={true}
-              scaleOnHover={1.05}
+              scaleOnHover={1}
               containerWidth="auto"
               imageWidth="100%"
               displayOverlayContent={true}

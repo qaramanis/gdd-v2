@@ -70,14 +70,6 @@ export default function ViewAll() {
     },
   ];
 
-  const renderSimpleOverlay = (title: string) => (
-    <div className="w-full h-full flex items-start">
-      <div className="dark:bg-black/80 dark:text-white bg-white/80 text-black px-3 py-2 rounded-lg mx-6 my-5 max-w-full">
-        {title}
-      </div>
-    </div>
-  );
-
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="flex items-center justify-between mb-6">
@@ -106,7 +98,7 @@ export default function ViewAll() {
             altText={doc.title}
             captionText={doc.title}
             showTooltip={true}
-            scaleOnHover={1.05}
+            scaleOnHover={1}
             containerWidth="auto"
             imageWidth="100%"
             displayOverlayContent={true}
