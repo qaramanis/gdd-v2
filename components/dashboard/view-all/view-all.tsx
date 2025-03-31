@@ -3,10 +3,10 @@
 import React from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import TiltedCard from "../tilted-card";
 import { cn } from "@/lib/utils";
+import TiltedCard from "@/components/tilted-card";
 
-export function ViewAll() {
+export default function ViewAll() {
   const documents = [
     {
       id: 1,

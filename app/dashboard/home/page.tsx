@@ -1,5 +1,5 @@
-import { ViewAll } from "@/components/view-all/view-all";
+import Home from "@/components/dashboard/home/home";
 
 export default function HomePage() {
-  return <ViewAll />;
+  return <Home />;
 }
