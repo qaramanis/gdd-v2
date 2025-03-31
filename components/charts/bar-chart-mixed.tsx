@@ -60,7 +60,6 @@ export function Component() {
     );
   };
 
-  // Custom label renderer to show browser name inside the bar
   const renderCustomizedLabel = (props: any) => {
     const { x, y, height, index } = props;
     const browser = chartData[index].browser;
