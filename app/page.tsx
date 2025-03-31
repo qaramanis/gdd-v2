@@ -1,10 +1,5 @@
-import Dashboard from "@/components/dashboard/dashboard";
-import ViewAll from "@/components/dashboard/view-all/view-all";
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
-  return (
-    <Dashboard>
-      <ViewAll />
-    </Dashboard>
-  );
+export default function RootPage() {
+  redirect("/dashboard/home");
 }

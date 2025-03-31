@@ -23,7 +23,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="bg-gradient-to-br from-sky-300 via-indigo-300 to-sky-300 dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 rounded-xl m-3">
+      <SidebarInset className="bg-gradient-to-br from-sky-200 via-indigo-200 to-sky-200 dark:bg-gradient-to-br dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 rounded-xl m-3">
         <header className="flex h-16 shrink-0 items-center justify-between transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 px-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
