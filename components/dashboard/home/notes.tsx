@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit2, Save, Trash2, Plus } from "lucide-react";
+import Link from "next/link";
 
 interface Note {
   id: string;
@@ -57,7 +58,9 @@ export default function Notes() {
   return (
     <div className="bg-primary/5 p-6 rounded-lg dark:bg-gray-900/60 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Notes</h2>
+        <Link href="/notes" className="text-xl font-bold">
+          Personal Notes
+        </Link>
         {!isAddingNote && (
           <Button
             variant="ghost"
