@@ -12,31 +12,31 @@ export function Home() {
       id: 1,
       title: "Grand Theft Auto V",
       image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202101/2019/JdvqcPlTYMxXrA1QQJm6TbDX.png?w=230&thumb=false",
+        "https://image.api.playstation.com/vulcan/ap/rnd/202101/2019/JdvqcPlTYMxXrA1QQJm6TbDX.png",
     },
     {
       id: 2,
       title: "Bioshock 2",
       image:
-        "https://image.api.playstation.com/vulcan/img/cfn/11307iHrR0st30ikbq2Ed2zG2gSIk6YJQoUUl0BDPNWTaFNcAXnCbaZVojki47m1NwHMw42vdb-xdEJDyqAcfXsbsGU6P7a1.png?w=230&thumb=false",
+        "https://image.api.playstation.com/vulcan/img/cfn/11307iHrR0st30ikbq2Ed2zG2gSIk6YJQoUUl0BDPNWTaFNcAXnCbaZVojki47m1NwHMw42vdb-xdEJDyqAcfXsbsGU6P7a1.png",
     },
     {
       id: 3,
       title: "Civilization 6",
       image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202107/0117/b79fQ20GVAQjRF9fAPVd7TsF.png?w=230&thumb=false",
+        "https://image.api.playstation.com/vulcan/ap/rnd/202107/0117/b79fQ20GVAQjRF9fAPVd7TsF.png",
     },
     {
       id: 4,
       title: "Rust",
       image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202103/1501/enihR6QwSYiWCNl2HdPfV6R6.png?w=230&thumb=false",
+        "https://image.api.playstation.com/vulcan/ap/rnd/202103/1501/enihR6QwSYiWCNl2HdPfV6R6.png",
     },
     {
       id: 5,
       title: "Cities Skylines",
       image:
-        "https://image.api.playstation.com/vulcan/img/rnd/202009/3007/n0VP0Z8M5gB93kWKt7Zz2Wrw.png?w=230&thumb=false",
+        "https://image.api.playstation.com/vulcan/img/rnd/202009/3007/n0VP0Z8M5gB93kWKt7Zz2Wrw.png",
     },
     {
       id: 6,
@@ -48,7 +48,7 @@ export function Home() {
       id: 7,
       title: "Red Dead Redemption 2",
       image:
-        "https://image.api.playstation.com/cdn/UP1004/CUSA03041_00/Hpl5MtwQgOVF9vJqlfui6SDB5Jl4oBSq.png?w=230&thumb=false",
+        "https://image.api.playstation.com/cdn/UP1004/CUSA03041_00/Hpl5MtwQgOVF9vJqlfui6SDB5Jl4oBSq.png",
     },
     {
       id: 8,
@@ -60,7 +60,7 @@ export function Home() {
       id: 9,
       title: "Cyberpunk 2077",
       image:
-        "https://image.api.playstation.com/vulcan/ap/rnd/202306/0116/e22efe5995a1271bc407b45e7d4a1b64bb3d9adae88b1887.png?w=230&thumb=false",
+        "https://image.api.playstation.com/vulcan/ap/rnd/202306/0116/e22efe5995a1271bc407b45e7d4a1b64bb3d9adae88b1887.png",
     },
     {
       id: 10,
@@ -98,40 +98,21 @@ export function Home() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mx-8 my-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         {documents.map((doc) => (
-          <div key={doc.id} className="flex justify-center">
-            <TiltedCard
-              imageSrc={doc.image}
-              altText={doc.title}
-              captionText={doc.title}
-              showTooltip={true}
-              scaleOnHover={1.1}
-              displayOverlayContent={true}
-              overlayContent={renderSimpleOverlay(doc.title)}
-              showMobileWarning={false}
-            />
-          </div>
-        ))}
-
-        {/* New Document Card */}
-        {/* <div className="flex justify-center">
           <TiltedCard
-            imageSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e2e8f0'/%3E%3C/svg%3E"
-            altText="Create new document"
-            captionText="Create new document"
+            imageSrc={doc.image}
+            altText={doc.title}
+            captionText={doc.title}
             showTooltip={true}
+            scaleOnHover={1.1}
+            containerWidth="auto"
+            imageWidth="100%"
             displayOverlayContent={true}
-            overlayContent={
-              <div className="w-full h-full flex items-start justify-between flex-col">
-                <div className="bg-black/70 text-white px-3 py-2 rounded-lg m-3 max-w-full">
-                  Create new document
-                </div>
-              </div>
-            }
+            overlayContent={renderSimpleOverlay(doc.title)}
             showMobileWarning={false}
           />
-        </div> */}
+        ))}
       </div>
     </div>
   );
