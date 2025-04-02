@@ -60,7 +60,7 @@ export default function Notes() {
         </Link>
       </div>
 
-      <div className="space-y-4 overflow-y-auto">
+      <div className=" overflow-y-auto">
         {loading ? (
           <div className="text-center py-4 text-gray-500">Loading notes...</div>
         ) : error ? (

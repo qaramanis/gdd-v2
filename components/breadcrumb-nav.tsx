@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { capitalize } from "@/lib/utils";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 interface BreadcrumbItem {
   href: string;
@@ -22,6 +23,8 @@ export function BreadcrumbNav() {
   const pathname = usePathname();
   const isHomePage = pathname === "/home";
   const hideFromBreadcrumbs = ["/dashboard"];
+  const router = useRouter();
+
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     if (pathname === "/" || isHomePage) return [];
     const segments = pathname.split("/").filter(Boolean);
@@ -58,7 +61,12 @@ export function BreadcrumbNav() {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/home">Home</BreadcrumbLink>
+          <BreadcrumbLink
+            onClick={() => router.push("/home")}
+            className="cursor-pointer"
+          >
+            Home
+          </BreadcrumbLink>
         </BreadcrumbItem>
 
         {breadcrumbs.length > 0 && (
