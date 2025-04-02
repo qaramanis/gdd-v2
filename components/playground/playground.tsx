@@ -37,7 +37,9 @@ const DEMO_SCENES = {
 
 export default function Playground() {
   const [activeEngine, setActiveEngine] = useState<"unity" | "unreal">("unity");
-  const [selectedScene, setSelectedScene] = useState(DEMO_SCENES.unity[0]);
+  const [selectedScene, setSelectedScene] = useState<
+    (typeof DEMO_SCENES.unity)[0] | null
+  >(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const handleSceneSelect = (scene: (typeof DEMO_SCENES.unity)[0]) => {
@@ -49,6 +51,7 @@ export default function Playground() {
     // Mock upload process
     setTimeout(() => {
       setIsUploading(false);
+      // You could set a new scene here after successful upload
     }, 2000);
   };
 
@@ -75,17 +78,15 @@ export default function Playground() {
         <div className="w-64 bg-background rounded-lg p-4 border">
           <Tabs
             value={activeEngine}
-            onValueChange={(v: string) =>
-              setActiveEngine(v as "unity" | "unreal")
-            }
+            onValueChange={(v) => setActiveEngine(v as "unity" | "unreal")}
           >
-            <TabsList className="w-full mb-4">
+            <TabsList className="w-full mb-4 border-b ">
               <TabsTrigger value="unity" className="flex-1">
                 Unity
               </TabsTrigger>
-              <TabsTrigger value="unreal" className="flex-1">
+              {/* <TabsTrigger value="unreal" className="flex-1">
                 Unreal
-              </TabsTrigger>
+              </TabsTrigger>   */}
             </TabsList>
 
             <TabsContent value="unity" className="mt-0">
@@ -96,7 +97,7 @@ export default function Playground() {
                   <div
                     key={scene.id}
                     className={`p-2 rounded-md cursor-pointer transition-colors ${
-                      selectedScene.id === scene.id
+                      selectedScene?.id === scene.id
                         ? "bg-primary text-primary-foreground"
                         : "hover:bg-muted"
                     }`}
@@ -116,7 +117,7 @@ export default function Playground() {
                   <div
                     key={scene.id}
                     className={`p-2 rounded-md cursor-pointer transition-colors ${
-                      selectedScene.id === scene.id
+                      selectedScene?.id === scene.id
                         ? "bg-primary text-primary-foreground"
                         : "hover:bg-muted"
                     }`}
@@ -131,7 +132,11 @@ export default function Playground() {
         </div>
 
         <div className="flex-1">
-          <SceneViewer sceneUrl={selectedScene.url} engineType={activeEngine} />
+          <SceneViewer
+            sceneUrl={selectedScene?.url || null}
+            engineType={activeEngine}
+            onUpload={handleUpload}
+          />
         </div>
       </div>
     </div>

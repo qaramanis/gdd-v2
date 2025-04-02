@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Edit2, Save, Trash2, Plus } from "lucide-react";
 import Link from "next/link";
+import { supabase } from "@/database/supabase";
 
 interface Note {
   id: string;
@@ -12,14 +13,39 @@ interface Note {
 }
 
 export default function Notes() {
-  const [notes, setNotes] = useState<Note[]>([
-    { id: "1", content: "Update character movement mechanics" },
-    { id: "2", content: "Schedule meeting with art team" },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newNoteContent, setNewNoteContent] = useState("");
   const [editContent, setEditContent] = useState("");
   const [isAddingNote, setIsAddingNote] = useState(false);
+  useEffect(() => {
+    async function fetchNotes() {
+      try {
+        setLoading(true);
+
+        let { data: notes, error } = await supabase
+          .from("notes")
+          .select("*")
+          .order("created_at", { ascending: true })
+          .limit(3);
+
+        if (error) {
+          throw error;
+        }
+
+        setNotes(notes || []);
+      } catch (err) {
+        console.error("Error fetching notes:", err);
+        setError("Failed to load notes. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchNotes();
+  }, []);
 
   const handleEdit = (note: Note) => {
     setEditingId(note.id);

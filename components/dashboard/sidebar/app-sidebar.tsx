@@ -59,16 +59,20 @@ const data = {
       isActive: false,
       items: [
         {
+          title: "Scene Viewer",
+          url: "playground",
+        },
+        {
           title: "History",
-          url: "/dashboard/playground/history",
+          url: "playground/history",
         },
         {
           title: "Starred",
-          url: "/dashboard/playground/starred",
+          url: "playground/starred",
         },
         {
           title: "Settings",
-          url: "/dashboard/playground/settings",
+          url: "playground/settings",
         },
       ],
     },
