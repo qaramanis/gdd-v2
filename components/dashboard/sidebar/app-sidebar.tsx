@@ -102,19 +102,19 @@ const data = {
       items: [
         {
           title: "Introduction",
-          url: "/dashboard/documentation/introduction",
+          url: "documentation/introduction",
         },
         {
           title: "Get Started",
-          url: "/dashboard/documentation/getting-started",
+          url: "/documentation/getting-started",
         },
         {
           title: "Tutorials",
-          url: "/dashboard/documentation/tutorials",
+          url: "/documentation/tutorials",
         },
         {
           title: "Changelog",
-          url: "/dashboard/documentation/changelog",
+          url: "/documentation/changelog",
         },
       ],
     },
@@ -125,19 +125,19 @@ const data = {
       items: [
         {
           title: "General",
-          url: "/dashboard/settings",
+          url: "/settings",
         },
         {
           title: "Team",
-          url: "/dashboard/settings/team",
+          url: "/settings/team",
         },
         {
           title: "Billing",
-          url: "/dashboard/settings/billing",
+          url: "/settings/billing",
         },
         {
           title: "Limits",
-          url: "/dashboard/settings/limits",
+          url: "/settings/limits",
         },
       ],
     },

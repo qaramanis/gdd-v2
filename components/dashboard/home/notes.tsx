@@ -2,24 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Edit2, Save, Trash2, Plus } from "lucide-react";
+import { ArrowRightIcon, GamepadIcon } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/database/supabase";
+import { formatDate } from "@/lib/date-utils";
 
 interface Note {
   id: string;
+  created_at: string;
+  title: string;
   content: string;
+  tags: string[] | null;
+  game: string | null;
 }
 
 export default function Notes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [newNoteContent, setNewNoteContent] = useState("");
-  const [editContent, setEditContent] = useState("");
-  const [isAddingNote, setIsAddingNote] = useState(false);
+
   useEffect(() => {
     async function fetchNotes() {
       try {
@@ -28,7 +29,7 @@ export default function Notes() {
         let { data: notes, error } = await supabase
           .from("notes")
           .select("*")
-          .order("created_at", { ascending: true })
+          .order("created_at", { ascending: false })
           .limit(3);
 
         if (error) {
@@ -47,132 +48,64 @@ export default function Notes() {
     fetchNotes();
   }, []);
 
-  const handleEdit = (note: Note) => {
-    setEditingId(note.id);
-    setEditContent(note.content);
-  };
-
-  const handleSave = () => {
-    if (editingId) {
-      setNotes(
-        notes.map((note) =>
-          note.id === editingId ? { ...note, content: editContent } : note
-        )
-      );
-      setEditingId(null);
-    }
-  };
-
-  const handleDelete = (id: string) => {
-    setNotes(notes.filter((note) => note.id !== id));
-    if (editingId === id) setEditingId(null);
-  };
-
-  const handleAddNote = () => {
-    if (newNoteContent.trim()) {
-      const newNote = {
-        id: Date.now().toString(),
-        content: newNoteContent,
-      };
-      setNotes([...notes, newNote]);
-      setNewNoteContent("");
-      setIsAddingNote(false);
-    }
-  };
-
   return (
-    <div className="bg-primary/5 p-6 rounded-lg dark:bg-gray-900/60 flex flex-col h-full">
+    <div className="bg-primary/5 p-6 rounded-lg md:w-128 md:h-128 flex flex-col dark:bg-gray-900/60 md:flex-shrink-0">
       <div className="flex items-center justify-between mb-4">
-        <Link href="/notes" className="text-xl font-bold">
-          Personal Notes
-        </Link>
-        {!isAddingNote && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsAddingNote(true)}
-            className="text-xs"
-          >
-            <Plus className="size-4 mr-1" />
-            Add Note
+        <h2 className="text-xl font-bold">Personal Notes</h2>
+        <Link href="/notes">
+          <Button variant="ghost" size="sm" className="text-xs rounded-full">
+            View All
+            <ArrowRightIcon className="size-4 ml-1" />
           </Button>
-        )}
+        </Link>
       </div>
 
-      {isAddingNote && (
-        <div className="mb-4 flex gap-2">
-          <Input
-            placeholder="Enter new note..."
-            value={newNoteContent}
-            onChange={(e) => setNewNoteContent(e.target.value)}
-            className="text-sm"
-          />
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleAddNote}
-            className="shrink-0"
-          >
-            <Save className="size-4" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              setIsAddingNote(false);
-              setNewNoteContent("");
-            }}
-            className="shrink-0"
-          >
-            <Trash2 className="size-4" />
-          </Button>
-        </div>
-      )}
-
-      <div className="space-y-2 overflow-y-auto">
-        {notes.map((note) => (
-          <div
-            key={note.id}
-            className="p-3 bg-white dark:bg-gray-800 rounded-md flex justify-between items-center group"
-          >
-            {editingId === note.id ? (
-              <Input
-                value={editContent}
-                onChange={(e) => setEditContent(e.target.value)}
-                className="flex-1 mr-2 text-sm"
-              />
-            ) : (
-              <p className="text-sm flex-1">{note.content}</p>
-            )}
-            <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              {editingId === note.id ? (
-                <Button size="sm" variant="ghost" onClick={handleSave}>
-                  <Save className="size-4" />
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleEdit(note)}
-                >
-                  <Edit2 className="size-4" />
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => handleDelete(note.id)}
-              >
-                <Trash2 className="size-4" />
-              </Button>
-            </div>
-          </div>
-        ))}
-
-        {notes.length === 0 && (
+      <div className="space-y-4 overflow-y-auto">
+        {loading ? (
+          <div className="text-center py-4 text-gray-500">Loading notes...</div>
+        ) : error ? (
+          <div className="text-center py-4 text-red-500">{error}</div>
+        ) : notes.length === 0 ? (
           <div className="text-center py-4 text-gray-500 dark:text-gray-400">
-            No notes yet. Add a note to get started.
+            No notes yet. Add notes from the notes page.
           </div>
+        ) : (
+          notes.map((note) => (
+            <Link href={`/notes#${note.id}`} key={note.id}>
+              <div className="p-3 bg-white mb-2 dark:bg-gray-800 rounded-md flex flex-col hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-sm">{note.title}</h3>
+
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span>{formatDate(note.created_at)}</span>
+                      {note.game && (
+                        <span className="flex items-center">
+                          <GamepadIcon className="size-3 mr-1" />
+                          {note.game}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-xs mt-2 line-clamp-2">{note.content}</p>
+
+                {note.tags && note.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {note.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </Link>
+          ))
         )}
       </div>
     </div>
