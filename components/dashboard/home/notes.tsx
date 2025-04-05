@@ -49,7 +49,7 @@ export default function Notes() {
   }, []);
 
   return (
-    <div className="bg-primary/5 p-6 rounded-lg md:w-128 md:h-128 flex flex-col dark:bg-gray-900/60 md:flex-shrink-0">
+    <div className="bg-primary/5 p-6   rounded-lg md:w-128 md:h-128 flex flex-col dark:bg-gray-900/60 md:flex-shrink-0">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">Personal Notes</h2>
         <Link href="/notes">
