@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,11 +19,25 @@ import {
   Users,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import Stepper, { Step } from "@/components/stepper";
+
+type SectionSelection = {
+  [key: string]: boolean;
+};
+
+type Template = {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+};
 
 const NewDocumentPage = () => {
   const [activeTab, setActiveTab] = useState("templates");
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [selectedSections, setSelectedSections] = useState({
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
+    null
+  );
+  const [selectedSections, setSelectedSections] = useState<SectionSelection>({
     overview: true,
     gameConcept: true,
     storyline: true,
@@ -35,13 +51,6 @@ const NewDocumentPage = () => {
     development: true,
     legal: false,
   });
-
-  type Template = {
-    id: string;
-    name: string;
-    icon: string;
-    description: string;
-  };
 
   const templates: Template[] = [
     {
@@ -239,7 +248,7 @@ const NewDocumentPage = () => {
     setSelectedTemplate(template);
   };
 
-  const toggleSection = (sectionId: any) => {
+  const toggleSection = (sectionId: string) => {
     setSelectedSections({
       ...selectedSections,
       [sectionId]: !selectedSections[sectionId],
@@ -272,25 +281,25 @@ const NewDocumentPage = () => {
         <h1 className="text-2xl font-bold">Create New Document</h1>
       </div>
 
-      <div className="flex flex-col">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="templates">Templates</TabsTrigger>
-            <TabsTrigger value="sections">Sections</TabsTrigger>
-            <TabsTrigger value="info">Basic Info</TabsTrigger>
-            <TabsTrigger value="structure">Structure</TabsTrigger>
-            <TabsTrigger value="theme">Visual Theme</TabsTrigger>
-            <TabsTrigger value="review">Review</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="templates" className="mt-6">
-            <div className="space-y-4">
+      <div className="flex flex-col w-full">
+        <Stepper
+          initialStep={1}
+          onStepChange={(step) => console.log(`Step changed to ${step}`)}
+          onFinalStepCompleted={() =>
+            console.log("Document creation completed")
+          }
+          className="w-full min-w-full"
+          stepContainerClassName="justify-center w-full"
+          contentClassName="w-full"
+          footerClassName="w-full"
+        >
+          <Step>
+            <div className="space-y-4 w-full min-w-full">
               <h2 className="text-xl font-semibold">Choose a Template</h2>
               <p className="text-muted-foreground">
                 Select a starting point based on your game type
               </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 w-full">
                 {templates.map((template) => (
                   <Card
                     key={template.id}
@@ -321,16 +330,10 @@ const NewDocumentPage = () => {
                 ))}
               </div>
             </div>
+          </Step>
 
-            <div className="flex justify-end mt-8">
-              <Button onClick={handleNextTab} disabled={!selectedTemplate}>
-                Next <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="sections" className="mt-6">
-            <div className="space-y-4">
+          <Step>
+            <div className="space-y-4 w-full max-w-full">
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="text-xl font-semibold">Document Sections</h2>
@@ -389,19 +392,10 @@ const NewDocumentPage = () => {
                 ))}
               </div>
             </div>
+          </Step>
 
-            <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={handlePrevTab}>
-                Back
-              </Button>
-              <Button onClick={handleNextTab}>
-                Next <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="info" className="mt-6">
-            <div className="space-y-6">
+          <Step>
+            <div className="space-y-4 w-full max-w-full">
               <div>
                 <h2 className="text-xl font-semibold">
                   Basic Project Information
@@ -515,19 +509,10 @@ const NewDocumentPage = () => {
                 </div>
               </div>
             </div>
+          </Step>
 
-            <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={handlePrevTab}>
-                Back
-              </Button>
-              <Button onClick={handleNextTab}>
-                Next <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="structure" className="mt-6">
-            <div className="space-y-6">
+          <Step>
+            <div className="space-y-4 w-full max-w-full">
               <div>
                 <h2 className="text-xl font-semibold">Document Structure</h2>
                 <p className="text-muted-foreground">
@@ -594,7 +579,8 @@ const NewDocumentPage = () => {
                             Asset Repository
                           </h4>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Connect to your project's asset management system
+                            Connect to your project&apos;s asset management
+                            system
                           </p>
                         </div>
                       </div>
@@ -621,23 +607,14 @@ const NewDocumentPage = () => {
                 </div>
               </div>
             </div>
+          </Step>
 
-            <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={handlePrevTab}>
-                Back
-              </Button>
-              <Button onClick={handleNextTab}>
-                Next <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="theme" className="mt-6">
-            <div className="space-y-6">
+          <Step>
+            <div className="space-y-4 w-full max-w-full">
               <div>
                 <h2 className="text-xl font-semibold">Visual Theme</h2>
                 <p className="text-muted-foreground">
-                  Choose a visual style that reflects your game's aesthetic
+                  Choose a visual style that reflects your game&apos;s aesthetic
                 </p>
               </div>
 
@@ -715,19 +692,10 @@ const NewDocumentPage = () => {
                 </div>
               </div>
             </div>
+          </Step>
 
-            <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={handlePrevTab}>
-                Back
-              </Button>
-              <Button onClick={handleNextTab}>
-                Next <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="review" className="mt-6">
-            <div className="space-y-6">
+          <Step>
+            <div className="space-y-4 w-full max-w-full">
               <div>
                 <h2 className="text-xl font-semibold">Review Your Document</h2>
                 <p className="text-muted-foreground">
@@ -871,17 +839,8 @@ const NewDocumentPage = () => {
                 </Card>
               </div>
             </div>
-
-            <div className="flex justify-between mt-8">
-              <Button variant="outline" onClick={handlePrevTab}>
-                Back
-              </Button>
-              <Button className="bg-black dark:bg-white dark:text-black text-white">
-                Create Document
-              </Button>
-            </div>
-          </TabsContent>
-        </Tabs>
+          </Step>
+        </Stepper>
       </div>
     </div>
   );
