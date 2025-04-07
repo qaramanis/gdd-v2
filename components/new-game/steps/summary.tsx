@@ -266,14 +266,14 @@ export default function Summary() {
 
               <div>
                 <h4 className="text-sm font-medium mb-2">Visual Preferences</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
+                <div className="flex gap-10">
+                  <div className="w-40">
                     <span className="text-xs text-muted-foreground">
                       Theme:
                     </span>
                     <p className="text-sm">{getThemeName()}</p>
                   </div>
-                  <div>
+                  <div className="w-40">
                     <span className="text-xs text-muted-foreground">
                       Typography:
                     </span>
