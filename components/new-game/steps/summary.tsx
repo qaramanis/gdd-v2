@@ -296,7 +296,7 @@ export default function Summary() {
                   <Info className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm">
+                  <p className="text-sm mt-1">
                     Your document will be created with the selected template and
                     sections.
                   </p>
@@ -308,7 +308,7 @@ export default function Summary() {
                   <Users className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm">
+                  <p className="text-sm mt-1">
                     {gameInfo.teamMembers.length > 0
                       ? "Collaborators will receive an invitation to join this document."
                       : "You can add collaborators after document creation."}
@@ -321,7 +321,7 @@ export default function Summary() {
                   <PenTool className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm">
+                  <p className="text-sm mt-1">
                     You can edit and customize all aspects of your document
                     after creation.
                   </p>

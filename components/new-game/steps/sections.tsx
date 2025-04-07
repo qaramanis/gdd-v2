@@ -18,24 +18,28 @@ const sectionGroups = [
         name: "Overview",
         description:
           "High-level understanding of the game's concept and target audience",
+        suggested: true,
       },
       {
         id: "gameConcept",
         name: "Game Concept",
         description:
           "Core ideas and mechanics that form the foundation of the game",
+        suggested: true,
       },
       {
         id: "storyline",
         name: "Storyline & Background",
         description:
           "Context and depth to the game world, setting the stage for the player's journey",
+        suggested: false,
       },
       {
         id: "gameplay",
         name: "Gameplay Mechanics",
         description:
           "Interactive elements that players will engage with while playing",
+        suggested: true,
       },
     ],
   },
@@ -47,24 +51,28 @@ const sectionGroups = [
         name: "Level Design",
         description:
           "Stages or levels with objectives, layouts, and progression curves",
+        suggested: true,
       },
       {
         id: "assets",
         name: "Assets",
         description:
           "Visual, auditory, and other resources required to bring the game to life",
+        suggested: false,
       },
       {
         id: "technical",
         name: "Technical Features",
         description:
           "Platforms, engine choice, networking requirements, and performance considerations",
+        suggested: true,
       },
       {
         id: "ui",
         name: "User Interface (UI)",
         description:
           "How players interact with menus, HUDs, and other graphical elements",
+        suggested: false,
       },
     ],
   },
@@ -76,22 +84,26 @@ const sectionGroups = [
         name: "Monetization Strategy",
         description:
           "How the game will generate revenue through purchases, subscriptions, or ads",
+        suggested: false,
       },
       {
         id: "marketing",
         name: "Marketing & Promotion",
         description: "Strategies for promoting the game to target audiences",
+        suggested: false,
       },
       {
         id: "development",
         name: "Development Plan",
         description: "Timeline, milestones, tasks and resources required",
+        suggested: true,
       },
       {
         id: "legal",
         name: "Legal & Compliance",
         description:
           "Legal requirements, regulations, and compliance considerations",
+        suggested: false,
       },
     ],
   },
@@ -157,17 +169,22 @@ export default function Sections() {
             <h3 className="font-medium text-base border-b pb-1">
               {group.name}
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl mr-auto">
               {group.sections.map((section) => (
                 <Card
                   key={section.id}
-                  className={`cursor-pointer hover:shadow-md transition-all ${
+                  className={`cursor-pointer hover:shadow-md transition-all relative ${
                     selectedSections[section.id]
                       ? "border-primary-500 shadow-md"
                       : "hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                   onClick={() => toggleSection(section.id)}
                 >
+                  {section.suggested && (
+                    <div className="absolute top-2 right-2 text-xs text-black/50 dark:text-white/50 font-medium px-2 py-0.5 bg-primary/10 rounded-full ">
+                      Suggested
+                    </div>
+                  )}
                   <CardContent className="p-4 flex items-start">
                     <div
                       className={`w-6 h-6 rounded-md border-2 flex-shrink-0 mr-3 flex items-center justify-center transition-colors ${
@@ -224,5 +241,4 @@ export default function Sections() {
   );
 }
 
-// Export for use in other components
 export { sectionGroups };
