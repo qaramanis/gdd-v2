@@ -1,16 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import { saveToStorage, loadFromStorage, STORAGE_KEYS } from "../local-storage";
 
-type Template = {
+interface Template {
   id: string;
   name: string;
   icon: string;
   description: string;
-};
+}
 
-const templates: Template[] = [
+const templates = [
   {
     id: "rpg",
     name: "Role-Playing Game",
@@ -66,9 +67,21 @@ export default function Templates() {
     null
   );
 
-  const handleTemplateSelect = (template: any) => {
+  useEffect(() => {
+    const savedTemplate = loadFromStorage<Template | null>(
+      STORAGE_KEYS.TEMPLATE,
+      null
+    );
+    if (savedTemplate) {
+      setSelectedTemplate(savedTemplate);
+    }
+  }, []);
+
+  const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);
+    saveToStorage(STORAGE_KEYS.TEMPLATE, template);
   };
+
   return (
     <div className="space-y-4 w-full min-w-full">
       <h2 className="text-xl font-semibold">Choose a Template</h2>

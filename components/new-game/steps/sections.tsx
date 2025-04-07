@@ -1,12 +1,13 @@
-"use cleint";
+"use client";
 
-type SectionSelection = {
-  [key: string]: boolean;
-};
-
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { saveToStorage, loadFromStorage, STORAGE_KEYS } from "../local-storage";
+
+interface SectionSelection {
+  [key: string]: boolean;
+}
 
 const sectionGroups = [
   {
@@ -96,32 +97,44 @@ const sectionGroups = [
   },
 ];
 
+// Default selections
+const defaultSections: SectionSelection = {
+  overview: true,
+  gameConcept: true,
+  storyline: true,
+  gameplay: true,
+  levelDesign: true,
+  assets: true,
+  technical: true,
+  ui: true,
+  monetization: false,
+  marketing: false,
+  development: true,
+  legal: false,
+};
+
 export default function Sections() {
-  const [selectedSections, setSelectedSections] = useState<SectionSelection>({
-    overview: true,
-    gameConcept: true,
-    storyline: true,
-    gameplay: true,
-    levelDesign: true,
-    assets: true,
-    technical: true,
-    ui: true,
-    monetization: false,
-    marketing: false,
-    development: true,
-    legal: false,
-  });
+  const [selectedSections, setSelectedSections] = useState<SectionSelection>(defaultSections);
+
+  // Load saved sections on component mount
+  useEffect(() => {
+    const savedSections = loadFromStorage<SectionSelection>(STORAGE_KEYS.SECTIONS, defaultSections);
+    setSelectedSections(savedSections);
+  }, []);
 
   const toggleSection = (sectionId: string) => {
-    setSelectedSections({
+    const updatedSections = {
       ...selectedSections,
       [sectionId]: !selectedSections[sectionId],
-    });
+    };
+    setSelectedSections(updatedSections);
+    saveToStorage(STORAGE_KEYS.SECTIONS, updatedSections);
   };
 
   const countSelectedSections = () => {
     return Object.values(selectedSections).filter((value) => value).length;
   };
+
   return (
     <div className="space-y-4 w-full max-w-full">
       <div className="flex justify-between items-center">
@@ -182,3 +195,6 @@ export default function Sections() {
     </div>
   );
 }
+
+// Export for use in other components
+export { sectionGroups };

@@ -1,7 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Layers, Gamepad2, PenTool, Users, File } from "lucide-react";
+import { saveToStorage, loadFromStorage, STORAGE_KEYS } from "../local-storage";
+
+interface StructureData {
+  documentStructure: string;
+  integrations: {
+    engine: boolean;
+    assets: boolean;
+    collaboration: boolean;
+  };
+}
+
+const defaultStructure: StructureData = {
+  documentStructure: "comprehensive",
+  integrations: {
+    engine: false,
+    assets: false,
+    collaboration: false,
+  },
+};
 
 const documentStructures = [
   {
@@ -22,6 +42,32 @@ const documentStructures = [
 ];
 
 export default function Structure() {
+  const [structureData, setStructureData] =
+    useState<StructureData>(defaultStructure);
+
+  useEffect(() => {
+    const savedStructure = loadFromStorage<StructureData>(
+      STORAGE_KEYS.STRUCTURE,
+      defaultStructure
+    );
+    setStructureData(savedStructure);
+  }, []);
+
+  const updateStructure = (updates: Partial<StructureData>) => {
+    const updatedStructure = { ...structureData, ...updates };
+    setStructureData(updatedStructure);
+    saveToStorage(STORAGE_KEYS.STRUCTURE, updatedStructure);
+  };
+
+  const toggleIntegration = (key: keyof StructureData["integrations"]) => {
+    updateStructure({
+      integrations: {
+        ...structureData.integrations,
+        [key]: !structureData.integrations[key],
+      },
+    });
+  };
+
   return (
     <div className="space-y-4 w-full max-w-full">
       <div>
@@ -35,7 +81,12 @@ export default function Structure() {
         {documentStructures.map((structure) => (
           <Card
             key={structure.id}
-            className="cursor-pointer border hover:shadow-md transition-all"
+            className={`cursor-pointer border hover:shadow-md transition-all ${
+              structureData.documentStructure === structure.id
+                ? "ring-2 ring-primary"
+                : ""
+            }`}
+            onClick={() => updateStructure({ documentStructure: structure.id })}
           >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
@@ -58,10 +109,15 @@ export default function Structure() {
         ))}
       </div>
 
-      <div className="mt-8 space-y-4">
+      <div className="my-8 space-y-4">
         <h3 className="font-semibold">Integration Options</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
+          <Card
+            className={`cursor-pointer ${
+              structureData.integrations.engine ? "ring-2 ring-primary" : ""
+            }`}
+            onClick={() => toggleIntegration("engine")}
+          >
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-md bg-primary/10">
@@ -79,7 +135,12 @@ export default function Structure() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card
+            className={`cursor-pointer ${
+              structureData.integrations.assets ? "ring-2 ring-primary" : ""
+            }`}
+            onClick={() => toggleIntegration("assets")}
+          >
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-md bg-primary/10">
@@ -95,7 +156,14 @@ export default function Structure() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card
+            className={`cursor-pointer ${
+              structureData.integrations.collaboration
+                ? "ring-2 ring-primary"
+                : ""
+            }`}
+            onClick={() => toggleIntegration("collaboration")}
+          >
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-md bg-primary/10">
