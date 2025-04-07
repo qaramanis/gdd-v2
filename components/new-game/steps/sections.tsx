@@ -146,43 +146,54 @@ export default function Sections() {
             Select the sections you want to include in your document
           </p>
         </div>
-        <div className="text-sm bg-primary/10 py-1 px-3 rounded-full">
-          <span className="font-medium">{countSelectedSections()}</span>{" "}
-          sections selected
+        <div className="text-sm bg-primary text-primary-foreground font-medium py-1.5 px-4 rounded-full shadow-sm">
+          <span>{countSelectedSections()}</span> sections selected
         </div>
       </div>
 
-      <div className="space-y-6 mt-6">
+      <div className="space-y-8 mt-6">
         {sectionGroups.map((group) => (
           <div key={group.name} className="space-y-3">
-            <h3 className="font-medium text-base text-muted-foreground">
+            <h3 className="font-medium text-base border-b pb-1">
               {group.name}
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {group.sections.map((section) => (
                 <Card
                   key={section.id}
-                  className={`cursor-pointer border transition-all ${
+                  className={`cursor-pointer hover:shadow-md transition-all ${
                     selectedSections[section.id]
-                      ? "border-primary bg-primary/5"
-                      : ""
+                      ? "border-primary-500 shadow-md"
+                      : "hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                   onClick={() => toggleSection(section.id)}
                 >
                   <CardContent className="p-4 flex items-start">
                     <div
-                      className={`w-5 h-5 rounded-full border flex-shrink-0 mr-3 mt-0.5 flex items-center justify-center ${
+                      className={`w-6 h-6 rounded-md border-2 flex-shrink-0 mr-3 flex items-center justify-center transition-colors ${
                         selectedSections[section.id]
                           ? "bg-primary border-primary"
-                          : "border-input"
+                          : "border-gray-300 dark:border-gray-600"
                       }`}
                     >
                       {selectedSections[section.id] && (
-                        <Check className="h-3 w-3 text-primary-foreground" />
+                        <Check className="h-4 w-4 text-primary-foreground" />
                       )}
                     </div>
-                    <div>
-                      <h4 className="font-medium text-sm">{section.name}</h4>
+                    <div
+                      className={
+                        selectedSections[section.id]
+                          ? "opacity-100"
+                          : "opacity-80"
+                      }
+                    >
+                      <h4
+                        className={`font-medium text-sm ${
+                          selectedSections[section.id] ? "text-primary" : ""
+                        }`}
+                      >
+                        {section.name}
+                      </h4>
                       <p className="text-xs text-muted-foreground mt-1">
                         {section.description}
                       </p>
@@ -193,6 +204,21 @@ export default function Sections() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="bg-primary/5 dark:bg-primary/10 rounded-lg p-4 mt-8">
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-full bg-primary/10">
+            <Check className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-medium">Pro tip: Choose carefully</p>
+            <p className="text-sm text-muted-foreground">
+              Select only the sections you need for your project. You can always
+              add more sections later.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

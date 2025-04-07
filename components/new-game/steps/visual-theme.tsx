@@ -83,7 +83,6 @@ export default function VisualTheme() {
               themeData.visualTheme === theme.id ? "ring-2 ring-primary" : ""
             }`}
             onClick={() => updateTheme({ visualTheme: theme.id })}
-            style={{ borderColor: theme.primary }}
           >
             <div
               className="h-2"
