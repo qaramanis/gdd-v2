@@ -166,7 +166,7 @@ export default function Summary() {
   }
 
   return (
-    <div className="space-y-4 w-full max-w-full">
+    <div className="space-y-4 w-full max-w-full py-4">
       <div>
         <h2 className="text-xl font-semibold">Review Your Document</h2>
         <p className="text-muted-foreground">
@@ -174,7 +174,7 @@ export default function Summary() {
         </p>
       </div>
 
-      <div className="mt-6 space-y-6">
+      <div className="space-y-6">
         <Card>
           <CardHeader className="pb-2">
             <div className="flex justify-between items-center">

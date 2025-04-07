@@ -97,7 +97,6 @@ const sectionGroups = [
   },
 ];
 
-// Default selections
 const defaultSections: SectionSelection = {
   overview: true,
   gameConcept: true,
@@ -114,11 +113,14 @@ const defaultSections: SectionSelection = {
 };
 
 export default function Sections() {
-  const [selectedSections, setSelectedSections] = useState<SectionSelection>(defaultSections);
+  const [selectedSections, setSelectedSections] =
+    useState<SectionSelection>(defaultSections);
 
-  // Load saved sections on component mount
   useEffect(() => {
-    const savedSections = loadFromStorage<SectionSelection>(STORAGE_KEYS.SECTIONS, defaultSections);
+    const savedSections = loadFromStorage<SectionSelection>(
+      STORAGE_KEYS.SECTIONS,
+      defaultSections
+    );
     setSelectedSections(savedSections);
   }, []);
 
@@ -136,7 +138,7 @@ export default function Sections() {
   };
 
   return (
-    <div className="space-y-4 w-full max-w-full">
+    <div className="space-y-4 w-full max-w-full py-4">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-semibold">Document Sections</h2>

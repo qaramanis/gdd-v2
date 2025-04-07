@@ -83,7 +83,7 @@ export default function Templates() {
   };
 
   return (
-    <div className="space-y-4 w-full min-w-full">
+    <div className="space-y-4 w-full min-w-full py-4">
       <h2 className="text-xl font-semibold">Choose a Template</h2>
       <p className="text-muted-foreground">
         Select a starting point based on your game type
@@ -104,11 +104,6 @@ export default function Templates() {
                 <p className="text-sm text-muted-foreground mt-2">
                   {template.description}
                 </p>
-                {selectedTemplate?.id === template.id && (
-                  <div className="mt-4 bg-primary text-primary-foreground rounded-full py-1 px-3 text-xs font-medium">
-                    Selected
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>

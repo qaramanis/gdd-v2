@@ -67,7 +67,7 @@ export default function VisualTheme() {
   };
 
   return (
-    <div className="space-y-4 w-full max-w-full">
+    <div className="space-y-4 w-full max-w-full py-4">
       <div>
         <h2 className="text-xl font-semibold">Visual Theme</h2>
         <p className="text-muted-foreground">
@@ -111,7 +111,7 @@ export default function VisualTheme() {
         ))}
       </div>
 
-      <div className="my-8 space-y-4">
+      <div className="space-y-4">
         <h3 className="font-semibold">Typography Options</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card
