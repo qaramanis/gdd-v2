@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import TiltedCard from "@/components/tilted-card";
 import { supabase } from "@/database/supabase";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 interface Game {
   id: number;
@@ -19,6 +20,7 @@ export default function ViewAll() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchGames() {
@@ -49,6 +51,7 @@ export default function ViewAll() {
         <h1 className="text-2xl font-bold">All Documents</h1>
         <Button
           variant="ghost"
+          onClick={() => router.push("/new")}
           className={cn(
             "w-auto rounded-full justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
             "bg-black hover:bg-black/80",

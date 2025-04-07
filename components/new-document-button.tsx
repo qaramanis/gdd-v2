@@ -4,6 +4,7 @@ import * as React from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
 import {
   Tooltip,
   TooltipContent,
@@ -14,12 +15,14 @@ import { cn } from "@/lib/utils";
 export function NewDocument() {
   const { state, isMobile } = useSidebar();
   const isCollapsed = state === "collapsed" && !isMobile;
+  const router = useRouter();
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
           variant="ghost"
+          onClick={() => router.push("/new")}
           className={cn(
             "w-auto rounded-full justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
             "bg-black hover:bg-black/80",

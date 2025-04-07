@@ -3,14 +3,13 @@
 import * as React from "react";
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
+  Users,
+  Settings,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
-  Settings2,
   SquareTerminal,
 } from "lucide-react";
 
@@ -25,7 +24,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { NewDocument } from "@/components/new-document";
+import { NewDocument } from "@/components/new-document-button";
 import { HomeButton } from "@/components/home-button";
 
 const data = {
@@ -63,81 +62,38 @@ const data = {
           url: "playground",
         },
         {
-          title: "History",
-          url: "playground/history",
-        },
-        {
-          title: "Starred",
+          title: "Starred Scenes",
           url: "playground/starred",
         },
         {
-          title: "Settings",
+          title: "Palyground Settings",
           url: "playground/settings",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Teams",
       url: "",
-      icon: Bot,
+      icon: Users,
       items: [
         {
-          title: "Genesis",
-          url: "/dashboard/models/genesis",
+          title: "All Teams",
+          url: "/teams",
         },
         {
-          title: "Explorer",
-          url: "/dashboard/models/explorer",
-        },
-        {
-          title: "Quantum",
-          url: "/dashboard/models/quantum",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "documentation/introduction",
-        },
-        {
-          title: "Get Started",
-          url: "/documentation/getting-started",
-        },
-        {
-          title: "Tutorials",
-          url: "/documentation/tutorials",
-        },
-        {
-          title: "Changelog",
-          url: "/documentation/changelog",
+          title: "Teams Settings",
+          url: "/teams/settings",
         },
       ],
     },
     {
       title: "Settings",
       url: "",
-      icon: Settings2,
+      icon: Settings,
       items: [
         {
           title: "General",
           url: "/settings",
-        },
-        {
-          title: "Team",
-          url: "/settings/team",
-        },
-        {
-          title: "Billing",
-          url: "/settings/billing",
-        },
-        {
-          title: "Limits",
-          url: "/settings/limits",
         },
       ],
     },
