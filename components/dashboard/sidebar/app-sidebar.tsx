@@ -59,15 +59,15 @@ const data = {
       items: [
         {
           title: "Scene Viewer",
-          url: "playground",
+          url: "/playground",
         },
         {
           title: "Starred Scenes",
-          url: "playground/starred",
+          url: "/playground/starred",
         },
         {
           title: "Palyground Settings",
-          url: "playground/settings",
+          url: "/playground/settings",
         },
       ],
     },

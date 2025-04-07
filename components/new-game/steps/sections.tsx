@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Check } from "lucide-react";
+import { Check, RotateCcw } from "lucide-react";
 import { saveToStorage, loadFromStorage, STORAGE_KEYS } from "../local-storage";
+import { Button } from "@/components/ui/button";
 
 interface SectionSelection {
   [key: string]: boolean;
@@ -145,6 +146,19 @@ export default function Sections() {
     saveToStorage(STORAGE_KEYS.SECTIONS, updatedSections);
   };
 
+  const resetToSuggested = () => {
+    const suggestedSections: SectionSelection = {};
+
+    sectionGroups.forEach((group) => {
+      group.sections.forEach((section) => {
+        suggestedSections[section.id] = section.suggested;
+      });
+    });
+
+    setSelectedSections(suggestedSections);
+    saveToStorage(STORAGE_KEYS.SECTIONS, suggestedSections);
+  };
+
   const countSelectedSections = () => {
     return Object.values(selectedSections).filter((value) => value).length;
   };
@@ -158,8 +172,19 @@ export default function Sections() {
             Select the sections you want to include in your document
           </p>
         </div>
-        <div className="text-sm bg-primary text-primary-foreground font-medium py-1.5 px-4 rounded-full shadow-sm">
-          <span>{countSelectedSections()}</span> sections selected
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={resetToSuggested}
+            className="flex items-center rounded-full"
+          >
+            <RotateCcw className="h-3 w-3 mr-1" />
+            Reset to Suggested
+          </Button>
+          <div className="text-sm bg-primary text-primary-foreground font-medium py-1.5 px-4 rounded-full shadow-sm">
+            <span>{countSelectedSections()}</span> sections selected
+          </div>
         </div>
       </div>
 
