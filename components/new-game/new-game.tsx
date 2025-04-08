@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import Stepper, { Step } from "@/components/stepper";
 import Templates from "./steps/templates";
@@ -9,18 +9,11 @@ import Information from "./steps/information";
 import Structure from "./steps/structure";
 import Summary from "./steps/summary";
 import VisualThemes from "./steps/visual-theme";
-import { clearFormData } from "./local-storage";
 import DocumentCreated from "./steps/completed";
 
 const NewDocumentPage = () => {
-  const router = useRouter();
-
   const handleFinalStepCompleted = () => {
-    clearFormData();
-    console.log("Document creation completed - localStorage cleared");
-    setTimeout(() => {
-      router.push("/home");
-    }, 500);
+    console.log("Final step completed - proceeding to document creation");
   };
 
   return (
