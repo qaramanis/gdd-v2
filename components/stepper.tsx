@@ -53,6 +53,9 @@ export default function Stepper({
   const isCompleted = currentStep > totalSteps;
   const isLastStep = currentStep === totalSteps;
 
+  // Calculate the number of visible step indicators (excluding the final step)
+  const visibleStepsCount = totalSteps - 1;
+
   const updateStep = (newStep: number) => {
     setCurrentStep(newStep);
     if (newStep > totalSteps) {
@@ -81,6 +84,12 @@ export default function Stepper({
     updateStep(totalSteps + 1);
   };
 
+  // Function to handle step clicks
+  const handleStepClick = (clickedStep: number) => {
+    setDirection(clickedStep > currentStep ? 1 : -1);
+    updateStep(clickedStep);
+  };
+
   return (
     <div
       className="flex min-h-full flex-1 flex-col items-center justify-center p-4 sm:aspect-[4/3] md:aspect-[2/1]"
@@ -93,32 +102,27 @@ export default function Stepper({
         <div
           className={`${stepContainerClassName} flex w-full items-center p-8`}
         >
-          {stepsArray.map((_, index) => {
+          {/* Render step indicators for all steps except the last one */}
+          {Array.from({ length: visibleStepsCount }).map((_, index) => {
             const stepNumber = index + 1;
-            const isNotLastStep = index < totalSteps - 1;
+            const isNotLastVisibleStep = index < visibleStepsCount - 1;
             return (
               <React.Fragment key={stepNumber}>
                 {renderStepIndicator ? (
                   renderStepIndicator({
                     step: stepNumber,
                     currentStep,
-                    onStepClick: (clicked) => {
-                      setDirection(clicked > currentStep ? 1 : -1);
-                      updateStep(clicked);
-                    },
+                    onStepClick: handleStepClick,
                   })
                 ) : (
                   <StepIndicator
                     step={stepNumber}
                     disableStepIndicators={disableStepIndicators}
                     currentStep={currentStep}
-                    onClickStep={(clicked) => {
-                      setDirection(clicked > currentStep ? 1 : -1);
-                      updateStep(clicked);
-                    }}
+                    onClickStep={handleStepClick}
                   />
                 )}
-                {isNotLastStep && (
+                {isNotLastVisibleStep && (
                   <StepConnector isComplete={currentStep > stepNumber} />
                 )}
               </React.Fragment>
@@ -157,7 +161,7 @@ export default function Stepper({
               )}
               <button
                 onClick={isLastStep ? handleComplete : handleNext}
-                className="duration-350 flex items-center justify-center rounded-full bg-green-400 dark:bg-green-700 py-1.5 px-3.5 font-medium tracking-tight text-black dark:text-gray-200 transition hover:bg-green-500 dark:hover:bg-green-600 active:bg-green-800"
+                className="duration-350 flex items-center justify-center rounded-full bg-green-400 dark:bg-green-700 py-1.5 px-3.5 font-medium tracking-tight text-gray-600 dark:text-gray-200 transition hover:bg-green-500 dark:hover:bg-green-600 active:bg-green-800"
                 {...nextButtonProps}
               >
                 {isLastStep ? "Complete" : nextButtonText}
