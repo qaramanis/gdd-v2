@@ -9,7 +9,6 @@ import { Settings, Users, Clock, Info, PenTool } from "lucide-react";
 import { loadFromStorage, STORAGE_KEYS } from "../local-storage";
 import { sectionGroups } from "./sections";
 
-// These interfaces match the data structure we store in localStorage
 interface Template {
   id: string;
   name: string;
@@ -60,9 +59,7 @@ export default function Summary() {
   const [structure, setStructure] = useState<StructureData | null>(null);
   const [theme, setTheme] = useState<ThemeData | null>(null);
 
-  // Load all data on component mount
   useEffect(() => {
-    // Use default values as fallbacks
     setSelectedTemplate(
       loadFromStorage<Template | null>(STORAGE_KEYS.TEMPLATE, null)
     );

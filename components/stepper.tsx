@@ -157,7 +157,7 @@ export default function Stepper({
               )}
               <button
                 onClick={isLastStep ? handleComplete : handleNext}
-                className="duration-350 flex items-center justify-center rounded-full bg-green-500 py-1.5 px-3.5 font-medium tracking-tight text-white transition hover:bg-green-600 active:bg-green-700"
+                className="duration-350 flex items-center justify-center rounded-full bg-green-400 dark:bg-green-700 py-1.5 px-3.5 font-medium tracking-tight text-black dark:text-gray-200 transition hover:bg-green-500 dark:hover:bg-green-600 active:bg-green-800"
                 {...nextButtonProps}
               >
                 {isLastStep ? "Complete" : nextButtonText}

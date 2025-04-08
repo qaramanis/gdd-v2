@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-
+import { useRouter } from "next/navigation";
 import Stepper, { Step } from "@/components/stepper";
 import Templates from "./steps/templates";
 import Sections from "./steps/sections";
@@ -9,26 +9,18 @@ import Information from "./steps/information";
 import Structure from "./steps/structure";
 import Summary from "./steps/summary";
 import VisualThemes from "./steps/visual-theme";
+import { clearFormData } from "./local-storage";
+import DocumentCreated from "./steps/completed";
 
 const NewDocumentPage = () => {
-  const [activeTab, setActiveTab] = useState("templates");
+  const router = useRouter();
 
-
-
-  const handleNextTab = () => {
-    if (activeTab === "templates") setActiveTab("sections");
-    else if (activeTab === "sections") setActiveTab("info");
-    else if (activeTab === "info") setActiveTab("structure");
-    else if (activeTab === "structure") setActiveTab("theme");
-    else if (activeTab === "theme") setActiveTab("review");
-  };
-
-  const handlePrevTab = () => {
-    if (activeTab === "sections") setActiveTab("templates");
-    else if (activeTab === "info") setActiveTab("sections");
-    else if (activeTab === "structure") setActiveTab("info");
-    else if (activeTab === "theme") setActiveTab("structure");
-    else if (activeTab === "review") setActiveTab("theme");
+  const handleFinalStepCompleted = () => {
+    clearFormData();
+    console.log("Document creation completed - localStorage cleared");
+    setTimeout(() => {
+      router.push("/home");
+    }, 500);
   };
 
   return (
@@ -41,9 +33,7 @@ const NewDocumentPage = () => {
         <Stepper
           initialStep={1}
           onStepChange={(step) => console.log(`Step changed to ${step}`)}
-          onFinalStepCompleted={() =>
-            console.log("Document creation completed")
-          }
+          onFinalStepCompleted={handleFinalStepCompleted}
           className="w-full min-w-full"
           stepContainerClassName="justify-center w-full"
           contentClassName="w-full"
@@ -71,6 +61,10 @@ const NewDocumentPage = () => {
 
           <Step>
             <Summary />
+          </Step>
+
+          <Step>
+            <DocumentCreated />
           </Step>
         </Stepper>
       </div>
