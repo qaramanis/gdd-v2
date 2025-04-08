@@ -1,3 +1,4 @@
+// components/new-game/steps/completed.tsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -127,7 +128,6 @@ export default function DocumentCreated() {
   useEffect(() => {
     async function saveGameToDatabase() {
       try {
-        // Load data from localStorage
         const template = loadFromStorage<Template | null>(
           STORAGE_KEYS.TEMPLATE,
           null
@@ -160,24 +160,25 @@ export default function DocumentCreated() {
           typography: "sans",
         });
 
-        // Get template data - using limit(1) instead of single()
+        // Get template data
         const { data: templateDataArray, error: templateError } = await supabase
           .from("templates")
           .select("id")
           .eq("name", template?.name || "Blank Document")
           .limit(1);
 
-        if (
-          templateError ||
-          !templateDataArray ||
-          templateDataArray.length === 0
-        ) {
-          throw new Error(
-            `Template lookup failed: ${
-              templateError?.message || "Template not found"
-            }`
-          );
+        if (templateError) {
+          setSavedStatus("error");
+          setErrorMessage(`Template lookup failed: ${templateError.message}`);
+          return;
         }
+
+        if (!templateDataArray || templateDataArray.length === 0) {
+          setSavedStatus("error");
+          setErrorMessage("Template not found");
+          return;
+        }
+
         const templateData = templateDataArray[0];
 
         // Get structure data
@@ -188,33 +189,40 @@ export default function DocumentCreated() {
             .eq("name", structure.documentStructure || "comprehensive")
             .limit(1);
 
-        if (
-          structureError ||
-          !structureDataArray ||
-          structureDataArray.length === 0
-        ) {
-          throw new Error(
-            `Document structure lookup failed: ${
-              structureError?.message || "Structure not found"
-            }`
+        if (structureError) {
+          setSavedStatus("error");
+          setErrorMessage(
+            `Document structure lookup failed: ${structureError.message}`
           );
+          return;
         }
+
+        if (!structureDataArray || structureDataArray.length === 0) {
+          setSavedStatus("error");
+          setErrorMessage("Document structure not found");
+          return;
+        }
+
         const structureData = structureDataArray[0];
 
-        // Get theme data
         const { data: themeDataArray, error: themeError } = await supabase
           .from("visual_themes")
           .select("id")
           .eq("name", theme.visualTheme)
           .limit(1);
 
-        if (themeError || !themeDataArray || themeDataArray.length === 0) {
-          throw new Error(
-            `Visual theme lookup failed: ${
-              themeError?.message || "Theme not found"
-            }`
-          );
+        if (themeError) {
+          setSavedStatus("error");
+          setErrorMessage(`Visual theme lookup failed: ${themeError.message}`);
+          return;
         }
+
+        if (!themeDataArray || themeDataArray.length === 0) {
+          setSavedStatus("error");
+          setErrorMessage(`Theme not found: ${theme.visualTheme}`);
+          return;
+        }
+
         const themeData = themeDataArray[0];
 
         // Get typography data
@@ -225,17 +233,20 @@ export default function DocumentCreated() {
             .eq("name", theme.typography || "sans")
             .limit(1);
 
-        if (
-          typographyError ||
-          !typographyDataArray ||
-          typographyDataArray.length === 0
-        ) {
-          throw new Error(
-            `Typography lookup failed: ${
-              typographyError?.message || "Typography not found"
-            }`
+        if (typographyError) {
+          setSavedStatus("error");
+          setErrorMessage(
+            `Typography lookup failed: ${typographyError.message}`
           );
+          return;
         }
+
+        if (!typographyDataArray || typographyDataArray.length === 0) {
+          setSavedStatus("error");
+          setErrorMessage("Typography option not found");
+          return;
+        }
+
         const typographyData = typographyDataArray[0];
 
         // Create game
@@ -243,7 +254,7 @@ export default function DocumentCreated() {
           .from("games")
           .insert([
             {
-              name: info.gameTitle || "Untitled Game",
+              title: info.gameTitle || "Untitled Game",
               concept: info.concept || "",
               template_id: templateData.id,
               document_structure_id: structureData.id,
@@ -257,70 +268,75 @@ export default function DocumentCreated() {
           ])
           .select();
 
-        if (gameError || !gameDataArray || gameDataArray.length === 0) {
-          throw new Error(
-            `Game creation failed: ${
-              gameError?.message || "Unknown error creating game"
-            }`
-          );
+        if (gameError) {
+          setSavedStatus("error");
+          setErrorMessage(`Game creation failed: ${gameError.message}`);
+          return;
         }
+
+        if (!gameDataArray || gameDataArray.length === 0) {
+          setSavedStatus("error");
+          setErrorMessage("Game created but no data returned");
+          return;
+        }
+
         const gameData = gameDataArray[0];
 
-        // Process team members
+        // Process team members (now users)
         if (info.teamMembers && info.teamMembers.length > 0) {
           for (const member of info.teamMembers) {
-            // Check if member exists
-            const { data: existingMemberArray, error: memberLookupError } =
+            // Check if user exists
+            const { data: existingUserArray, error: userLookupError } =
               await supabase
-                .from("team_members")
+                .from("users")
                 .select("id")
                 .eq("name", member)
                 .limit(1);
 
-            let memberId;
-            if (
-              memberLookupError ||
-              !existingMemberArray ||
-              existingMemberArray.length === 0
-            ) {
-              // Create new member
-              const { data: newMemberArray, error: createMemberError } =
+            if (userLookupError) {
+              console.warn(`User lookup warning: ${userLookupError.message}`);
+              // Continue with creation instead of failing
+            }
+
+            let userId;
+            if (!existingUserArray || existingUserArray.length === 0) {
+              // Create new user
+              const { data: newUserArray, error: createUserError } =
                 await supabase
-                  .from("team_members")
+                  .from("users")
                   .insert([{ name: member }])
                   .select();
 
-              if (
-                createMemberError ||
-                !newMemberArray ||
-                newMemberArray.length === 0
-              ) {
-                throw new Error(
-                  `Team member creation failed: ${
-                    createMemberError?.message ||
-                    "Unknown error creating team member"
-                  }`
+              if (createUserError) {
+                console.error(
+                  `User creation error: ${createUserError.message}`
                 );
+                continue; // Skip this user but continue with others
               }
-              memberId = newMemberArray[0].id;
+
+              if (!newUserArray || newUserArray.length === 0) {
+                console.error("User created but no data returned");
+                continue; // Skip this user but continue with others
+              }
+
+              userId = newUserArray[0].id;
             } else {
-              memberId = existingMemberArray[0].id;
+              userId = existingUserArray[0].id;
             }
 
-            // Link member to game
-            const { error: linkMemberError } = await supabase
-              .from("game_team_members")
+            // Link user to game
+            const { error: linkUserError } = await supabase
+              .from("game_users")
               .insert([
                 {
                   game_id: gameData.id,
-                  team_member_id: memberId,
+                  user_id: userId,
                 },
               ]);
 
-            if (linkMemberError) {
-              throw new Error(
-                `Team member linking failed: ${linkMemberError.message}`
-              );
+            if (linkUserError) {
+              console.error(`User linking error: ${linkUserError.message}`);
+              // Continue with other users instead of failing completely
             }
           }
         }
@@ -339,16 +355,14 @@ export default function DocumentCreated() {
                 .eq("name", platform)
                 .limit(1);
 
-            if (
-              platformError ||
-              !platformDataArray ||
-              platformDataArray.length === 0
-            ) {
-              throw new Error(
-                `Platform lookup failed: ${
-                  platformError?.message || "Platform not found"
-                }`
-              );
+            if (platformError) {
+              console.error(`Platform lookup error: ${platformError.message}`);
+              continue;
+            }
+
+            if (!platformDataArray || platformDataArray.length === 0) {
+              console.error(`Platform "${platform}" not found`);
+              continue;
             }
 
             const platformData = platformDataArray[0];
@@ -363,14 +377,13 @@ export default function DocumentCreated() {
               ]);
 
             if (linkPlatformError) {
-              throw new Error(
-                `Platform linking failed: ${linkPlatformError.message}`
+              console.error(
+                `Platform linking error: ${linkPlatformError.message}`
               );
             }
           }
         }
 
-        // Process sections
         if (sections) {
           const selectedSections = Object.entries(sections)
             .filter(([_, isSelected]) => isSelected)
@@ -384,16 +397,14 @@ export default function DocumentCreated() {
                 .eq("name", sectionName)
                 .limit(1);
 
-            if (
-              sectionError ||
-              !sectionDataArray ||
-              sectionDataArray.length === 0
-            ) {
-              throw new Error(
-                `Section lookup failed: ${
-                  sectionError?.message || "Section not found"
-                }`
-              );
+            if (sectionError) {
+              console.error(`Section lookup error: ${sectionError.message}`);
+              continue;
+            }
+
+            if (!sectionDataArray || sectionDataArray.length === 0) {
+              console.error(`Section "${sectionName}" not found`);
+              continue;
             }
 
             const sectionData = sectionDataArray[0];
@@ -410,14 +421,13 @@ export default function DocumentCreated() {
               ]);
 
             if (linkSectionError) {
-              throw new Error(
-                `Section linking failed: ${linkSectionError.message}`
+              console.error(
+                `Section linking error: ${linkSectionError.message}`
               );
             }
           }
         }
 
-        // Process integrations
         if (structure.integrations) {
           const enabledIntegrations = Object.entries(structure.integrations)
             .filter(([_, isEnabled]) => isEnabled)
@@ -431,16 +441,16 @@ export default function DocumentCreated() {
                 .eq("name", integration)
                 .limit(1);
 
-            if (
-              integrationError ||
-              !integrationDataArray ||
-              integrationDataArray.length === 0
-            ) {
-              throw new Error(
-                `Integration lookup failed: ${
-                  integrationError?.message || "Integration not found"
-                }`
+            if (integrationError) {
+              console.error(
+                `Integration lookup error: ${integrationError.message}`
               );
+              continue;
+            }
+
+            if (!integrationDataArray || integrationDataArray.length === 0) {
+              console.error(`Integration "${integration}" not found`);
+              continue;
             }
 
             const integrationData = integrationDataArray[0];
@@ -456,9 +466,10 @@ export default function DocumentCreated() {
               ]);
 
             if (linkIntegrationError) {
-              throw new Error(
-                `Integration linking failed: ${linkIntegrationError.message}`
+              console.error(
+                `Integration linking error: ${linkIntegrationError.message}`
               );
+              // Continue with other integrations instead of failing completely
             }
           }
         }

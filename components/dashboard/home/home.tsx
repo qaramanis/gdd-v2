@@ -16,7 +16,7 @@ import Notes from "./notes";
 
 interface Game {
   id: number;
-  name: string;
+  title: string;
   image_url: string;
 }
 
@@ -93,14 +93,14 @@ export default function Home() {
                 <TiltedCard
                   key={game.id}
                   imageSrc={game.image_url}
-                  altText={game.name}
-                  captionText={game.name}
+                  altText={game.title}
+                  captionText={game.title}
                   showTooltip={true}
                   scaleOnHover={1}
                   containerWidth="auto"
                   imageWidth="100%"
                   displayOverlayContent={true}
-                  overlayContent={game.name}
+                  overlayContent={game.title}
                   showMobileWarning={false}
                 />
               ))}

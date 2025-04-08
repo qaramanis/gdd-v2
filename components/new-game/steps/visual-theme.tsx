@@ -1,57 +1,56 @@
+// components/new-game/steps/visual-theme.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { saveToStorage, loadFromStorage, STORAGE_KEYS } from "../local-storage";
+import { supabase } from "@/database/supabase";
 
 interface ThemeData {
   visualTheme: string;
   typography: string;
 }
 
+interface VisualTheme {
+  name: string;
+  primary: string;
+  secondary: string;
+}
+
 const defaultTheme: ThemeData = {
-  visualTheme: "classic",
+  visualTheme: "Classic Professional",
   typography: "sans",
 };
 
-const visualThemes = [
-  {
-    id: "classic",
-    name: "Classic Professional",
-    primary: "#3a86ff",
-    secondary: "#8ecae6",
-  },
-  {
-    id: "dark",
-    name: "Dark Modern",
-    primary: "#2a2a2a",
-    secondary: "#7209b7",
-  },
-  {
-    id: "retro",
-    name: "Retro Pixel",
-    primary: "#e63946",
-    secondary: "#f77f00",
-  },
-  {
-    id: "minimalist",
-    name: "Minimalist",
-    primary: "#f1faee",
-    secondary: "#a8dadc",
-  },
-  {
-    id: "fantasy",
-    name: "Fantasy",
-    primary: "#606c38",
-    secondary: "#283618",
-  },
-  { id: "scifi", name: "Sci-Fi", primary: "#073b4c", secondary: "#118ab2" },
-];
-
 export default function VisualTheme() {
   const [themeData, setThemeData] = useState<ThemeData>(defaultTheme);
+  const [visualThemes, setVisualThemes] = useState<VisualTheme[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load saved theme on component mount
+  // Fetch themes from database
+  useEffect(() => {
+    async function fetchThemes() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("visual_themes")
+        .select("name, primary_color, secondary_color");
+
+      if (error) {
+        console.error("Error fetching themes:", error);
+      } else if (data) {
+        const themes = data.map((theme) => ({
+          name: theme.name,
+          primary: theme.primary_color,
+          secondary: theme.secondary_color,
+        }));
+        setVisualThemes(themes);
+      }
+      setLoading(false);
+    }
+
+    fetchThemes();
+  }, []);
+
   useEffect(() => {
     const savedTheme = loadFromStorage<ThemeData>(
       STORAGE_KEYS.THEME,
@@ -78,11 +77,11 @@ export default function VisualTheme() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         {visualThemes.map((theme) => (
           <Card
-            key={theme.id}
+            key={theme.name}
             className={`cursor-pointer overflow-hidden hover:shadow-md transition-all ${
-              themeData.visualTheme === theme.id ? "ring-2 ring-primary" : ""
+              themeData.visualTheme === theme.name ? "ring-2 ring-primary" : ""
             }`}
-            onClick={() => updateTheme({ visualTheme: theme.id })}
+            onClick={() => updateTheme({ visualTheme: theme.name })}
           >
             <div
               className="h-2"
