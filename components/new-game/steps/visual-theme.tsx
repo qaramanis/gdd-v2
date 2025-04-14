@@ -27,7 +27,6 @@ export default function VisualTheme() {
   const [visualThemes, setVisualThemes] = useState<VisualTheme[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch themes from database
   useEffect(() => {
     async function fetchThemes() {
       setLoading(true);
@@ -35,6 +34,7 @@ export default function VisualTheme() {
         .from("visual_themes")
         .select("name, primary_color, secondary_color");
 
+      console.log("Fetched Visual: ", data, error);
       if (error) {
         console.error("Error fetching themes:", error);
       } else if (data) {
@@ -68,6 +68,13 @@ export default function VisualTheme() {
   return (
     <div className="space-y-4 w-full max-w-full py-4">
       <div>
+        <div>
+          <h2 className="text-xl font-semibold">Visual Theme</h2>
+          <p className="text-muted-foreground">
+            Choose a visual style that reflects your game's aesthetic (Showing{" "}
+            {visualThemes.length} themes)
+          </p>
+        </div>
         <h2 className="text-xl font-semibold">Visual Theme</h2>
         <p className="text-muted-foreground">
           Choose a visual style that reflects your game&apos;s aesthetic
@@ -107,6 +114,17 @@ export default function VisualTheme() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="mt-4">
+        <p>Debug view of all themes:</p>
+        <div className="flex flex-wrap gap-2">
+          {visualThemes.map((theme, index) => (
+            <div key={index} className="border p-2 text-sm">
+              {index + 1}: {theme.name}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-4">

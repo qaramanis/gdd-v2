@@ -254,7 +254,7 @@ export default function DocumentCreated() {
           .from("games")
           .insert([
             {
-              title: info.gameTitle || "Untitled Game",
+              name: info.gameTitle || "Untitled Game",
               concept: info.concept || "",
               template_id: templateData.id,
               document_structure_id: structureData.id,

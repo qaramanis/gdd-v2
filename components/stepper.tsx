@@ -102,7 +102,6 @@ export default function Stepper({
         <div
           className={`${stepContainerClassName} flex w-full items-center p-8`}
         >
-          {/* Render step indicators for all steps except the last one */}
           {Array.from({ length: visibleStepsCount }).map((_, index) => {
             const stepNumber = index + 1;
             const isNotLastVisibleStep = index < visibleStepsCount - 1;
@@ -159,13 +158,15 @@ export default function Stepper({
                   {backButtonText}
                 </button>
               )}
-              <button
-                onClick={isLastStep ? handleComplete : handleNext}
-                className="duration-350 flex items-center justify-center rounded-full bg-green-400 dark:bg-green-700 py-1.5 px-3.5 font-medium tracking-tight text-gray-600 dark:text-gray-200 transition hover:bg-green-500 dark:hover:bg-green-600 active:bg-green-800"
-                {...nextButtonProps}
-              >
-                {isLastStep ? "Complete" : nextButtonText}
-              </button>
+              {!isLastStep && (
+                <button
+                  onClick={handleNext}
+                  className="duration-350 flex items-center justify-center rounded-full bg-green-400 dark:bg-green-700 py-1.5 px-3.5 font-medium tracking-tight text-gray-600 dark:text-gray-200 transition hover:bg-green-500 dark:hover:bg-green-600 active:bg-green-800"
+                  {...nextButtonProps}
+                >
+                  {nextButtonText}
+                </button>
+              )}
             </div>
           </div>
         )}
