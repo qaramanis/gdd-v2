@@ -5,6 +5,7 @@ import React, {
   useLayoutEffect,
   HTMLAttributes,
   ReactNode,
+  useEffect,
 } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
@@ -194,7 +195,12 @@ function StepContentWrapper({
 
   return (
     <motion.div
-      style={{ position: "relative", overflow: "hidden" }}
+      style={{
+        position: "relative",
+        overflow: "hidden",
+        // Add a minimum height to prevent layout shifts
+        minHeight: isCompleted ? 0 : 400,
+      }}
       animate={{ height: isCompleted ? 0 : parentHeight }}
       transition={{ type: "spring", duration: 0.4 }}
       className={className}
@@ -232,6 +238,23 @@ function SlideTransition({
       onHeightReady(containerRef.current.offsetHeight);
     }
   }, [children, onHeightReady]);
+
+  useEffect(() => {
+    const handleHeightChange = () => {
+      if (containerRef.current) {
+        onHeightReady(containerRef.current.offsetHeight);
+      }
+    };
+
+    window.addEventListener("stepContentHeightChange", handleHeightChange);
+
+    window.addEventListener("resize", handleHeightChange);
+
+    return () => {
+      window.removeEventListener("stepContentHeightChange", handleHeightChange);
+      window.removeEventListener("resize", handleHeightChange);
+    };
+  }, [onHeightReady]);
 
   return (
     <motion.div

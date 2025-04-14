@@ -1,7 +1,7 @@
 // components/new-game/steps/visual-theme.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { saveToStorage, loadFromStorage, STORAGE_KEYS } from "../local-storage";
 import { supabase } from "@/database/supabase";
@@ -26,6 +26,14 @@ export default function VisualTheme() {
   const [themeData, setThemeData] = useState<ThemeData>(defaultTheme);
   const [visualThemes, setVisualThemes] = useState<VisualTheme[]>([]);
   const [loading, setLoading] = useState(true);
+  // Add a ref to track if data has been loaded
+  const dataLoadedRef = useRef(false);
+  // Function to trigger parent component height recalculation
+  const triggerHeightRecalculation = () => {
+    // Create and dispatch a custom event that the Stepper can listen for
+    const event = new CustomEvent("stepContentHeightChange");
+    window.dispatchEvent(event);
+  };
 
   useEffect(() => {
     async function fetchThemes() {
@@ -34,7 +42,6 @@ export default function VisualTheme() {
         .from("visual_themes")
         .select("name, primary_color, secondary_color");
 
-      console.log("Fetched Visual: ", data, error);
       if (error) {
         console.error("Error fetching themes:", error);
       } else if (data) {
@@ -44,6 +51,12 @@ export default function VisualTheme() {
           secondary: theme.secondary_color,
         }));
         setVisualThemes(themes);
+
+        // Mark that data has been loaded
+        dataLoadedRef.current = true;
+
+        // Trigger height recalculation after data is loaded and component has rendered
+        setTimeout(triggerHeightRecalculation, 0);
       }
       setLoading(false);
     }
@@ -59,6 +72,13 @@ export default function VisualTheme() {
     setThemeData(savedTheme);
   }, []);
 
+  // Add effect to recalculate height when themes are loaded
+  useEffect(() => {
+    if (visualThemes.length > 0 && dataLoadedRef.current) {
+      triggerHeightRecalculation();
+    }
+  }, [visualThemes]);
+
   const updateTheme = (updates: Partial<ThemeData>) => {
     const updatedTheme = { ...themeData, ...updates };
     setThemeData(updatedTheme);
@@ -68,16 +88,11 @@ export default function VisualTheme() {
   return (
     <div className="space-y-4 w-full max-w-full py-4">
       <div>
-        <div>
-          <h2 className="text-xl font-semibold">Visual Theme</h2>
-          <p className="text-muted-foreground">
-            Choose a visual style that reflects your game's aesthetic (Showing{" "}
-            {visualThemes.length} themes)
-          </p>
-        </div>
         <h2 className="text-xl font-semibold">Visual Theme</h2>
         <p className="text-muted-foreground">
           Choose a visual style that reflects your game&apos;s aesthetic
+          {visualThemes.length > 0 &&
+            ` (${visualThemes.length} themes available)`}
         </p>
       </div>
 
@@ -116,16 +131,12 @@ export default function VisualTheme() {
         ))}
       </div>
 
-      <div className="mt-4">
-        <p>Debug view of all themes:</p>
-        <div className="flex flex-wrap gap-2">
-          {visualThemes.map((theme, index) => (
-            <div key={index} className="border p-2 text-sm">
-              {index + 1}: {theme.name}
-            </div>
-          ))}
+      {/* Loading indicator when themes are being fetched */}
+      {loading && (
+        <div className="flex justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      </div>
+      )}
 
       <div className="space-y-4">
         <h3 className="font-semibold">Typography Options</h3>
