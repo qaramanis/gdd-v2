@@ -27,8 +27,16 @@ export default function GameHeader({ game }: GameHeaderProps) {
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">
-        <div className="bg-primary/10 dark:bg-primary/20 rounded-lg w-36 h-36 flex items-center justify-center">
-          <Gamepad2 className="size-16 text-primary/60" />
+        <div className="relative bg-primary/10 dark:bg-primary/20 rounded-lg w-36 h-36 flex items-center justify-center overflow-hidden">
+          {game.image_url ? (
+            <img 
+              src={game.image_url} 
+              alt={game.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Gamepad2 className="size-16 text-primary/60" />
+          )}
         </div>
 
         <div className="flex flex-col gap-4 flex-1">
