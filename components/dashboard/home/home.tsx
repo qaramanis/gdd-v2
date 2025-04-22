@@ -62,7 +62,7 @@ export default function Home() {
             <Button
               variant="ghost"
               className="flex items-center gap-2 rounded-full dark:hover:bg-sky-600/80"
-              onClick={() => router.push("/dashboard/view-all")}
+              onClick={() => router.push("/games")}
             >
               View All <ArrowRightIcon className="size-4" />
             </Button>
@@ -90,19 +90,24 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 select-none">
               {games.map((game) => (
-                <TiltedCard
+                <div
                   key={game.id}
-                  imageSrc={game.image_url}
-                  altText={game.name}
-                  captionText={game.name}
-                  showTooltip={true}
-                  scaleOnHover={1}
-                  containerWidth="auto"
-                  imageWidth="100%"
-                  displayOverlayContent={true}
-                  overlayContent={game.name}
-                  showMobileWarning={false}
-                />
+                  onClick={() => router.push(`/games/${game.id}`)}
+                  className="cursor-pointer"
+                >
+                  <TiltedCard
+                    imageSrc={game.image_url}
+                    altText={game.name}
+                    captionText={game.name}
+                    showTooltip={true}
+                    scaleOnHover={1}
+                    containerWidth="auto"
+                    imageWidth="100%"
+                    displayOverlayContent={true}
+                    overlayContent={game.name}
+                    showMobileWarning={false}
+                  />
+                </div>
               ))}
             </div>
           )}

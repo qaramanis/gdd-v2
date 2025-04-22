@@ -1,4 +1,3 @@
-// components/dashboard/view-all/view-all.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -89,19 +88,24 @@ export default function ViewAll() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 select-none">
           {games.map((game) => (
-            <TiltedCard
+            <div
               key={game.id}
-              imageSrc={game.image_url}
-              altText={game.name}
-              captionText={game.name}
-              showTooltip={true}
-              scaleOnHover={1}
-              containerWidth="auto"
-              imageWidth="100%"
-              displayOverlayContent={true}
-              overlayContent={game.name}
-              showMobileWarning={false}
-            />
+              onClick={() => router.push(`/games/${game.id}`)}
+              className="cursor-pointer"
+            >
+              <TiltedCard
+                imageSrc={game.image_url}
+                altText={game.name}
+                captionText={game.name}
+                showTooltip={true}
+                scaleOnHover={1}
+                containerWidth="auto"
+                imageWidth="100%"
+                displayOverlayContent={true}
+                overlayContent={game.name}
+                showMobileWarning={false}
+              />
+            </div>
           ))}
         </div>
       )}
