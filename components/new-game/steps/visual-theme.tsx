@@ -1,21 +1,34 @@
-// components/new-game/steps/visual-theme.tsx
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { saveToStorage, loadFromStorage, STORAGE_KEYS } from "../local-storage";
-import { supabase } from "@/database/supabase";
 
 interface ThemeData {
   visualTheme: string;
   typography: string;
 }
 
-interface VisualTheme {
-  name: string;
-  primary: string;
-  secondary: string;
-}
+const predefinedThemes = [
+  {
+    name: "Classic Professional",
+    primary: "#4A6FFF",
+    secondary: "#8C9EFF",
+    description: "A professional style with a clean blue palette",
+  },
+  {
+    name: "Dark Modern",
+    primary: "#7C3AED",
+    secondary: "#C4B5FD",
+    description: "A modern style with a dark purple theme",
+  },
+  {
+    name: "Retro Pixel",
+    primary: "#10B981",
+    secondary: "#6EE7B7",
+    description: "A retro style with pixel-art inspired green tones",
+  },
+];
 
 const defaultTheme: ThemeData = {
   visualTheme: "Classic Professional",
@@ -24,45 +37,6 @@ const defaultTheme: ThemeData = {
 
 export default function VisualTheme() {
   const [themeData, setThemeData] = useState<ThemeData>(defaultTheme);
-  const [visualThemes, setVisualThemes] = useState<VisualTheme[]>([]);
-  const [loading, setLoading] = useState(true);
-  // Add a ref to track if data has been loaded
-  const dataLoadedRef = useRef(false);
-  // Function to trigger parent component height recalculation
-  const triggerHeightRecalculation = () => {
-    // Create and dispatch a custom event that the Stepper can listen for
-    const event = new CustomEvent("stepContentHeightChange");
-    window.dispatchEvent(event);
-  };
-
-  useEffect(() => {
-    async function fetchThemes() {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("visual_themes")
-        .select("name, primary_color, secondary_color");
-
-      if (error) {
-        console.error("Error fetching themes:", error);
-      } else if (data) {
-        const themes = data.map((theme) => ({
-          name: theme.name,
-          primary: theme.primary_color,
-          secondary: theme.secondary_color,
-        }));
-        setVisualThemes(themes);
-
-        // Mark that data has been loaded
-        dataLoadedRef.current = true;
-
-        // Trigger height recalculation after data is loaded and component has rendered
-        setTimeout(triggerHeightRecalculation, 0);
-      }
-      setLoading(false);
-    }
-
-    fetchThemes();
-  }, []);
 
   useEffect(() => {
     const savedTheme = loadFromStorage<ThemeData>(
@@ -71,13 +45,6 @@ export default function VisualTheme() {
     );
     setThemeData(savedTheme);
   }, []);
-
-  // Add effect to recalculate height when themes are loaded
-  useEffect(() => {
-    if (visualThemes.length > 0 && dataLoadedRef.current) {
-      triggerHeightRecalculation();
-    }
-  }, [visualThemes]);
 
   const updateTheme = (updates: Partial<ThemeData>) => {
     const updatedTheme = { ...themeData, ...updates };
@@ -90,14 +57,13 @@ export default function VisualTheme() {
       <div>
         <h2 className="text-xl font-semibold">Visual Theme</h2>
         <p className="text-muted-foreground">
-          Choose a visual style that reflects your game&apos;s aesthetic
-          {visualThemes.length > 0 &&
-            ` (${visualThemes.length} themes available)`}
+          Choose a visual style that reflects your game's aesthetic (
+          {predefinedThemes.length} themes available)
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-        {visualThemes.map((theme) => (
+        {predefinedThemes.map((theme) => (
           <Card
             key={theme.name}
             className={`cursor-pointer overflow-hidden hover:shadow-md transition-all ${
@@ -123,20 +89,13 @@ export default function VisualTheme() {
                 </div>
                 <h3 className="font-semibold">{theme.name}</h3>
                 <p className="text-sm text-muted-foreground mt-2">
-                  A {theme.name.toLowerCase()} style for your documentation
+                  {theme.description}
                 </p>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-
-      {/* Loading indicator when themes are being fetched */}
-      {loading && (
-        <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      )}
 
       <div className="space-y-4">
         <h3 className="font-semibold">Typography Options</h3>

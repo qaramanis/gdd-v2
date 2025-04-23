@@ -249,7 +249,6 @@ export default function DocumentCreated() {
 
         const typographyData = typographyDataArray[0];
 
-        // Create game
         const { data: gameDataArray, error: gameError } = await supabase
           .from("games")
           .insert([

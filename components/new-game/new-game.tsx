@@ -6,7 +6,6 @@ import Stepper, { Step } from "@/components/stepper";
 import Templates from "./steps/templates";
 import Sections from "./steps/sections";
 import Information from "./steps/information";
-import Structure from "./steps/structure";
 import Summary from "./steps/summary";
 import VisualThemes from "./steps/visual-theme";
 import DocumentCreated from "./steps/completed";
@@ -42,10 +41,6 @@ const NewDocumentPage = () => {
 
           <Step>
             <Information />
-          </Step>
-
-          <Step>
-            <Structure />
           </Step>
 
           <Step>

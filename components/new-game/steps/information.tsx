@@ -36,31 +36,16 @@ const defaultInfo: GameInfo = {
 
 export default function Information() {
   const [info, setInfo] = useState<GameInfo>(defaultInfo);
-  const [newTeamMember, setNewTeamMember] = useState("");
 
   useEffect(() => {
     const savedInfo = loadFromStorage<GameInfo>(STORAGE_KEYS.INFO, defaultInfo);
     setInfo(savedInfo);
   }, []);
 
-  // Update info and save to localStorage
   const updateInfo = (updates: Partial<GameInfo>) => {
     const updatedInfo = { ...info, ...updates };
     setInfo(updatedInfo);
     saveToStorage(STORAGE_KEYS.INFO, updatedInfo);
-  };
-
-  const addTeamMember = () => {
-    if (newTeamMember.trim()) {
-      const updatedTeamMembers = [...info.teamMembers, newTeamMember.trim()];
-      updateInfo({ teamMembers: updatedTeamMembers });
-      setNewTeamMember("");
-    }
-  };
-
-  const removeTeamMember = (index: number) => {
-    const updatedTeamMembers = info.teamMembers.filter((_, i) => i !== index);
-    updateInfo({ teamMembers: updatedTeamMembers });
   };
 
   const togglePlatform = (platform: keyof GameInfo["platforms"]) => {
@@ -111,51 +96,6 @@ export default function Information() {
             </div>
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  Team Members/Collaborators
-                </label>
-                <div className="flex flex-wrap gap-2 p-3 border rounded-md">
-                  {info.teamMembers.map((member, index) => (
-                    <div
-                      key={index}
-                      className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm flex items-center"
-                    >
-                      {member}{" "}
-                      <Button
-                        variant="ghost"
-                        className="h-5 w-5 p-0 ml-1"
-                        onClick={() => removeTeamMember(index)}
-                      >
-                        ×
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="flex items-center gap-1">
-                    <Input
-                      className="flex-1 min-w-24 h-8"
-                      placeholder="Add team member..."
-                      value={newTeamMember}
-                      onChange={(e) => setNewTeamMember(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          addTeamMember();
-                          e.preventDefault();
-                        }
-                      }}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={addTeamMember}
-                      className="h-8 px-2"
-                    >
-                      +
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
               <div className="space-y-2">
                 <label className="text-sm font-medium">Target Platforms</label>
                 <div className="grid grid-cols-2 gap-2 p-3 border rounded-md">

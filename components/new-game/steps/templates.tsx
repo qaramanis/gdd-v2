@@ -13,8 +13,8 @@ interface Template {
 
 const templates = [
   {
-    id: "rpg",
-    name: "Role-Playing Game",
+    id: "mmo/rpg",
+    name: "MMO/RPG",
     icon: "🧙‍♂️",
     description:
       "Template optimized for RPGs with character progression systems and narrative focus",
@@ -47,11 +47,18 @@ const templates = [
       "Structure for platformers with character movement and level design",
   },
   {
-    id: "sandbox",
-    name: "Open World/Sandbox",
+    id: "open-world",
+    name: "Open World",
     icon: "🌎",
     description:
       "Documentation framework for open-world exploration and systems",
+  },
+  {
+    id: "driving-sim",
+    name: "Driving Simulator",
+    icon: "🏎️",
+    description:
+      "Optimal for any driving games with vehicle physics and enviroment",
   },
   {
     id: "blank",
@@ -84,11 +91,11 @@ export default function Templates() {
 
   return (
     <div className="space-y-4 w-full min-w-full py-4">
-      <h2 className="text-xl font-semibold">Choose a Template</h2>
+      <h2 className="text-xl font-semibold">Choose a Game Style</h2>
       <p className="text-muted-foreground">
         Select a starting point based on your game type
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6 w-full">
         {templates.map((template) => (
           <Card
             key={template.id}

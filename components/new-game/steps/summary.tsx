@@ -23,7 +23,6 @@ interface SectionSelection {
 interface GameInfo {
   gameTitle: string;
   concept: string;
-  teamMembers: string[];
   platforms: {
     pc: boolean;
     mobile: boolean;
@@ -32,15 +31,6 @@ interface GameInfo {
   };
   startDate: string;
   timeline: string;
-}
-
-interface StructureData {
-  documentStructure: string;
-  integrations: {
-    engine: boolean;
-    assets: boolean;
-    collaboration: boolean;
-  };
 }
 
 interface ThemeData {
@@ -56,7 +46,6 @@ export default function Summary() {
     {}
   );
   const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
-  const [structure, setStructure] = useState<StructureData | null>(null);
   const [theme, setTheme] = useState<ThemeData | null>(null);
 
   useEffect(() => {
@@ -85,17 +74,9 @@ export default function Summary() {
       loadFromStorage<GameInfo>(STORAGE_KEYS.INFO, {
         gameTitle: "",
         concept: "",
-        teamMembers: ["Jane Smith", "John Doe"],
         platforms: { pc: false, mobile: false, console: false, vr: false },
         startDate: "",
         timeline: "6 months",
-      })
-    );
-
-    setStructure(
-      loadFromStorage<StructureData>(STORAGE_KEYS.STRUCTURE, {
-        documentStructure: "comprehensive",
-        integrations: { engine: false, assets: false, collaboration: false },
       })
     );
 
@@ -110,21 +91,6 @@ export default function Summary() {
   const countSelectedSections = () => {
     if (!selectedSections) return 0;
     return Object.values(selectedSections).filter((value) => value).length;
-  };
-
-  const getDocumentStructureName = () => {
-    if (!structure) return "Single Comprehensive Document";
-
-    switch (structure.documentStructure) {
-      case "comprehensive":
-        return "Single Comprehensive Document";
-      case "multipart":
-        return "Multi-part Documents";
-      case "wiki":
-        return "Wiki-style with Cross-references";
-      default:
-        return "Single Comprehensive Document";
-    }
   };
 
   const getThemeName = () => {
@@ -154,7 +120,7 @@ export default function Summary() {
     return typographyNames[theme.typography] || "Sans-serif";
   };
 
-  if (!selectedSections || !gameInfo || !structure || !theme) {
+  if (!selectedSections || !gameInfo || !theme) {
     return (
       <div className="flex justify-center items-center p-8">
         <p>Loading summary data...</p>
@@ -192,37 +158,11 @@ export default function Summary() {
                     <h3 className="font-semibold text-lg">
                       {gameInfo.gameTitle || "Untitled Project"}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Using {selectedTemplate?.name || "Custom"} template with{" "}
-                      {getThemeName()} theme
-                    </p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Settings className="h-4 w-4" />
-                    <span>Structure</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {getDocumentStructureName()}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Users className="h-4 w-4" />
-                    <span>Collaborators</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {gameInfo.teamMembers.length > 0
-                      ? `${gameInfo.teamMembers.length} team members`
-                      : "No team members added"}
-                  </p>
-                </div>
-
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <Clock className="h-4 w-4" />
@@ -276,52 +216,6 @@ export default function Summary() {
                     </span>
                     <p className="text-sm">{getTypographyName()}</p>
                   </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle>Next Steps</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-full bg-primary/10">
-                  <Info className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm mt-1">
-                    Your document will be created with the selected template and
-                    sections.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-full bg-primary/10">
-                  <Users className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm mt-1">
-                    {gameInfo.teamMembers.length > 0
-                      ? "Collaborators will receive an invitation to join this document."
-                      : "You can add collaborators after document creation."}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-full bg-primary/10">
-                  <PenTool className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm mt-1">
-                    You can edit and customize all aspects of your document
-                    after creation.
-                  </p>
                 </div>
               </div>
             </div>
