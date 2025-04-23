@@ -80,7 +80,7 @@ export default function GamePage() {
       <GameHeader game={game} />
 
       <Tabs defaultValue="document" className="w-full">
-        <TabsList className="border-b p-1 w-full justify-start gap-6 bg-white dark:bg-gray-800">
+        <TabsList className="border-b p-1 w-full md:w-1/2 justify-start gap-6 bg-white dark:bg-gray-800">
           <TabsTrigger value="document">Document</TabsTrigger>
           <TabsTrigger value="story-points">Notes</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>

@@ -8,14 +8,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { loadFromStorage, STORAGE_KEYS, clearFormData } from "../local-storage";
 import { supabase } from "@/database/supabase";
-
-// Define types for the data stored in localStorage
-interface Template {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-}
+import CheckmarkFactory from "@/components/checkmark";
+import { sectionGroups } from "./sections";
 
 interface SectionSelection {
   [key: string]: boolean;
@@ -39,75 +33,7 @@ interface ThemeData {
   typography: string;
 }
 
-interface CheckmarkProps {
-  size?: number;
-  strokeWidth?: number;
-  color?: string;
-  className?: string;
-}
-
-const draw = {
-  hidden: { pathLength: 0, opacity: 0 },
-  visible: (i: number) => ({
-    pathLength: 1,
-    opacity: 1,
-    transition: {
-      pathLength: {
-        delay: i * 0.2,
-        type: "spring",
-        duration: 1.5,
-        bounce: 0.2,
-        ease: "easeInOut",
-      },
-      opacity: { delay: i * 0.2, duration: 0.2 },
-    },
-  }),
-};
-
-function Checkmark({
-  size = 100,
-  strokeWidth = 2,
-  color = "currentColor",
-  className = "",
-}: CheckmarkProps) {
-  return (
-    <motion.svg
-      width={size}
-      height={size}
-      viewBox="0 0 100 100"
-      initial="hidden"
-      animate="visible"
-      className={className}
-    >
-      <title>Animated Checkmark</title>
-      <motion.circle
-        cx="50"
-        cy="50"
-        r="40"
-        stroke={color}
-        variants={draw}
-        custom={0}
-        style={{
-          strokeWidth,
-          strokeLinecap: "round",
-          fill: "transparent",
-        }}
-      />
-      <motion.path
-        d="M30 50L45 65L70 35"
-        stroke={color}
-        variants={draw}
-        custom={1}
-        style={{
-          strokeWidth,
-          strokeLinecap: "round",
-          strokeLinejoin: "round",
-          fill: "transparent",
-        }}
-      />
-    </motion.svg>
-  );
-}
+const Checkmark = CheckmarkFactory();
 
 export default function DocumentCreated() {
   const [savedStatus, setSavedStatus] = useState<"saving" | "saved" | "error">(
@@ -119,10 +45,6 @@ export default function DocumentCreated() {
   useEffect(() => {
     async function saveGameToDatabase() {
       try {
-        const template = loadFromStorage<Template | null>(
-          STORAGE_KEYS.TEMPLATE,
-          null
-        );
         const sections = loadFromStorage<SectionSelection>(
           STORAGE_KEYS.SECTIONS,
           {}
@@ -139,7 +61,6 @@ export default function DocumentCreated() {
           typography: "sans",
         });
 
-        // Process platforms as an array
         let platformsArray: string[] = [];
         if (info.platforms) {
           platformsArray = Object.entries(info.platforms)
@@ -147,7 +68,6 @@ export default function DocumentCreated() {
             .map(([name, _]) => name);
         }
 
-        // Process sections as an array
         let sectionsArray: string[] = [];
         if (sections) {
           sectionsArray = Object.entries(sections)
@@ -155,7 +75,6 @@ export default function DocumentCreated() {
             .map(([name, _]) => name);
         }
 
-        // Create a new game entry
         const { data: gameData, error: gameError } = await supabase
           .from("games")
           .insert([
@@ -165,31 +84,88 @@ export default function DocumentCreated() {
               start_date:
                 info.startDate || new Date().toISOString().split("T")[0],
               timeline: info.timeline || "6 months",
-              image_url: "/game-placeholder.jpg", // Default placeholder image
-              platforms: platformsArray, // Store platforms as an array directly
-              sections: sectionsArray, // Store sections as an array directly
+              image_url: "/game-placeholder.jpg",
+              platforms: platformsArray,
+              sections: sectionsArray,
             },
           ])
           .select();
 
-        // Check if we got data back, even if there was an error
         if (gameData && gameData.length > 0) {
           console.log("Game saved successfully:", gameData[0]);
           setGameId(gameData[0].id);
+
+          // Create document structure based on selected sections
+          try {
+            const gameId = gameData[0].id;
+
+            // First create the document
+            const { data: documentData, error: documentError } = await supabase
+              .from("documents")
+              .insert({
+                game_id: gameId,
+                title: `${gameData[0].name} - Design Document`,
+              })
+              .select();
+
+            if (documentError) throw documentError;
+
+            // Now create document sections based on the selected sections
+            if (documentData && documentData.length > 0) {
+              const documentId = documentData[0].id;
+
+              // Get the sections from the stored template
+              const savedSections = loadFromStorage<SectionSelection>(
+                STORAGE_KEYS.SECTIONS,
+                {}
+              );
+
+              const sectionsToCreate = Object.entries(savedSections)
+                .filter(([_, isSelected]) => isSelected)
+                .map(([sectionId, _], index) => {
+                  // Get the section name from the section ID
+                  const section = sectionGroups
+                    .flatMap((group) => group.sections)
+                    .find((section) => section.id === sectionId);
+
+                  return {
+                    document_id: documentId,
+                    title: section?.name || sectionId,
+                    order: index,
+                    content: "",
+                  };
+                });
+
+              if (sectionsToCreate.length > 0) {
+                const { error: sectionsError } = await supabase
+                  .from("document_sections")
+                  .insert(sectionsToCreate);
+
+                if (sectionsError) {
+                  console.error(
+                    "Error creating document sections:",
+                    sectionsError
+                  );
+                }
+              }
+            }
+          } catch (error) {
+            console.error("Error creating document:", error);
+            // Don't fail the game creation if document creation fails
+            // Just log the error
+          }
+
           setSavedStatus("saved");
           clearFormData();
           return;
         }
 
-        // If no data but we have an error
         if (gameError) {
-          // Check if this is the specific duplicate key error
           if (
             gameError.message.includes(
               "duplicate key value violates unique constraint"
             )
           ) {
-            // Try to check if the game was actually created despite the error
             const { data: checkData, error: checkError } = await supabase
               .from("games")
               .select("id")

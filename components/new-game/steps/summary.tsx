@@ -142,9 +142,6 @@ export default function Summary() {
           <CardHeader className="pb-2">
             <div className="flex justify-between items-center">
               <CardTitle>Document Summary</CardTitle>
-              <Button variant="ghost" className="text-xs" size="sm">
-                Edit
-              </Button>
             </div>
           </CardHeader>
           <CardContent>
