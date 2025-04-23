@@ -15,7 +15,6 @@ interface GameTeamProps {
 export default function GameTeam({ gameId, team }: GameTeamProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // If the real team data is empty, use some dummy data for the demo
   const teamMembers =
     team.length > 0
       ? team

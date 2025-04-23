@@ -80,31 +80,11 @@ export default function GamePage() {
       <GameHeader game={game} />
 
       <Tabs defaultValue="document" className="w-full">
-        <TabsList className="mb-6 border-b pb-0 w-full justify-start gap-6 bg-transparent">
-          <TabsTrigger
-            value="document"
-            className="border-b-2 border-transparent data-[state=active]:border-primary rounded-none pb-2 px-1"
-          >
-            Document
-          </TabsTrigger>
-          <TabsTrigger
-            value="story-points"
-            className="border-b-2 border-transparent data-[state=active]:border-primary rounded-none pb-2 px-1"
-          >
-            Story Points & Tasks
-          </TabsTrigger>
-          <TabsTrigger
-            value="team"
-            className="border-b-2 border-transparent data-[state=active]:border-primary rounded-none pb-2 px-1"
-          >
-            Team
-          </TabsTrigger>
-          <TabsTrigger
-            value="scenes"
-            className="border-b-2 border-transparent data-[state=active]:border-primary rounded-none pb-2 px-1"
-          >
-            Scenes
-          </TabsTrigger>
+        <TabsList className="border-b p-1 w-full justify-start gap-6 bg-transparent">
+          <TabsTrigger value="document">Document</TabsTrigger>
+          <TabsTrigger value="story-points">Story Points & Tasks</TabsTrigger>
+          <TabsTrigger value="team">Team</TabsTrigger>
+          <TabsTrigger value="scenes">Scenes</TabsTrigger>
         </TabsList>
 
         <TabsContent value="document" className="mt-0">
@@ -130,7 +110,6 @@ export default function GamePage() {
 function GamePageSkeleton() {
   return (
     <div className="flex flex-col gap-6 p-4 pt-0">
-      {/* Header skeleton */}
       <div className="flex flex-col gap-4">
         <Skeleton className="h-10 w-1/3" />
         <div className="flex gap-4">

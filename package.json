@@ -30,6 +30,9 @@
     "react-dom": "^19.0.0",
     "recharts": "^2.15.1",
     "root": "git+https://github.com/tanstack/react-query.git",
+    "slate": "^0.112.0",
+    "slate-history": "^0.113.1",
+    "slate-react": "^0.112.1",
     "tailwind-merge": "^3.0.2",
     "tw-animate-css": "^1.2.5"
   },

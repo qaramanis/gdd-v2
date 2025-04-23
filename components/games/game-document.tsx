@@ -50,7 +50,6 @@ export default function GameDocument({ game }: GameDocumentProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Display sections */}
         {includedSections.map((section: any) => (
           <Card
             key={section.section_id}
@@ -82,8 +81,6 @@ export default function GameDocument({ game }: GameDocumentProps) {
             </CardContent>
           </Card>
         ))}
-
-        {/* Add section card (only in edit mode) */}
         {viewMode === "edit" && (
           <Card className="border-dashed hover:shadow-md hover:border-primary/50 transition-all cursor-pointer flex flex-col items-center justify-center">
             <CardContent className="py-8 flex flex-col items-center gap-2">
@@ -99,7 +96,6 @@ export default function GameDocument({ game }: GameDocumentProps) {
         )}
       </div>
 
-      {/* Document content preview */}
       <Card className="mt-8">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -109,8 +105,7 @@ export default function GameDocument({ game }: GameDocumentProps) {
         </CardHeader>
         <CardContent>
           <div className="prose dark:prose-invert max-w-none">
-            <h1>{game.name}</h1>
-            <p className="lead">{game.concept}</p>
+            <h1 className="font-bold">{game.name}</h1>
 
             {includedSections.map((section: any) => (
               <div key={section.section_id} className="mb-4">
