@@ -1,11 +1,15 @@
-"use client";
-
-import React, { useState, useEffect, useRef } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+  LexicalComposer,
+  InitialConfigType,
+} from "@lexical/react/LexicalComposer";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 
 interface DocumentEditorProps {
   documentId: string;
@@ -30,60 +34,35 @@ export default function DocumentEditor({
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const router = useRouter();
-  const quillRef = useRef<ReactQuill>(null);
-
-  // Auto-save functionality
-  useEffect(() => {
-    const autoSaveInterval = setTimeout(() => {
-      if (content !== initialContent && !saving && onSave) {
-        handleSave();
-      }
-    }, 30000);
-
-    return () => clearTimeout(autoSaveInterval);
-  }, [content, initialContent, saving]);
 
   const handleSave = async () => {
     if (!onSave) return;
-
     setSaving(true);
     try {
       await onSave(content);
       setLastSaved(new Date());
     } catch (error) {
       console.error("Error saving document:", error);
-      // Implement proper error handling here
     } finally {
       setSaving(false);
     }
   };
 
-  const handleBackNavigation = () => {
-    if (
-      content !== initialContent &&
-      !confirm("You have unsaved changes. Are you sure you want to leave?")
-    ) {
-      return;
-    }
-    router.back();
-  };
+  useEffect(() => {
+    const autoSaveInterval = setTimeout(() => {
+      if (content !== initialContent && !saving && onSave) {
+        handleSave();
+      }
+    }, 30000);
+    return () => clearTimeout(autoSaveInterval);
+  }, [content, initialContent, saving]);
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      ["link", "image"],
-      ["clean"],
-      [{ color: [] }, { background: [] }],
-      [{ font: [] }],
-      [{ align: [] }],
-    ],
+  const editorConfig: InitialConfigType = {
+    namespace: "DocumentEditor",
+    theme: {},
+    onError: (error) => {
+      throw error;
+    },
   };
 
   return (
@@ -93,7 +72,17 @@ export default function DocumentEditor({
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleBackNavigation}
+            onClick={() => {
+              if (
+                content !== initialContent &&
+                !confirm(
+                  "You have unsaved changes. Are you sure you want to leave?"
+                )
+              ) {
+                return;
+              }
+              router.back();
+            }}
             className="gap-1"
           >
             <ArrowLeft className="size-4" />
@@ -126,16 +115,32 @@ export default function DocumentEditor({
 
       <div className="flex-1 overflow-auto p-4 bg-gray-50 dark:bg-gray-900">
         <div className="bg-white dark:bg-gray-800 max-w-6xl mx-auto rounded-lg shadow p-4 min-h-screen">
-          <ReactQuill
-            ref={quillRef}
-            theme="snow"
-            value={content}
-            onChange={setContent}
-            modules={modules}
-            placeholder="Start writing your document..."
-            readOnly={readOnly}
-            className="h-[calc(100vh-200px)]"
-          />
+          <LexicalComposer initialConfig={editorConfig}>
+            <RichTextPlugin
+              contentEditable={
+                <ContentEditable className="h-[calc(100vh-200px)] outline-none p-4" />
+              }
+              placeholder={
+                <div className="text-muted-foreground">
+                  Start writing your document...
+                </div>
+              }
+              ErrorBoundary={(props) => (
+                <div className="text-red-500">
+                  Editor error: {props.onError.toString()}
+                </div>
+              )}
+            />
+            <HistoryPlugin />
+            <OnChangePlugin
+              onChange={(editorState) => {
+                editorState.read(() => {
+                  const content = editorState.toJSON();
+                  setContent(JSON.stringify(content));
+                });
+              }}
+            />
+          </LexicalComposer>
         </div>
       </div>
     </div>
