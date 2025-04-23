@@ -158,6 +158,10 @@ export default function Summary() {
                     <h3 className="font-semibold text-lg">
                       {gameInfo.gameTitle || "Untitled Project"}
                     </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Creating a new {selectedTemplate?.name || "Custom"}{" "}
+                      document
+                    </p>
                   </div>
                 </div>
               </div>

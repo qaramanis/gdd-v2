@@ -24,7 +24,6 @@ interface SectionSelection {
 interface GameInfo {
   gameTitle: string;
   concept: string;
-  teamMembers: string[];
   platforms: {
     pc: boolean;
     mobile: boolean;
@@ -33,15 +32,6 @@ interface GameInfo {
   };
   startDate: string;
   timeline: string;
-}
-
-interface StructureData {
-  documentStructure: string;
-  integrations: {
-    engine: boolean;
-    assets: boolean;
-    collaboration: boolean;
-  };
 }
 
 interface ThemeData {
@@ -124,6 +114,7 @@ export default function DocumentCreated() {
     "saving"
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [gameId, setGameId] = useState<number | null>(null);
 
   useEffect(() => {
     async function saveGameToDatabase() {
@@ -139,343 +130,92 @@ export default function DocumentCreated() {
         const info = loadFromStorage<GameInfo>(STORAGE_KEYS.INFO, {
           gameTitle: "",
           concept: "",
-          teamMembers: [],
           platforms: { pc: false, mobile: false, console: false, vr: false },
           startDate: "",
           timeline: "",
         });
-        const structure = loadFromStorage<StructureData>(
-          STORAGE_KEYS.STRUCTURE,
-          {
-            documentStructure: "comprehensive",
-            integrations: {
-              engine: false,
-              assets: false,
-              collaboration: false,
-            },
-          }
-        );
         const theme = loadFromStorage<ThemeData>(STORAGE_KEYS.THEME, {
           visualTheme: "Classic Professional",
           typography: "sans",
         });
 
-        // Get template data
-        const { data: templateDataArray, error: templateError } = await supabase
-          .from("templates")
-          .select("id")
-          .eq("name", template?.name || "Blank Document")
-          .limit(1);
-
-        if (templateError) {
-          setSavedStatus("error");
-          setErrorMessage(`Template lookup failed: ${templateError.message}`);
-          return;
+        // Process platforms as an array
+        let platformsArray: string[] = [];
+        if (info.platforms) {
+          platformsArray = Object.entries(info.platforms)
+            .filter(([_, isSelected]) => isSelected)
+            .map(([name, _]) => name);
         }
 
-        if (!templateDataArray || templateDataArray.length === 0) {
-          setSavedStatus("error");
-          setErrorMessage("Template not found");
-          return;
+        // Process sections as an array
+        let sectionsArray: string[] = [];
+        if (sections) {
+          sectionsArray = Object.entries(sections)
+            .filter(([_, isSelected]) => isSelected)
+            .map(([name, _]) => name);
         }
 
-        const templateData = templateDataArray[0];
-
-        // Get structure data
-        const { data: structureDataArray, error: structureError } =
-          await supabase
-            .from("document_structures")
-            .select("id")
-            .eq("name", structure.documentStructure || "comprehensive")
-            .limit(1);
-
-        if (structureError) {
-          setSavedStatus("error");
-          setErrorMessage(
-            `Document structure lookup failed: ${structureError.message}`
-          );
-          return;
-        }
-
-        if (!structureDataArray || structureDataArray.length === 0) {
-          setSavedStatus("error");
-          setErrorMessage("Document structure not found");
-          return;
-        }
-
-        const structureData = structureDataArray[0];
-
-        const { data: themeDataArray, error: themeError } = await supabase
-          .from("visual_themes")
-          .select("id")
-          .eq("name", theme.visualTheme)
-          .limit(1);
-
-        if (themeError) {
-          setSavedStatus("error");
-          setErrorMessage(`Visual theme lookup failed: ${themeError.message}`);
-          return;
-        }
-
-        if (!themeDataArray || themeDataArray.length === 0) {
-          setSavedStatus("error");
-          setErrorMessage(`Theme not found: ${theme.visualTheme}`);
-          return;
-        }
-
-        const themeData = themeDataArray[0];
-
-        // Get typography data
-        const { data: typographyDataArray, error: typographyError } =
-          await supabase
-            .from("typography_options")
-            .select("id")
-            .eq("name", theme.typography || "sans")
-            .limit(1);
-
-        if (typographyError) {
-          setSavedStatus("error");
-          setErrorMessage(
-            `Typography lookup failed: ${typographyError.message}`
-          );
-          return;
-        }
-
-        if (!typographyDataArray || typographyDataArray.length === 0) {
-          setSavedStatus("error");
-          setErrorMessage("Typography option not found");
-          return;
-        }
-
-        const typographyData = typographyDataArray[0];
-
-        const { data: gameDataArray, error: gameError } = await supabase
+        // Create a new game entry
+        const { data: gameData, error: gameError } = await supabase
           .from("games")
           .insert([
             {
               name: info.gameTitle || "Untitled Game",
               concept: info.concept || "",
-              template_id: templateData.id,
-              document_structure_id: structureData.id,
-              visual_theme_id: themeData.id,
-              typography_id: typographyData.id,
               start_date:
                 info.startDate || new Date().toISOString().split("T")[0],
               timeline: info.timeline || "6 months",
               image_url: "/game-placeholder.jpg", // Default placeholder image
+              platforms: platformsArray, // Store platforms as an array directly
+              sections: sectionsArray, // Store sections as an array directly
             },
           ])
           .select();
 
+        // Check if we got data back, even if there was an error
+        if (gameData && gameData.length > 0) {
+          console.log("Game saved successfully:", gameData[0]);
+          setGameId(gameData[0].id);
+          setSavedStatus("saved");
+          clearFormData();
+          return;
+        }
+
+        // If no data but we have an error
         if (gameError) {
+          // Check if this is the specific duplicate key error
+          if (
+            gameError.message.includes(
+              "duplicate key value violates unique constraint"
+            )
+          ) {
+            // Try to check if the game was actually created despite the error
+            const { data: checkData, error: checkError } = await supabase
+              .from("games")
+              .select("id")
+              .eq("name", info.gameTitle || "Untitled Game")
+              .order("created_at", { ascending: false })
+              .limit(1);
+
+            if (checkData && checkData.length > 0) {
+              console.log(
+                "Game was actually created despite error:",
+                checkData[0]
+              );
+              setGameId(checkData[0].id);
+              setSavedStatus("saved");
+              clearFormData();
+              return;
+            }
+          }
+
           setSavedStatus("error");
           setErrorMessage(`Game creation failed: ${gameError.message}`);
           return;
         }
 
-        if (!gameDataArray || gameDataArray.length === 0) {
-          setSavedStatus("error");
-          setErrorMessage("Game created but no data returned");
-          return;
-        }
-
-        const gameData = gameDataArray[0];
-
-        // Process team members (now users)
-        if (info.teamMembers && info.teamMembers.length > 0) {
-          for (const member of info.teamMembers) {
-            // Check if user exists
-            const { data: existingUserArray, error: userLookupError } =
-              await supabase
-                .from("users")
-                .select("id")
-                .eq("name", member)
-                .limit(1);
-
-            if (userLookupError) {
-              console.warn(`User lookup warning: ${userLookupError.message}`);
-              // Continue with creation instead of failing
-            }
-
-            let userId;
-            if (!existingUserArray || existingUserArray.length === 0) {
-              // Create new user
-              const { data: newUserArray, error: createUserError } =
-                await supabase
-                  .from("users")
-                  .insert([{ name: member }])
-                  .select();
-
-              if (createUserError) {
-                console.error(
-                  `User creation error: ${createUserError.message}`
-                );
-                continue; // Skip this user but continue with others
-              }
-
-              if (!newUserArray || newUserArray.length === 0) {
-                console.error("User created but no data returned");
-                continue; // Skip this user but continue with others
-              }
-
-              userId = newUserArray[0].id;
-            } else {
-              userId = existingUserArray[0].id;
-            }
-
-            // Link user to game
-            const { error: linkUserError } = await supabase
-              .from("game_users")
-              .insert([
-                {
-                  game_id: gameData.id,
-                  user_id: userId,
-                },
-              ]);
-
-            if (linkUserError) {
-              console.error(`User linking error: ${linkUserError.message}`);
-              // Continue with other users instead of failing completely
-            }
-          }
-        }
-
-        // Process platforms
-        if (info.platforms) {
-          const platformNames = Object.entries(info.platforms)
-            .filter(([_, isSelected]) => isSelected)
-            .map(([name, _]) => name);
-
-          for (const platform of platformNames) {
-            const { data: platformDataArray, error: platformError } =
-              await supabase
-                .from("platform_types")
-                .select("id")
-                .eq("name", platform)
-                .limit(1);
-
-            if (platformError) {
-              console.error(`Platform lookup error: ${platformError.message}`);
-              continue;
-            }
-
-            if (!platformDataArray || platformDataArray.length === 0) {
-              console.error(`Platform "${platform}" not found`);
-              continue;
-            }
-
-            const platformData = platformDataArray[0];
-
-            const { error: linkPlatformError } = await supabase
-              .from("game_platforms")
-              .insert([
-                {
-                  game_id: gameData.id,
-                  platform_id: platformData.id,
-                },
-              ]);
-
-            if (linkPlatformError) {
-              console.error(
-                `Platform linking error: ${linkPlatformError.message}`
-              );
-            }
-          }
-        }
-
-        if (sections) {
-          const selectedSections = Object.entries(sections)
-            .filter(([_, isSelected]) => isSelected)
-            .map(([name, _]) => name);
-
-          for (const [index, sectionName] of selectedSections.entries()) {
-            const { data: sectionDataArray, error: sectionError } =
-              await supabase
-                .from("sections")
-                .select("id")
-                .eq("name", sectionName)
-                .limit(1);
-
-            if (sectionError) {
-              console.error(`Section lookup error: ${sectionError.message}`);
-              continue;
-            }
-
-            if (!sectionDataArray || sectionDataArray.length === 0) {
-              console.error(`Section "${sectionName}" not found`);
-              continue;
-            }
-
-            const sectionData = sectionDataArray[0];
-
-            const { error: linkSectionError } = await supabase
-              .from("game_sections")
-              .insert([
-                {
-                  game_id: gameData.id,
-                  section_id: sectionData.id,
-                  is_included: true,
-                  section_order: index,
-                },
-              ]);
-
-            if (linkSectionError) {
-              console.error(
-                `Section linking error: ${linkSectionError.message}`
-              );
-            }
-          }
-        }
-
-        if (structure.integrations) {
-          const enabledIntegrations = Object.entries(structure.integrations)
-            .filter(([_, isEnabled]) => isEnabled)
-            .map(([name, _]) => name);
-
-          for (const integration of enabledIntegrations) {
-            const { data: integrationDataArray, error: integrationError } =
-              await supabase
-                .from("integrations")
-                .select("id")
-                .eq("name", integration)
-                .limit(1);
-
-            if (integrationError) {
-              console.error(
-                `Integration lookup error: ${integrationError.message}`
-              );
-              continue;
-            }
-
-            if (!integrationDataArray || integrationDataArray.length === 0) {
-              console.error(`Integration "${integration}" not found`);
-              continue;
-            }
-
-            const integrationData = integrationDataArray[0];
-
-            const { error: linkIntegrationError } = await supabase
-              .from("game_integrations")
-              .insert([
-                {
-                  game_id: gameData.id,
-                  integration_id: integrationData.id,
-                  is_enabled: true,
-                },
-              ]);
-
-            if (linkIntegrationError) {
-              console.error(
-                `Integration linking error: ${linkIntegrationError.message}`
-              );
-              // Continue with other integrations instead of failing completely
-            }
-          }
-        }
-
-        console.log("Game saved successfully:", gameData);
-        setSavedStatus("saved");
-        clearFormData();
+        setSavedStatus("error");
+        setErrorMessage("Game creation failed with no specific error");
       } catch (error: any) {
         console.error("Error saving game to database:", error);
         setSavedStatus("error");
@@ -551,7 +291,11 @@ export default function DocumentCreated() {
 
       {(savedStatus === "saved" || savedStatus === "error") && (
         <Button asChild className="rounded-full">
-          <Link href="/home">
+          <Link
+            href={
+              savedStatus === "saved" && gameId ? `/games/${gameId}` : "/home"
+            }
+          >
             {savedStatus === "saved" ? "View Game Page" : "Back to Home"}
           </Link>
         </Button>
