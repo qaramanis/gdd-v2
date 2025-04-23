@@ -24,7 +24,7 @@ export function NewDocument() {
           variant="ghost"
           onClick={() => router.push("/new")}
           className={cn(
-            "w-auto rounded-full justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
+            "w-auto rounded-lg justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
             "bg-black hover:bg-black/80",
             "dark:bg-white dark:hover:bg-white text-white",
             "[&>svg]:text-white dark:[&>svg]:text-black"

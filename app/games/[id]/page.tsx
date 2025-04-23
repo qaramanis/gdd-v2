@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GameHeader from "@/components/games/game-header";
 import GameDocument from "@/components/games/game-document";
-import GameStoryPoints from "@/components/games/game-story-points";
+import GameStoryPoints from "@/components/games/game-notes";
 import GameTeam from "@/components/games/game-team";
 import GameScenes from "@/components/games/game-scenes";
 import { supabase } from "@/database/supabase";
@@ -80,9 +80,9 @@ export default function GamePage() {
       <GameHeader game={game} />
 
       <Tabs defaultValue="document" className="w-full">
-        <TabsList className="border-b p-1 w-full justify-start gap-6 bg-transparent">
+        <TabsList className="border-b p-1 w-full justify-start gap-6 bg-white dark:bg-gray-800">
           <TabsTrigger value="document">Document</TabsTrigger>
-          <TabsTrigger value="story-points">Story Points & Tasks</TabsTrigger>
+          <TabsTrigger value="story-points">Notes</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
           <TabsTrigger value="scenes">Scenes</TabsTrigger>
         </TabsList>
@@ -122,7 +122,6 @@ function GamePageSkeleton() {
         </div>
       </div>
 
-      {/* Tabs skeleton */}
       <div className="flex gap-4 border-b pb-4">
         <Skeleton className="h-8 w-24" />
         <Skeleton className="h-8 w-24" />

@@ -96,28 +96,13 @@ export default function GameDocument({ game }: GameDocumentProps) {
         )}
       </div>
 
-      <Card className="mt-8">
+      <Card className="mt-8 bg-white dark:bg-gray-800">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-lg">
             <FileText className="size-5" />
             Document Preview
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="prose dark:prose-invert max-w-none">
-            <h1 className="font-bold">{game.name}</h1>
-
-            {includedSections.map((section: any) => (
-              <div key={section.section_id} className="mb-4">
-                <h2>{section.section.name}</h2>
-                <p className="text-muted-foreground italic">
-                  {section.section.description}
-                </p>
-                <p>Content for this section will be displayed here.</p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
       </Card>
     </div>
   );

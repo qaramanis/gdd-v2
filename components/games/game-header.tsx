@@ -11,17 +11,13 @@ interface GameHeaderProps {
 
 export default function GameHeader({ game }: GameHeaderProps) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 bg-white dark:bg-gray-800 rounded-xl px-6 py-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{game.name}</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Share className="size-4" />
-            Share
-          </Button>
           <Button size="sm" className="gap-2">
             <Edit className="size-4" />
-            Edit
+            <div className="md:flex hidden">Edit</div>
           </Button>
         </div>
       </div>
@@ -39,8 +35,8 @@ export default function GameHeader({ game }: GameHeaderProps) {
           )}
         </div>
 
-        <div className="flex flex-row gap-4 flex-1">
-          <div className="md:max-w-[25%] max-w-[60%]">
+        <div className="flex flex-col md:flex-row gap-4 flex-1">
+          <div className="md:max-w-[25%] max-w-full">
             <p className="text-sm text-muted-foreground">Concept</p>
             <p className="text-base">{game.concept || "No concept provided"}</p>
           </div>
@@ -70,14 +66,16 @@ export default function GameHeader({ game }: GameHeaderProps) {
 
             <div className="flex items-center gap-2">
               <div className="p-2 rounded-full bg-primary/10">
-                <Users className="h-4 w-4 text-primary" />
+                <Calendar className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Team Members</p>
+                <p className="text-xs text-muted-foreground">
+                  Target Release Date
+                </p>
                 <p className="text-sm font-medium">
-                  {game.game_users && game.game_users.length
-                    ? `${game.game_users.length} members`
-                    : "No team members"}
+                  {game.release_date
+                    ? formatDate(game.release_date)
+                    : "Not set yet"}
                 </p>
               </div>
             </div>
