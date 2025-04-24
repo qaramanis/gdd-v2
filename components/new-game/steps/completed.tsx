@@ -28,11 +28,6 @@ interface GameInfo {
   timeline: string;
 }
 
-interface ThemeData {
-  visualTheme: string;
-  typography: string;
-}
-
 const Checkmark = CheckmarkFactory();
 
 export default function DocumentCreated() {
@@ -56,23 +51,19 @@ export default function DocumentCreated() {
           startDate: "",
           timeline: "",
         });
-        const theme = loadFromStorage<ThemeData>(STORAGE_KEYS.THEME, {
-          visualTheme: "Classic Professional",
-          typography: "sans",
-        });
 
         let platformsArray: string[] = [];
         if (info.platforms) {
           platformsArray = Object.entries(info.platforms)
-            .filter(([_, isSelected]) => isSelected)
-            .map(([name, _]) => name);
+            .filter(([isSelected]) => isSelected)
+            .map(([name]) => name);
         }
 
         let sectionsArray: string[] = [];
         if (sections) {
           sectionsArray = Object.entries(sections)
-            .filter(([_, isSelected]) => isSelected)
-            .map(([name, _]) => name);
+            .filter(([isSelected]) => isSelected)
+            .map(([name]) => name);
         }
 
         const { data: gameData, error: gameError } = await supabase
@@ -95,11 +86,8 @@ export default function DocumentCreated() {
           console.log("Game saved successfully:", gameData[0]);
           setGameId(gameData[0].id);
 
-          // Create document structure based on selected sections
           try {
             const gameId = gameData[0].id;
-
-            // First create the document
             const { data: documentData, error: documentError } = await supabase
               .from("documents")
               .insert({
@@ -121,8 +109,8 @@ export default function DocumentCreated() {
               );
 
               const sectionsToCreate = Object.entries(savedSections)
-                .filter(([_, isSelected]) => isSelected)
-                .map(([sectionId, _], index) => {
+                .filter(([isSelected]) => isSelected)
+                .map(([sectionId], index) => {
                   // Get the section name from the section ID
                   const section = sectionGroups
                     .flatMap((group) => group.sections)
@@ -166,7 +154,7 @@ export default function DocumentCreated() {
               "duplicate key value violates unique constraint"
             )
           ) {
-            const { data: checkData, error: checkError } = await supabase
+            const { data: checkData } = await supabase
               .from("games")
               .select("id")
               .eq("name", info.gameTitle || "Untitled Game")

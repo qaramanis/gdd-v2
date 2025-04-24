@@ -28,7 +28,7 @@ const draw = {
   }),
 };
 
-export default function () {
+export default function Checkmark() {
   return function Checkmark({
     size = 100,
     strokeWidth = 2,

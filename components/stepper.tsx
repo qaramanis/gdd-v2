@@ -80,12 +80,6 @@ export default function Stepper({
     }
   };
 
-  const handleComplete = () => {
-    setDirection(1);
-    updateStep(totalSteps + 1);
-  };
-
-  // Function to handle step clicks
   const handleStepClick = (clickedStep: number) => {
     setDirection(clickedStep > currentStep ? 1 : -1);
     updateStep(clickedStep);

@@ -2,14 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  FileText,
-  Plus,
-  PenLine,
-  BookOpen,
-  Download,
-  ChevronRight,
-} from "lucide-react";
+import { FileText, Plus, PenLine, Download, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
@@ -25,21 +18,17 @@ export default function GameDocument({
   document,
   sections,
 }: GameDocumentProps) {
-  const [viewMode, setViewMode] = useState<"view" | "edit">("view");
+  const [viewMode] = useState<"view" | "edit">("view");
   const router = useRouter();
 
   const handleOpenFullEditor = (sectionId?: string) => {
     if (!document) return;
 
     const route = sectionId
-      ? `/games/${game.id}/document/section/${sectionId}`
+      ? `/games/${game.id}/document`
       : `/games/${game.id}/document`;
 
     router.push(route);
-  };
-
-  const handleOpenSectionPreview = (section: any) => {
-    router.push(`/games/${game.id}/document/`);
   };
 
   const includedSections = (game.game_sections || [])
@@ -137,10 +126,10 @@ export default function GameDocument({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-primary/50"
-                    onClick={() => handleOpenSectionPreview(section)}
+                    className="text-primary/50 mt-1"
+                    onClick={() => router.push(`/games/${game.id}/document/`)}
                   >
-                    Continue reading
+                    View in editor
                     <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>

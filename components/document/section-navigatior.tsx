@@ -1,13 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  ChevronRight,
-  ChevronDown,
-  PlusCircle,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import React from "react";
+import { PlusCircle, Edit, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";

@@ -22,8 +22,6 @@ interface DocumentEditorProps {
 }
 
 export default function DocumentEditor({
-  documentId,
-  sectionId,
   initialContent = "",
   documentTitle,
   sectionTitle,

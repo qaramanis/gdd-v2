@@ -30,7 +30,6 @@ export default function GamePage() {
 
         setLoading(true);
 
-        // Fetch game data
         const { data: gameData, error: gameError } = await supabase
           .from("games")
           .select("*")
@@ -42,7 +41,6 @@ export default function GamePage() {
 
         setGame(gameData);
 
-        // Fetch document data
         const { data: documentData, error: documentError } = await supabase
           .from("documents")
           .select("*")
@@ -52,7 +50,6 @@ export default function GamePage() {
         if (!documentError && documentData) {
           setDocument(documentData);
 
-          // Fetch sections data
           const { data: sectionsData, error: sectionsError } = await supabase
             .from("document_sections")
             .select("*")
@@ -117,7 +114,7 @@ export default function GamePage() {
         </TabsContent>
 
         <TabsContent value="team" className="mt-0">
-          <GameTeam gameId={game.id} team={game.game_users || []} />
+          <GameTeam team={game.game_users || []} />
         </TabsContent>
 
         <TabsContent value="scenes" className="mt-0">

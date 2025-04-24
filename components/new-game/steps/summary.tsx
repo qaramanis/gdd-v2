@@ -2,10 +2,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Users, Clock, Info, PenTool } from "lucide-react";
+import { Clock } from "lucide-react";
 import { loadFromStorage, STORAGE_KEYS } from "../local-storage";
 import { sectionGroups } from "./sections";
 

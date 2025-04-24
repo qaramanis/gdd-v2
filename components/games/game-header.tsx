@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/date-utils";
-import { Gamepad2, Calendar, Clock, Users, Edit, Share } from "lucide-react";
+import { Gamepad2, Calendar, Clock, Edit } from "lucide-react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
 interface GameHeaderProps {
@@ -25,10 +26,12 @@ export default function GameHeader({ game }: GameHeaderProps) {
       <div className="flex flex-col md:flex-row gap-6">
         <div className="relative bg-primary/10 dark:bg-primary/20 rounded-lg w-36 h-36 flex items-center justify-center overflow-hidden">
           {game.image_url ? (
-            <img
+            <Image
               src={game.image_url}
               alt={game.name}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 33vw"
             />
           ) : (
             <Gamepad2 className="size-16 text-primary/60" />

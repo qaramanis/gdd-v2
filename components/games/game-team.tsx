@@ -8,50 +8,13 @@ import { Plus, Search, Mail, Trash2, UserPlus, UserCog } from "lucide-react";
 import { useState } from "react";
 
 interface GameTeamProps {
-  gameId: number;
   team: any[];
 }
 
-export default function GameTeam({ gameId, team }: GameTeamProps) {
+export default function GameTeam({ team }: GameTeamProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const teamMembers =
-    team.length > 0
-      ? team
-      : [
-          {
-            user: {
-              id: 1,
-              name: "Jane Smith",
-              email: "jane@example.com",
-              avatar_url: null,
-            },
-          },
-          {
-            user: {
-              id: 2,
-              name: "John Doe",
-              email: "john@example.com",
-              avatar_url: null,
-            },
-          },
-          {
-            user: {
-              id: 3,
-              name: "Alex Johnson",
-              email: "alex@example.com",
-              avatar_url: null,
-            },
-          },
-          {
-            user: {
-              id: 4,
-              name: "Sarah Williams",
-              email: "sarah@example.com",
-              avatar_url: null,
-            },
-          },
-        ];
+  const teamMembers = team;
 
   const filteredTeam = teamMembers.filter(
     (member) =>
@@ -96,7 +59,6 @@ export default function GameTeam({ gameId, team }: GameTeamProps) {
           <TeamMemberCard key={member.user.id || index} member={member.user} />
         ))}
 
-        {/* Add member card */}
         <Card className="border-dashed hover:shadow-md hover:border-primary/50 transition-all cursor-pointer flex flex-col items-center justify-center">
           <CardContent className="py-8 flex flex-col items-center gap-2">
             <div className="p-3 rounded-full bg-primary/10">

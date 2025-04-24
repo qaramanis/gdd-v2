@@ -57,7 +57,7 @@ export default function VisualTheme() {
       <div>
         <h2 className="text-xl font-semibold">Visual Theme</h2>
         <p className="text-muted-foreground">
-          Choose a visual style that reflects your game's aesthetic (
+          Choose a visual style that reflects your game&apos;s aesthetic (
           {predefinedThemes.length} themes available)
         </p>
       </div>

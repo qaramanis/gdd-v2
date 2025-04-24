@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import DocumentEditor from "@/components/document/document-editor";
 import { supabase } from "@/database/supabase";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, PenLine } from "lucide-react";

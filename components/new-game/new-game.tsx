@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
 import Stepper, { Step } from "@/components/stepper";
 import Templates from "./steps/templates";
 import Sections from "./steps/sections";

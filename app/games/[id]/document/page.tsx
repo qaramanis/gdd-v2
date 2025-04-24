@@ -25,49 +25,36 @@ export default function FullDocumentEditorPage() {
         if (!params.id) {
           throw new Error("Game ID is missing");
         }
-
         setLoading(true);
-
-        // Fetch game data
         const { data: gameData, error: gameError } = await supabase
           .from("games")
           .select("*")
           .eq("id", params.id)
           .single();
-
         if (gameError) throw gameError;
         if (!gameData) throw new Error("Game not found");
-
         setGame(gameData);
-
         const { data: documentData, error: documentError } = await supabase
           .from("documents")
           .select("*")
           .eq("game_id", params.id)
           .single();
-
         if (documentError) throw documentError;
         if (!documentData) throw new Error("Document not found");
-
         setDocument(documentData);
-
         const { data: sectionsData, error: sectionsError } = await supabase
           .from("document_sections")
           .select("*")
           .eq("document_id", documentData.id)
           .order("order", { ascending: true });
-
         if (sectionsError) throw sectionsError;
-
         const formattedSections = sectionsData.map((section) => ({
           id: section.id,
           title: section.title,
           content: section.content || "",
           order: section.order,
         }));
-
         setSections(formattedSections);
-
         if (formattedSections.length > 0) {
           setActiveSection(formattedSections[0].id);
           setSectionContent(formattedSections[0].content || "");
@@ -79,12 +66,10 @@ export default function FullDocumentEditorPage() {
         setLoading(false);
       }
     }
-
     fetchData();
   }, [params.id]);
 
   const handleSelectSection = (sectionId: string) => {
-    // Find the section in our sections array
     const section = sections.find((s) => s.id === sectionId);
     if (section) {
       setActiveSection(sectionId);
@@ -94,9 +79,7 @@ export default function FullDocumentEditorPage() {
 
   const handleSaveContent = async (content: string) => {
     if (!activeSection || !document) return;
-
     try {
-      // Update the section content in the database
       const { error } = await supabase
         .from("document_sections")
         .update({ content })
@@ -104,7 +87,6 @@ export default function FullDocumentEditorPage() {
 
       if (error) throw error;
 
-      // Update the local state
       setSections((prev) =>
         prev.map((section) =>
           section.id === activeSection ? { ...section, content } : section
@@ -118,17 +100,14 @@ export default function FullDocumentEditorPage() {
     }
   };
 
-  const handleAddSection = async (parentId?: string) => {
+  const handleAddSection = async () => {
     if (!document) return;
 
     try {
-      // Calculate the next order value
       const nextOrder =
         sections.length > 0
           ? Math.max(...sections.map((s) => s.order || 0)) + 1
           : 0;
-
-      // Create a new section
       const { data, error } = await supabase
         .from("document_sections")
         .insert({
@@ -139,10 +118,7 @@ export default function FullDocumentEditorPage() {
         })
         .select()
         .single();
-
       if (error) throw error;
-
-      // Add the new section to our state and select it
       const newSection = {
         id: data.id,
         title: data.title,
@@ -161,17 +137,12 @@ export default function FullDocumentEditorPage() {
   const handleEditSectionTitle = async (section: Section) => {
     const newTitle = prompt("Enter new section title:", section.title);
     if (!newTitle || newTitle === section.title) return;
-
     try {
-      // Update the section title in the database
       const { error } = await supabase
         .from("document_sections")
         .update({ title: newTitle })
         .eq("id", section.id);
-
       if (error) throw error;
-
-      // Update the local state
       setSections((prev) =>
         prev.map((s) => (s.id === section.id ? { ...s, title: newTitle } : s))
       );
@@ -182,19 +153,13 @@ export default function FullDocumentEditorPage() {
 
   const handleDeleteSection = async (sectionId: string) => {
     try {
-      // Delete the section from the database
       const { error } = await supabase
         .from("document_sections")
         .delete()
         .eq("id", sectionId);
-
       if (error) throw error;
-
-      // Remove from local state
       const newSections = sections.filter((s) => s.id !== sectionId);
       setSections(newSections);
-
-      // If this was the active section, select another one
       if (activeSection === sectionId) {
         if (newSections.length > 0) {
           setActiveSection(newSections[0].id);
