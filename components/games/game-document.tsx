@@ -39,7 +39,7 @@ export default function GameDocument({
   };
 
   const handleOpenSectionPreview = (section: any) => {
-    router.push(`/games/${game.id}/document/preview/${section.id}`);
+    router.push(`/games/${game.id}/document/`);
   };
 
   const includedSections = (game.game_sections || [])
@@ -132,26 +132,52 @@ export default function GameDocument({
           {sections.length > 0 ? (
             sections.map((section) => (
               <div key={section.id} className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">{section.title}</h3>
+                <div className="flex flex-row items-center gap-6 my-2">
+                  <h3 className="text-lg font-semibold ">{section.title}</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-primary/50"
+                    onClick={() => handleOpenSectionPreview(section)}
+                  >
+                    Continue reading
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+
                 {section.content ? (
                   <>
-                    <div
-                      className="text-sm text-muted-foreground mb-2"
-                      dangerouslySetInnerHTML={{
-                        __html:
-                          section.content.substring(0, 300) +
-                          (section.content.length > 300 ? "..." : ""),
-                      }}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-2 text-primary"
-                      onClick={() => handleOpenSectionPreview(section)}
-                    >
-                      Continue reading
-                      <ChevronRight className="h-4 w-4 mr-1" />
-                    </Button>
+                    <div className="text-sm text-muted-foreground my-2">
+                      {(() => {
+                        try {
+                          const contentObj = JSON.parse(section.content);
+
+                          let extractedText = "";
+                          if (contentObj?.root?.children) {
+                            contentObj.root.children.forEach(
+                              (paragraph: { children: any[] }) => {
+                                if (paragraph?.children) {
+                                  paragraph.children.forEach((textNode) => {
+                                    if (textNode?.text) {
+                                      extractedText += textNode.text + " ";
+                                    }
+                                  });
+                                  extractedText += "\n";
+                                }
+                              }
+                            );
+                          }
+
+                          return (
+                            extractedText.substring(0, 150) +
+                            (extractedText.length > 150 ? "..." : "")
+                          );
+                        } catch (e) {
+                          console.error("Error parsing content JSON:", e);
+                          return "Error displaying content";
+                        }
+                      })()}
+                    </div>
                   </>
                 ) : (
                   <p className="text-sm text-muted-foreground">
