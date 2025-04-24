@@ -2,15 +2,45 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Plus, PenLine, BookOpen, Download } from "lucide-react";
+import {
+  FileText,
+  Plus,
+  PenLine,
+  BookOpen,
+  Download,
+  ChevronRight,
+} from "lucide-react";
 import { useState } from "react";
+import { Separator } from "../ui/separator";
+import { useRouter } from "next/navigation";
 
 interface GameDocumentProps {
   game: any;
+  document: any;
+  sections: any[];
 }
 
-export default function GameDocument({ game }: GameDocumentProps) {
+export default function GameDocument({
+  game,
+  document,
+  sections,
+}: GameDocumentProps) {
   const [viewMode, setViewMode] = useState<"view" | "edit">("view");
+  const router = useRouter();
+
+  const handleOpenFullEditor = (sectionId?: string) => {
+    if (!document) return;
+
+    const route = sectionId
+      ? `/games/${game.id}/document/section/${sectionId}`
+      : `/games/${game.id}/document`;
+
+    router.push(route);
+  };
+
+  const handleOpenSectionPreview = (section: any) => {
+    router.push(`/games/${game.id}/document/preview/${section.id}`);
+  };
 
   const includedSections = (game.game_sections || [])
     .filter((s: any) => s.is_included)
@@ -23,30 +53,7 @@ export default function GameDocument({ game }: GameDocumentProps) {
           <h2 className="text-xl font-semibold">Game Design Document</h2>
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            variant={viewMode === "view" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("view")}
-            className="gap-2"
-          >
-            <BookOpen className="size-4" />
-            View
-          </Button>
-          <Button
-            variant={viewMode === "edit" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("edit")}
-            className="gap-2"
-          >
-            <PenLine className="size-4" />
-            Edit
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Download className="size-4" />
-            Export
-          </Button>
-        </div>
+        <div className="flex gap-2"></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -98,11 +105,68 @@ export default function GameDocument({ game }: GameDocumentProps) {
 
       <Card className="mt-8 bg-white dark:bg-gray-800">
         <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <FileText className="size-5" />
-            Document Preview
+          <CardTitle className="flex items-center justify-between text-lg">
+            <div className="flex items-center gap-2">
+              <FileText className="size-5" />
+              <p className="text-xl">Document Section Preview</p>
+            </div>
+            <div>
+              {document && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="m-1"
+                  onClick={() => handleOpenFullEditor()}
+                >
+                  View Full Document
+                </Button>
+              )}
+              <Button variant="default" size="sm" className="m-1">
+                Export
+                <Download className="ml-2 size-4" />
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
+        <CardContent className="prose dark:prose-invert max-w-none">
+          {sections.length > 0 ? (
+            sections.map((section) => (
+              <div key={section.id} className="mb-6">
+                <h3 className="text-lg font-semibold mb-2">{section.title}</h3>
+                {section.content ? (
+                  <>
+                    <div
+                      className="text-sm text-muted-foreground mb-2"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          section.content.substring(0, 300) +
+                          (section.content.length > 300 ? "..." : ""),
+                      }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 text-primary"
+                      onClick={() => handleOpenSectionPreview(section)}
+                    >
+                      Continue reading
+                      <ChevronRight className="h-4 w-4 mr-1" />
+                    </Button>
+                  </>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No content available yet.
+                  </p>
+                )}
+                <Separator className="mt-4" />
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-muted-foreground py-8">
+              No sections have been added to this document yet.
+            </p>
+          )}
+        </CardContent>
       </Card>
     </div>
   );

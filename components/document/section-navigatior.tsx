@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Separator } from "../ui/separator";
 
 export interface Section {
   id: string;
@@ -37,27 +38,12 @@ export default function SectionNavigator({
   onDeleteSection,
   isEditable = false,
 }: SectionNavigatorProps) {
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set()
-  );
-
-  const toggleSection = (sectionId: string) => {
-    const newExpanded = new Set(expandedSections);
-    if (newExpanded.has(sectionId)) {
-      newExpanded.delete(sectionId);
-    } else {
-      newExpanded.add(sectionId);
-    }
-    setExpandedSections(newExpanded);
-  };
-
   const handleSectionClick = (e: React.MouseEvent, sectionId: string) => {
     e.stopPropagation();
     onSelectSection(sectionId);
   };
 
   const renderSection = (section: Section, depth = 0) => {
-    const isExpanded = expandedSections.has(section.id);
     const isActive = section.id === activeSection;
 
     return (
@@ -116,7 +102,8 @@ export default function SectionNavigator({
   return (
     <div className="w-64 border-r h-full overflow-auto">
       <div className="p-3">
-        <h3 className="font-medium mb-2">Document Sections</h3>
+        <h3 className="font-bold">Document Sections</h3>
+        <Separator className="mb-2" />
 
         {sections.map((section) => renderSection(section))}
 

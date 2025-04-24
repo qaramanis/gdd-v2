@@ -18,39 +18,60 @@ export default function GamePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [game, setGame] = useState<any>(null);
+  const [document, setDocument] = useState<any>(null);
+  const [sections, setSections] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchGameData() {
+    async function fetchData() {
       try {
         if (!params.id) {
           throw new Error("Game ID is missing");
         }
 
         setLoading(true);
-        const { data, error } = await supabase
+
+        // Fetch game data
+        const { data: gameData, error: gameError } = await supabase
           .from("games")
           .select("*")
           .eq("id", params.id)
           .single();
 
-        if (error) {
-          throw error;
-        }
+        if (gameError) throw gameError;
+        if (!gameData) throw new Error("Game not found");
 
-        if (!data) {
-          throw new Error("Game not found");
-        }
+        setGame(gameData);
 
-        setGame(data);
+        // Fetch document data
+        const { data: documentData, error: documentError } = await supabase
+          .from("documents")
+          .select("*")
+          .eq("game_id", params.id)
+          .single();
+
+        if (!documentError && documentData) {
+          setDocument(documentData);
+
+          // Fetch sections data
+          const { data: sectionsData, error: sectionsError } = await supabase
+            .from("document_sections")
+            .select("*")
+            .eq("document_id", documentData.id)
+            .order("order", { ascending: true });
+
+          if (!sectionsError) {
+            setSections(sectionsData || []);
+          }
+        }
       } catch (err: any) {
-        console.error("Error fetching game:", err);
-        setError(err.message || "Failed to load game data");
+        console.error("Error fetching data:", err);
+        setError(err.message || "Failed to load data");
       } finally {
         setLoading(false);
       }
     }
 
-    fetchGameData();
+    fetchData();
   }, [params.id]);
 
   if (loading) {
@@ -88,7 +109,7 @@ export default function GamePage() {
         </TabsList>
 
         <TabsContent value="document" className="mt-0">
-          <GameDocument game={game} />
+          <GameDocument game={game} document={document} sections={sections} />
         </TabsContent>
 
         <TabsContent value="story-points" className="mt-0">
