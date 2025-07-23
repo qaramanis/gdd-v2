@@ -121,7 +121,7 @@ export default function GameDocument({
           {sections.length > 0 ? (
             sections.map((section) => (
               <div key={section.id} className="mb-6">
-                <div className="flex flex-row items-center gap-6 my-2">
+                <div className="flex  flex-row items-center gap-6 my-2">
                   <h3 className="text-lg font-semibold ">{section.title}</h3>
                   <Button
                     variant="ghost"

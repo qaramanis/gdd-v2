@@ -39,7 +39,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Dashboard>{children}</Dashboard>
+          {children}
         </Providers>
       </body>
     </html>
