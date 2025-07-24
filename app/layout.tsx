@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers/providers";
 import Dashboard from "@/components/dashboard/dashboard";
+import Iridescence from "@/components/iridescence";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          {/* <Iridescence
+            color={[0.067, 0.067, 0.067]}
+            mouseReact={false}
+            amplitude={0.1}
+            speed={1.0}
+          /> */}
         </Providers>
       </body>
     </html>

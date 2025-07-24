@@ -17,8 +17,8 @@ export default function Hero() {
         <br />
         related to your game with ease
       </div>
-      <Button className="text-black bg-white text-base hover:bg-[#aaaaaa] px-[1rem] py-1 rounded-2xl flex flex-row gap-2 cursor-pointer transition-all duration-300 mt-8">
-        Dashboard
+      <Button className="text-black bg-white text-base hover:bg-[#cccccc] px-[1rem] py-1 rounded-2xl flex flex-row gap-2 cursor-pointer transition-all duration-300 mt-8">
+        Get Started
         <ChevronRight className="w-4" />
       </Button>
     </div>

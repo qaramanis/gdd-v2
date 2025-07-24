@@ -103,3 +103,8 @@ body {
         @apply bg-background text-foreground;
     }
 }
+
+::selection {
+    background: #ffffff;
+    color: #000000;
+}

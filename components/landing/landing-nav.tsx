@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function MainNav() {
   return (
-    <div className="w-screen h-[8vh] flex items-center justify-between bg-black border-b-0 border-[#666666] px-4 select-none">
+    <div className="w-screen h-[8vh] flex items-center justify-between border-b-1 border-[#666666] px-4 select-none">
       <div className="flex items-center py-2 cursor-pointer">
         <Logo className="size-[3rem]" />
         <h1 className="text-2xl font-bold">DoX</h1>
@@ -30,7 +30,7 @@ export default function MainNav() {
 
       <div className="flex flex-row gap-[2rem] items-center">
         <Button className="hover:bg-white hover:text-black px-[1rem] text-base rounded-2xl py-1 transition-all duration-300 cursor-pointer">
-          Login
+          <Link href="/login">Login</Link>
         </Button>
         <Button className="text-black bg-white hover:bg-[#aaaaaa] px-[1rem] text-base rounded-2xl cursor-pointer transition-all duration-300">
           <Link href="/home" className="flex flex-row gap-2">
