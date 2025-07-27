@@ -1,113 +1,248 @@
-import { GalleryVerticalEnd } from "lucide-react";
+"use client";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Logo from "@/SVGs/logo";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+import { Loader2, Key } from "lucide-react";
+import { signIn } from "@/lib/auth-client";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-export function SignInForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export default function SignIn() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form>
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col items-center gap-2">
-            <a
-              href="/"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
-              <div className="flex size-32 items-center justify-center select-none pointer-events-none ">
-                <Logo className="size-[6rem]" />
-              </div>
-              <span className="sr-only">DocX</span>
-            </a>
-            <h1 className="text-xl font-bold">Sign In to DocX account</h1>
-            <div className="text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a href="/sign-up" className="hover:underline underline-offset-2">
-                Sign up
-              </a>
-            </div>
+    <Card className="max-w-md">
+      <CardHeader>
+        <CardTitle className="text-lg md:text-xl">Sign In</CardTitle>
+        <CardDescription className="text-xs md:text-sm">
+          Enter your email below to login to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              required
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              value={email}
+            />
           </div>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-3">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="john.doe@example.com"
-                className="border-1 placeholder:text-[#666666] border-[#666666] focus-visible:border-white focus-visible:ring-0 rounded-3xl"
-                required
-              />
-            </div>
-            <div className="grid gap-3">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                required
-                className="border-1 placeholder:text-[#666666] border-[#666666] focus-visible:border-white focus-visible:ring-0 rounded-3xl"
-              />
-              <a
-                href="#"
-                className="ml-auto text-sm underline-offset-2 hover:underline"
-              >
+
+          <div className="grid gap-2">
+            <div className="flex items-center">
+              <Label htmlFor="password">Password</Label>
+              <Link href="#" className="ml-auto inline-block text-sm underline">
                 Forgot your password?
-              </a>
+              </Link>
             </div>
-            <Button
-              variant="secondary"
-              type="submit"
-              className="px-8 bg-white text-black hover:bg-[#cccccc] w-auto self-center rounded-3xl cursor-pointer"
-            >
-              Sign In
-            </Button>
+
+            <Input
+              id="password"
+              type="password"
+              placeholder="password"
+              autoComplete="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
-          <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-            <span className="bg-background text-white relative z-10 px-2">
-              Or
-            </span>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="remember"
+              onClick={() => {
+                setRememberMe(!rememberMe);
+              }}
+            />
+            <Label htmlFor="remember">Remember me</Label>
           </div>
-          <div className="flex flex-row gap-4">
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loading}
+            onClick={async () => {
+              await signIn.email(
+                {
+                  email,
+                  password,
+                },
+                {
+                  onRequest: (ctx) => {
+                    setLoading(true);
+                  },
+                  onResponse: (ctx) => {
+                    setLoading(false);
+                  },
+                },
+              );
+            }}
+          >
+            {loading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <p> Login </p>
+            )}
+          </Button>
+
+          <div
+            className={cn(
+              "w-full gap-2 flex items-center",
+              "justify-between flex-col",
+            )}
+          >
             <Button
               variant="outline"
-              type="button"
-              className="w-1/2 cursor-pointer rounded-3xl self-center hover:bg-[#111111]"
+              className={cn("w-full gap-2")}
+              disabled={loading}
+              onClick={async () => {
+                await signIn.social(
+                  {
+                    provider: "google",
+                    callbackURL: "/dashboard",
+                  },
+                  {
+                    onRequest: (ctx) => {
+                      setLoading(true);
+                    },
+                    onResponse: (ctx) => {
+                      setLoading(false);
+                    },
+                  },
+                );
+              }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="0.98em"
+                height="1em"
+                viewBox="0 0 256 262"
+              >
                 <path
-                  d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-                  fill="currentColor"
-                />
+                  fill="#4285F4"
+                  d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                ></path>
+                <path
+                  fill="#34A853"
+                  d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                ></path>
+                <path
+                  fill="#FBBC05"
+                  d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z"
+                ></path>
+                <path
+                  fill="#EB4335"
+                  d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                ></path>
               </svg>
-              Continue with Apple
+              Sign in with Google
             </Button>
             <Button
               variant="outline"
-              type="button"
-              className="w-1/2 cursor-pointer rounded-3xl self-center hover:bg-[#111111]"
+              className={cn("w-full gap-2")}
+              disabled={loading}
+              onClick={async () => {
+                await signIn.social(
+                  {
+                    provider: "github",
+                    callbackURL: "/dashboard",
+                  },
+                  {
+                    onRequest: (ctx) => {
+                      setLoading(true);
+                    },
+                    onResponse: (ctx) => {
+                      setLoading(false);
+                    },
+                  },
+                );
+              }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
                 <path
-                  d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
                   fill="currentColor"
-                />
+                  d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2"
+                ></path>
               </svg>
-              Continue with Google
+              Sign in with Github
+            </Button>
+            <Button
+              variant="outline"
+              className={cn("w-full gap-2")}
+              disabled={loading}
+              onClick={async () => {
+                await signIn.social(
+                  {
+                    provider: "apple",
+                    callbackURL: "/dashboard",
+                  },
+                  {
+                    onRequest: (ctx) => {
+                      setLoading(true);
+                    },
+                    onResponse: (ctx) => {
+                      setLoading(false);
+                    },
+                  },
+                );
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="1em"
+                height="1em"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="M17.05 20.28c-.98.95-2.05.8-3.08.35c-1.09-.46-2.09-.48-3.24 0c-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8c1.18-.24 2.31-.93 3.57-.84c1.51.12 2.65.72 3.4 1.8c-3.12 1.87-2.38 5.98.48 7.13c-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25c.29 2.58-2.34 4.5-3.74 4.25"
+                ></path>
+              </svg>
+              Sign in with Apple
             </Button>
           </div>
         </div>
-      </form>
-      <div className="text-white *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
-      </div>
-    </div>
+      </CardContent>
+      <CardFooter>
+        <div className="flex justify-center w-full border-t py-4">
+          <p className="text-center text-xs text-neutral-500">
+            built with{" "}
+            <Link
+              href="https://better-auth.com"
+              className="underline"
+              target="_blank"
+            >
+              <span className="dark:text-white/70 cursor-pointer">
+                better-auth.
+              </span>
+            </Link>
+          </p>
+        </div>
+      </CardFooter>
+    </Card>
   );
 }
