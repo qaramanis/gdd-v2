@@ -5,6 +5,9 @@ import { Providers } from "@/providers/providers";
 import Dashboard from "@/components/dashboard/dashboard";
 import Iridescence from "@/components/iridescence";
 
+import css from "styled-jsx/css";
+import { AuthProvider } from "@/providers/auth-provider";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,20 +37,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full overflow-hidden`}
       >
-        <Providers
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          {/* <Iridescence
-            color={[0.067, 0.067, 0.067]}
-            mouseReact={false}
-            amplitude={0.1}
-            speed={1.0}
-          /> */}
-        </Providers>
+        <AuthProvider>
+          <Providers>{children}</Providers>
+        </AuthProvider>
       </body>
     </html>
   );

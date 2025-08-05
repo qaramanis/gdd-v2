@@ -29,7 +29,7 @@ export default function SignIn() {
       <CardHeader>
         <CardTitle className="text-lg md:text-xl">Sign In</CardTitle>
         <CardDescription className="text-xs md:text-sm">
-          Enter your email below to login to your account
+          Enter your email below to sing-in to your account
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -39,6 +39,7 @@ export default function SignIn() {
             <Input
               id="email"
               type="email"
+              className="placeholder:text-[#666666]"
               placeholder="m@example.com"
               required
               onChange={(e) => {
@@ -59,6 +60,7 @@ export default function SignIn() {
             <Input
               id="password"
               type="password"
+              className="placeholder:text-[#666666]"
               placeholder="password"
               autoComplete="password"
               value={password}
@@ -100,7 +102,7 @@ export default function SignIn() {
             {loading ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
-              <p> Login </p>
+              <p> Sign In </p>
             )}
           </Button>
 

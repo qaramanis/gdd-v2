@@ -30,7 +30,7 @@ export default function MainNav() {
 
       <div className="flex flex-row gap-[2rem] items-center">
         <Button className="hover:bg-white hover:text-black px-[1rem] text-base rounded-2xl py-1 transition-all duration-300 cursor-pointer">
-          <Link href="/login">Login</Link>
+          <Link href="/sign-in">Sign In</Link>
         </Button>
         <Button className="text-black bg-white hover:bg-[#aaaaaa] px-[1rem] text-base rounded-2xl cursor-pointer transition-all duration-300">
           <Link href="/home" className="flex flex-row gap-2">

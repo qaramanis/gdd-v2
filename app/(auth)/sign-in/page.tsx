@@ -1,4 +1,4 @@
-import { SignInForm } from "@/components/auth/sign-in-form";
+import SignInForm from "@/components/auth/sign-in-form";
 import { Sign } from "node:crypto";
 
 export default function SignInPage() {
