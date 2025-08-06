@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers/providers";
-import Dashboard from "@/components/dashboard/dashboard";
-import Iridescence from "@/components/iridescence";
 
-import css from "styled-jsx/css";
 import { AuthProvider } from "@/providers/auth-provider";
 import { Toaster } from "sonner";
 
@@ -41,7 +38,7 @@ export default function RootLayout({
         <AuthProvider>
           <Providers>
             {children}
-            <Toaster position="top-right" richColors />
+            <Toaster position="top-center" richColors />
           </Providers>
         </AuthProvider>
       </body>

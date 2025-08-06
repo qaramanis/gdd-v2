@@ -5,57 +5,42 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import Image from "next/image";
-import { Loader2, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-export default function SignUp() {
+export default function SignUpForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
-    <Card className="rounded-3xl max-w-md">
-      <CardHeader>
+    <Card className="max-w-md bg-white rounded-3xl">
+      <CardHeader className="text-black">
         <CardTitle className="text-lg md:text-xl">Sign Up</CardTitle>
         <CardDescription className="text-xs md:text-sm">
           Enter your information to create an account
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
+        <div className="grid gap-4  text-black">
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="first-name">First name</Label>
               <Input
                 id="first-name"
+                className="placeholder:text-[#666666] border-1 outline-none"
                 placeholder="Max"
                 required
                 onChange={(e) => {
@@ -68,6 +53,7 @@ export default function SignUp() {
               <Label htmlFor="last-name">Last name</Label>
               <Input
                 id="last-name"
+                className="placeholder:text-[#666666] border-1 outline-none"
                 placeholder="Robinson"
                 required
                 onChange={(e) => {
@@ -82,7 +68,8 @@ export default function SignUp() {
             <Input
               id="email"
               type="email"
-              placeholder="m@example.com"
+              className="placeholder:text-[#666666] border-1 outline-none"
+              placeholder="max@example.com"
               required
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -95,6 +82,7 @@ export default function SignUp() {
             <Input
               id="password"
               type="password"
+              className="placeholder:text-[#666666] border-1 outline-none"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
@@ -106,6 +94,7 @@ export default function SignUp() {
             <Input
               id="password_confirmation"
               type="password"
+              className="placeholder:text-[#666666] border-1 outline-none"
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}
               autoComplete="new-password"
@@ -114,14 +103,13 @@ export default function SignUp() {
           </div>
           <Button
             type="submit"
-            className="w-full"
+            className="w-full gap-2 rounded-2xl bg-black text-white hover:bg-[#111111]"
             disabled={loading}
             onClick={async () => {
               await signUp.email({
                 email,
                 password,
                 name: `${firstName} ${lastName}`,
-                image: image ? await convertImageToBase64(image) : "",
                 callbackURL: "/dashboard",
                 fetchOptions: {
                   onResponse: () => {
@@ -148,22 +136,6 @@ export default function SignUp() {
           </Button>
         </div>
       </CardContent>
-      <CardFooter>
-        <div className="flex justify-center w-full border-t py-4">
-          <p className="text-center text-xs text-neutral-500">
-            Secured by <span className="text-orange-400">better-auth.</span>
-          </p>
-        </div>
-      </CardFooter>
     </Card>
   );
-}
-
-async function convertImageToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 }

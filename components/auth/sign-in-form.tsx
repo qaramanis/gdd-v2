@@ -7,18 +7,16 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { Loader2, Key } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-export default function SignIn() {
+export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +38,7 @@ export default function SignIn() {
               id="email"
               type="email"
               className="placeholder:text-[#666666] border-1 outline-none"
-              placeholder="john@example.com"
+              placeholder="max@example.com"
               required
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -58,7 +56,7 @@ export default function SignIn() {
               id="password"
               type="password"
               className="placeholder:text-[#666666] border-1"
-              placeholder="password"
+              placeholder="Password"
               autoComplete="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -86,12 +84,14 @@ export default function SignIn() {
                 {
                   email,
                   password,
+                  rememberMe: rememberMe,
+                  callbackURL: "http://localhost:3000/dashboard",
                 },
                 {
-                  onRequest: (ctx) => {
+                  onRequest: () => {
                     setLoading(true);
                   },
-                  onResponse: (ctx) => {
+                  onResponse: () => {
                     setLoading(false);
                   },
                 },
@@ -124,10 +124,10 @@ export default function SignIn() {
                     callbackURL: "/dashboard",
                   },
                   {
-                    onRequest: (ctx) => {
+                    onRequest: () => {
                       setLoading(true);
                     },
-                    onResponse: (ctx) => {
+                    onResponse: () => {
                       setLoading(false);
                     },
                   },
@@ -172,10 +172,10 @@ export default function SignIn() {
                     callbackURL: "/dashboard",
                   },
                   {
-                    onRequest: (ctx) => {
+                    onRequest: () => {
                       setLoading(true);
                     },
-                    onResponse: (ctx) => {
+                    onResponse: () => {
                       setLoading(false);
                     },
                   },
@@ -208,10 +208,10 @@ export default function SignIn() {
                     callbackURL: "/dashboard",
                   },
                   {
-                    onRequest: (ctx) => {
+                    onRequest: () => {
                       setLoading(true);
                     },
-                    onResponse: (ctx) => {
+                    onResponse: () => {
                       setLoading(false);
                     },
                   },

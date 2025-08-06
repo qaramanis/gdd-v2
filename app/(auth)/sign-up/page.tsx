@@ -1,9 +1,9 @@
-import SignUp from "@/components/auth/sign-up-form";
+import SignUpForm from "@/components/auth/sign-up-form";
 
 export default function SignUpPage() {
   return (
-    <div className="bg-black">
-      <SignUp />
+    <div className="bg-black flex flex-col">
+      <SignUpForm />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import React from "react";
 import Hero from "./hero";
 import MainNav from "./landing-nav";
-import Iridescence from "../iridescence";
 
 export default function Landing() {
   return (
