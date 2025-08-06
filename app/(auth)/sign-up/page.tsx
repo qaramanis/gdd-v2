@@ -1,11 +1,9 @@
-import SignUpForm from "@/components/auth/sign-up-form";
+import SignUp from "@/components/auth/sign-up-form";
 
-export default function RegisterPage() {
+export default function SignUpPage() {
   return (
     <div className="bg-black">
-      <div className="w-full max-w-sm">
-        <SignUpForm />
-      </div>
+      <SignUp />
     </div>
   );
 }

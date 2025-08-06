@@ -1,12 +1,10 @@
 import SignInForm from "@/components/auth/sign-in-form";
-import { Sign } from "node:crypto";
+import { Signika } from "next/font/google";
 
 export default function SignInPage() {
   return (
     <div className="bg-black">
-      <div className="w-full max-w-sm">
-        <SignInForm />
-      </div>
+      <SignInForm />
     </div>
   );
 }

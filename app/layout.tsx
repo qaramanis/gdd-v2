@@ -7,6 +7,7 @@ import Iridescence from "@/components/iridescence";
 
 import css from "styled-jsx/css";
 import { AuthProvider } from "@/providers/auth-provider";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full overflow-hidden`}
       >
         <AuthProvider>
-          <Providers>{children}</Providers>
+          <Providers>
+            {children}
+            <Toaster position="top-right" richColors />
+          </Providers>
         </AuthProvider>
       </body>
     </html>
