@@ -13,35 +13,46 @@ import { Component as BarChart } from "@/components/charts/bar-chart-mixed";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/database/supabase";
 import Notes from "./notes";
+import { useUser } from "@/providers/user-context";
 
 interface Game {
   id: number;
   name: string;
   image_url: string;
+  user_id: string;
 }
 
 export default function Home() {
   const router = useRouter();
+  const { userId, loading: userLoading } = useUser();
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchGames() {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
 
+        // Fetch games that belong to the current user or where they are a collaborator
         let { data: games, error } = await supabase
           .from("games")
           .select("*")
-          .limit(6);
+          .eq("user_id", userId)
+          .limit(6)
+          .order("created_at", { ascending: false });
 
         if (error) {
           throw error;
         }
 
         setGames(games || []);
-        console.log(games);
+        console.log(`Loaded ${games?.length || 0} games for user ${userId}`);
       } catch (err) {
         console.error("Error fetching games:", err);
         setError("Failed to load games. Please try again later.");
@@ -50,8 +61,27 @@ export default function Home() {
       }
     }
 
-    fetchGames();
-  }, []);
+    if (!userLoading) {
+      fetchGames();
+    }
+  }, [userId, userLoading]);
+
+  if (userLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Skeleton className="w-32 h-8" />
+      </div>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <p className="text-lg mb-4">Please sign in to view your games</p>
+        <Button onClick={() => router.push("/sign-in")}>Sign In</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 p-4 pt-0">
@@ -82,10 +112,13 @@ export default function Home() {
               <p className="text-lg text-red-500">{error}</p>
             </div>
           ) : games.length === 0 ? (
-            <div className="flex justify-center items-center h-40">
-              <p className="text-lg">
-                No games found. Add some games to get started.
+            <div className="flex flex-col items-center justify-center h-40">
+              <p className="text-lg mb-4">
+                No games found. Create your first game to get started!
               </p>
+              <Button onClick={() => router.push("/new")}>
+                Create New Game
+              </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 select-none">
@@ -113,12 +146,10 @@ export default function Home() {
           )}
         </div>
       </div>
-      {/* <Separator className="bg-black/20 dark:bg-white/20" /> */}
       <Separator className="bg-primary/10 dark:bg-gray-400/20 m-2" />
       {loading ? (
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-auto md:flex-1 flex flex-col gap-6">
-            {/* Recent Activity skeleton */}
             <div className="bg-primary/5 p-4 rounded-lg md:w-full">
               <Skeleton className="w-40 h-7 mb-4" />
               <div className="space-y-2">
@@ -126,15 +157,11 @@ export default function Home() {
                 <Skeleton className="w-full h-16 rounded-md" />
               </div>
             </div>
-
-            {/* Charts skeleton */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Skeleton className="w-full h-64 rounded-lg" />
               <Skeleton className="w-full h-64 rounded-lg" />
             </div>
           </div>
-
-          {/* Quick Actions skeleton */}
           <Skeleton className="bg-primary/5 p-6 rounded-lg md:w-128 md:h-128 md:flex-shrink-0" />
         </div>
       ) : (

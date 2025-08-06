@@ -1,0 +1,97 @@
+"use client";
+
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useSession } from "@/lib/auth-client";
+import { supabase } from "@/database/supabase";
+
+interface UserContextType {
+  user: any | null;
+  userId: string | null;
+  loading: boolean;
+  error: string | null;
+  refreshUser: () => Promise<void>;
+}
+
+const UserContext = createContext<UserContextType>({
+  user: null,
+  userId: null,
+  loading: true,
+  error: null,
+  refreshUser: async () => {},
+});
+
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  const { data: session, isPending } = useSession();
+  const [user, setUser] = useState<any | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (session?.user) {
+          setUser(session.user);
+          setUserId(session.user.id);
+
+          // Set the user ID for Supabase RLS
+          // This is important for Row Level Security to work
+          const { error: authError } = await supabase.auth
+            .signInWithPassword({
+              email: session.user.email,
+              password: "dummy", // This won't actually be used
+            })
+            .catch(() => ({ error: null }));
+
+          // Alternative: Create a custom JWT token if you have access to Supabase service role
+          // Or use a server-side function to set the auth context
+        } else {
+          setUser(null);
+          setUserId(null);
+        }
+      } catch (err) {
+        console.error("Error loading user:", err);
+        setError("Failed to load user data");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (!isPending) {
+      loadUser();
+    }
+  }, [session, isPending]);
+
+  const refreshUser = async () => {
+    // Refresh user data if needed
+    if (session?.user) {
+      setUser(session.user);
+      setUserId(session.user.id);
+    }
+  };
+
+  return (
+    <UserContext.Provider
+      value={{
+        user,
+        userId,
+        loading: loading || isPending,
+        error,
+        refreshUser,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
+}
+
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
+};

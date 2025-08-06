@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers/providers";
-
 import { AuthProvider } from "@/providers/auth-provider";
+import { UserProvider } from "@/providers/user-context";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Game Document Editor",
-  description: "Create and edit your own game desing documents",
+  description: "Create and edit your own game design documents",
 };
 
 export default function RootLayout({
@@ -36,10 +36,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full overflow-hidden`}
       >
         <AuthProvider>
-          <Providers>
-            {children}
-            <Toaster position="top-center" richColors />
-          </Providers>
+          <UserProvider>
+            <Providers>
+              {children}
+              <Toaster position="top-right" richColors />
+            </Providers>
+          </UserProvider>
         </AuthProvider>
       </body>
     </html>
