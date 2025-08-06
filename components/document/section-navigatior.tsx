@@ -45,7 +45,7 @@ export default function SectionNavigator({
         <div
           className={cn(
             "flex items-center py-1.5 px-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer",
-            isActive && "bg-gray-100 dark:bg-gray-800 font-medium"
+            isActive && "bg-gray-100 dark:bg-gray-800 font-medium",
           )}
           style={{ paddingLeft: `${depth * 16 + 8}px` }}
           onClick={(e) => handleSectionClick(e, section.id)}
@@ -76,7 +76,7 @@ export default function SectionNavigator({
                     e.stopPropagation();
                     if (
                       confirm(
-                        `Are you sure you want to delete "${section.title}"?`
+                        `Are you sure you want to delete "${section.title}"?`,
                       )
                     ) {
                       onDeleteSection(section.id);
