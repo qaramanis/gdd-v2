@@ -48,7 +48,7 @@ const data = {
   ],
   overview: [
     {
-      title: "Dashboard",
+      title: "Overview Dashboard",
       url: "/dashboard",
       icon: Home,
     },
@@ -58,8 +58,12 @@ const data = {
       icon: GalleryVerticalEnd,
       items: [
         {
-          title: "All Games",
+          title: "Games Dashboard",
           url: "/games",
+        },
+        {
+          title: "View All",
+          url: "/all-games",
         },
         {
           title: "New Game",
