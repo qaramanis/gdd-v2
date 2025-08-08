@@ -30,6 +30,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/database/supabase";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/providers/user-context";
 
 interface CreateDocumentFormProps {
   game: {
@@ -172,6 +173,7 @@ const TEMPLATES = [
 
 export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
   const router = useRouter();
+  const { userId } = useUser();
   const [loading, setLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("standard");
   const [documentTitle, setDocumentTitle] = useState(
@@ -214,6 +216,11 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
       return;
     }
 
+    if (!userId) {
+      toast.error("You must be logged in to create a document");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -227,12 +234,13 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
         if (gameUpdateError) throw gameUpdateError;
       }
 
-      // Create the document
+      // Create the document with user_id
       const { data: documentData, error: documentError } = await supabase
         .from("documents")
         .insert({
           game_id: game.id,
           title: documentTitle,
+          user_id: userId, // Add the user_id here
         })
         .select()
         .single();
@@ -247,11 +255,6 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
           title: section?.name || sectionId,
           content: "",
           order: index,
-          metadata: {
-            description: section?.description,
-            category: section?.category,
-            required: section?.required,
-          },
         };
       });
 
