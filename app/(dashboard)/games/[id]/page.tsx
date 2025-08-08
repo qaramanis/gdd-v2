@@ -83,7 +83,7 @@ export default function GamePage() {
       setGame(gameData);
 
       // Fetch document
-      const { data: documentData, error: documentError } = await supabase
+      const { data: documentData } = await supabase
         .from("documents")
         .select("*")
         .eq("game_id", params.id)

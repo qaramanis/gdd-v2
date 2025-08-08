@@ -4,8 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   FileText,
-  Plus,
-  X,
   Check,
   ChevronRight,
   Book,
@@ -32,7 +30,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/database/supabase";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useUser } from "@/providers/user-context";
 
 interface CreateDocumentFormProps {
   game: {
