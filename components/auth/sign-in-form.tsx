@@ -85,7 +85,7 @@ export default function SignInForm() {
                   email,
                   password,
                   rememberMe: rememberMe,
-                  callbackURL: "http://localhost:3000/dashboard",
+                  callbackURL: "/dashboard",
                 },
                 {
                   onRequest: () => {
