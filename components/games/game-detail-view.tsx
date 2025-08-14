@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Calendar,
@@ -26,6 +26,8 @@ import { Progress } from "@/components/progress";
 import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/date-utils";
 import Image from "next/image";
+import GameScenesList from "./game-scenes-list";
+import { useUser } from "@/providers/user-context";
 
 interface GameDetailViewProps {
   game: any;
@@ -38,8 +40,10 @@ export default function GameDetailView({
   document,
   sections,
 }: GameDetailViewProps) {
+  const params = useParams();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
+  const { userId } = useUser();
 
   // Calculate document progress
   const totalSections = sections.length;
@@ -203,11 +207,11 @@ export default function GameDetailView({
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="w-full flex flex-row bg-gray-100 border-black border-1 gap-1">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="document">Document</TabsTrigger>
-          <TabsTrigger value="scenes">Scenes</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
+          <TabsTrigger value="scenes">Scenes</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -504,6 +508,13 @@ export default function GameDetailView({
               </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="scenes" className="space-y-4">
+          <GameScenesList
+            gameId={params.id as string}
+            userId={userId as string}
+          />
         </TabsContent>
       </Tabs>
     </div>
