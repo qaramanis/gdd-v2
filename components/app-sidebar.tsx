@@ -14,21 +14,23 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-};
+import { useSession } from "@/lib/auth-client";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+
+  const userData = {
+    user: {
+      name: session?.user?.name || "User",
+      email: session?.user?.email || "user@example.com",
+      avatar: session?.user?.image || "/avatars/default.jpg",
+    },
+  };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader className="border-sidebar-border h-16 border-b">
-        <NavUser user={data.user} />
+        <NavUser user={userData.user} />
       </SidebarHeader>
       <SidebarContent>
         <DatePicker />

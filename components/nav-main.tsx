@@ -66,13 +66,11 @@ export function NavMain({
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton
-                        asChild
                         onClick={() => handleNavigation(subItem.url)}
+                        className="cursor-pointer"
                       >
-                        <div>
-                          <span>{subItem.title}</span>
-                        </div>
-                      </SidebarMenuSubButton>
+                        <span>{subItem.title}</span>
+                      </SidebarMenuSubButton>{" "}
                     </SidebarMenuSubItem>
                   ))}
                 </SidebarMenuSub>

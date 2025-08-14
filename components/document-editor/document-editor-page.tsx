@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import DocumentEditorSkeleton from "@/components/document-editor/document-editor-skeleton";
 import EditorToolbar from "@/components/document-editor/document-editor-toolbar";
+import { useBreadcrumb } from "@/providers/breadcrumb-context";
 
 const lowlight = createLowlight(common);
 
@@ -89,6 +90,22 @@ export default function DocumentEditorPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+
+  const { setOverride, clearOverride } = useBreadcrumb();
+
+  useEffect(() => {
+    // When game data is loaded, update breadcrumb
+    if (game?.name) {
+      setOverride(`/games/${game.id}/document`, game.name);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (game?.id) {
+        clearOverride(`/games/${game.id}/document`);
+      }
+    };
+  }, [game]);
 
   // Initialize TipTap editor
   const editor = useEditor({

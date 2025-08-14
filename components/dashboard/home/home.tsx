@@ -31,7 +31,7 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchGames() {
-      if (!userId) {
+      if (!userId || userLoading) {
         setLoading(false);
         return;
       }
@@ -39,20 +39,27 @@ export default function Home() {
       try {
         setLoading(true);
 
-        // Fetch games that belong to the current user or where they are a collaborator
-        let { data: games, error } = await supabase
+        // Only fetch games for the authenticated user
+        const { data: games, error } = await supabase
           .from("games")
-          .select("*")
+          .select(
+            `
+            *,
+            documents (
+              id,
+              title
+            )
+          `,
+          )
           .eq("user_id", userId)
-          .limit(6)
-          .order("created_at", { ascending: false });
+          .order("updated_at", { ascending: false })
+          .limit(6);
 
         if (error) {
           throw error;
         }
 
         setGames(games || []);
-        console.log(`Loaded ${games?.length || 0} games for user ${userId}`);
       } catch (err) {
         console.error("Error fetching games:", err);
         setError("Failed to load games. Please try again later.");
@@ -61,11 +68,8 @@ export default function Home() {
       }
     }
 
-    if (!userLoading) {
-      fetchGames();
-    }
+    fetchGames();
   }, [userId, userLoading]);
-
   if (userLoading) {
     return (
       <div className="flex items-center justify-center h-64">

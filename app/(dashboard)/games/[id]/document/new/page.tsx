@@ -22,6 +22,7 @@ export default function NewDocumentPage() {
   const [game, setGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
 
   useEffect(() => {
     if (!userLoading && userId) {

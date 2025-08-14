@@ -34,9 +34,17 @@ export const dbHelpers = {
   async getUserGames(userId: string) {
     const { data, error } = await supabase
       .from("games")
-      .select("*")
+      .select(
+        `
+          *,
+          documents (
+            id,
+            title
+          )
+        `,
+      )
       .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+      .order("updated_at", { ascending: false });
 
     if (error) throw error;
     return data;
@@ -75,24 +83,30 @@ export const dbHelpers = {
     return data;
   },
 
-  // Get user's notes
-  async getUserNotes(userId: string) {
-    const { data, error } = await supabase
+  // Get user's notes with proper filtering
+  async getUserNotes(userId: string, limit?: number) {
+    let query = supabase
       .from("notes")
       .select("*")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   },
 
-  // Check if user has permission to access a game
-  async checkGamePermission(gameId: number, userId: string): Promise<boolean> {
+  // Check game permission with proper userId
+  async checkGamePermission(gameId: string, userId: string): Promise<boolean> {
     const { data, error } = await supabase
       .from("games")
       .select("id")
       .eq("id", gameId)
+      .eq("user_id", userId)
       .single();
 
     return !error && !!data;

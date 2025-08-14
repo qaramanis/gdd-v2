@@ -37,17 +37,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           setUser(session.user);
           setUserId(session.user.id);
 
-          // Set the user ID for Supabase RLS
-          // This is important for Row Level Security to work
-          const { error: authError } = await supabase.auth
-            .signInWithPassword({
-              email: session.user.email,
-              password: "dummy", // This won't actually be used
-            })
-            .catch(() => ({ error: null }));
-
-          // Alternative: Create a custom JWT token if you have access to Supabase service role
-          // Or use a server-side function to set the auth context
+          // TODO Note: For RLS to work properly, you'll need to configure
+          // Supabase to accept Better Auth JWTs or implement a
+          // server-side proxy that adds proper auth headers
         } else {
           setUser(null);
           setUserId(null);

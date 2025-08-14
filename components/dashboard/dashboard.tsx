@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
+import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import {
   AudioWaveform,
   Bot,
@@ -15,7 +16,6 @@ import {
   Settings2,
   Users2,
 } from "lucide-react";
-
 import { NavMain } from "@/components/dashboard/nav-main";
 import { NavUser } from "@/components/dashboard/nav-user";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
@@ -131,10 +131,10 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const user = session?.user || {
-    name: "Guest User",
-    email: "guest@example.com",
-    avatar: "/avatars/default.jpg",
+  const user = {
+    name: session?.user?.name || "Guest User",
+    email: session?.user?.email || "guest@example.com",
+    avatar: session?.user?.image || "/avatars/default.jpg",
   };
 
   return (
@@ -171,8 +171,9 @@ export default function DashboardLayout({
             <SidebarTrigger className="-ml-2" />
             <Separator orientation="vertical" className="h-6" />
 
-            {/* You can add breadcrumbs here later */}
-            <div className="flex-1">{/* Breadcrumb placeholder */}</div>
+            <div className="flex-1">
+              <BreadcrumbNav />
+            </div>
 
             {/* Header actions */}
             <div className="flex items-center gap-2">

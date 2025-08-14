@@ -10,8 +10,10 @@ import { NotesSearch } from "./notes-search";
 import { ActiveFilters } from "./active-filters";
 import { EmptyNotesState } from "./empty-notes";
 import { Note } from "@/types/notes";
+import { useUser } from "@/providers/user-context";
 
 export default function NotesPage() {
+  const { userId, loading: userLoading } = useUser();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,12 +26,18 @@ export default function NotesPage() {
 
   useEffect(() => {
     async function fetchNotes() {
+      if (!userId || userLoading) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
 
-        let { data: notes, error } = await supabase
+        const { data: notes, error } = await supabase
           .from("notes")
           .select("*")
+          .eq("user_id", userId)
           .order("created_at", { ascending: false });
 
         if (error) {
@@ -46,7 +54,7 @@ export default function NotesPage() {
     }
 
     fetchNotes();
-  }, []);
+  }, [userId, userLoading]);
 
   const handleEdit = (note: Note) => {
     setEditingId(note.id);
@@ -59,8 +67,8 @@ export default function NotesPage() {
       notes.map((note) =>
         note.id === id
           ? { ...note, title: editTitle, content: editContent }
-          : note
-      )
+          : note,
+      ),
     );
     setEditingId(null);
   };
@@ -91,7 +99,7 @@ export default function NotesPage() {
 
   const allTags = Array.from(new Set(notes.flatMap((note) => note.tags || [])));
   const allGames = Array.from(
-    new Set(notes.map((note) => note.game).filter(Boolean) as string[])
+    new Set(notes.map((note) => note.game).filter(Boolean) as string[]),
   );
 
   const filteredNotes = notes.filter((note) => {

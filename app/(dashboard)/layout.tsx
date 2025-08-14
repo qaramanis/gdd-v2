@@ -1,5 +1,10 @@
 import DashboardLayout from "@/components/dashboard/dashboard";
+import { BreadcrumbProvider } from "@/providers/breadcrumb-context";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <BreadcrumbProvider>
+      <DashboardLayout>{children}</DashboardLayout>
+    </BreadcrumbProvider>
+  );
 }

@@ -1,44 +1,81 @@
 import { Button } from "@/components/ui/button";
-import { Download, RefreshCw, Settings, Shield } from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  Download,
+  FileText,
+  NotebookPen,
+  Play,
+  RefreshCw,
+  Settings,
+  Shield,
+  Users,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function QuickActions() {
   const router = useRouter();
 
+  const handleSecurityScan = () => {
+    // TODO: Implement security scan functionality
+    console.log("Security scan initiated");
+  };
+
+  const handleSyncData = () => {
+    // TODO: Implement data sync functionality
+    console.log("Data sync initiated");
+  };
+
+  const handleBackup = () => {
+    // TODO: Implement backup functionality
+    console.log("Backup initiated");
+  };
+
   return (
-    <div className="bg-primary/5 p-6 rounded-lg md:w-128 md:h-128 flex flex-col dark:bg-gray-900/60 md:flex-shrink-0">
-      <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-2 gap-4 flex-1">
+    <Card className="col-span-3">
+      <CardHeader>
+        <CardTitle>Quick Actions</CardTitle>
+        <CardDescription>Common tasks and shortcuts</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
         <Button
-          variant="ghost"
-          className="flex flex-col items-center justify-center gap-3 h-full bg-gray-800/20 dark:bg-gray-800/50 hover:bg-gray-800/30 dark:hover:bg-gray-800/70 rounded-lg"
+          className="w-full justify-start"
+          variant="outline"
+          onClick={() => router.push("/new")}
         >
-          <Shield className="text-cyan-400 size-12" />
-          <span className="text-base">Security Scan</span>
+          <FileText className="mr-2 h-4 w-4" />
+          Create New Document
         </Button>
         <Button
-          variant="ghost"
-          className="flex flex-col items-center justify-center gap-3 h-full bg-gray-800/20 dark:bg-gray-800/50 hover:bg-gray-800/30 dark:hover:bg-gray-800/70 rounded-lg"
+          className="w-full justify-start"
+          variant="outline"
+          onClick={() => router.push("/playground")}
         >
-          <RefreshCw className="text-cyan-400 size-12" />
-          <span className="text-base">Sync Data</span>
+          <Play className="mr-2 h-4 w-4" />
+          Open Playground
         </Button>
         <Button
-          variant="ghost"
-          className="flex flex-col items-center justify-center gap-3 h-full bg-gray-800/20 dark:bg-gray-800/50 hover:bg-gray-800/30 dark:hover:bg-gray-800/70 rounded-lg"
+          className="w-full justify-start"
+          variant="outline"
+          onClick={() => router.push("/notes")}
         >
-          <Download className="text-cyan-400 size-12" />
-          <span className="text-base">Backup</span>
+          <NotebookPen className="mr-2 h-4 w-4" />
+          View All Notes
         </Button>
         <Button
-          variant="ghost"
-          className="flex flex-col items-center justify-center gap-3 h-full bg-gray-800/20 dark:bg-gray-800/50 hover:bg-gray-800/30 dark:hover:bg-gray-800/70 rounded-lg"
-          onClick={() => router.push("/settings")}
+          className="w-full justify-start"
+          variant="outline"
+          onClick={() => router.push("/teams")}
         >
-          <Settings className="text-cyan-400 size-12" />
-          <span className="text-base">Settings</span>
+          <Users className="mr-2 h-4 w-4" />
+          Manage Teams
         </Button>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
