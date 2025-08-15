@@ -6,35 +6,26 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import {
-  Download,
-  FileText,
-  NotebookPen,
-  Play,
-  RefreshCw,
-  Settings,
-  Shield,
-  Users,
-} from "lucide-react";
+import { FileText, NotebookPen, Play, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function QuickActions() {
   const router = useRouter();
 
-  const handleSecurityScan = () => {
-    // TODO: Implement security scan functionality
-    console.log("Security scan initiated");
-  };
+  // const handleSecurityScan = () => {
+  //   // TODO: Implement security scan functionality
+  //   console.log("Security scan initiated");
+  // };
 
-  const handleSyncData = () => {
-    // TODO: Implement data sync functionality
-    console.log("Data sync initiated");
-  };
+  // const handleSyncData = () => {
+  //   // TODO: Implement data sync functionality
+  //   console.log("Data sync initiated");
+  // };
 
-  const handleBackup = () => {
-    // TODO: Implement backup functionality
-    console.log("Backup initiated");
-  };
+  // const handleBackup = () => {
+  //   // TODO: Implement backup functionality
+  //   console.log("Backup initiated");
+  // };
 
   return (
     <Card className="col-span-3">
