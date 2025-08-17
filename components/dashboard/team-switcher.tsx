@@ -42,7 +42,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               size="lg"
               className="data-[state=open]:bg-foreground/5 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/5 transition-all duration-200"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 shadow-lg shadow-violet-500/20">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
                 <activeTeam.logo className="size-4 text-foreground" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -71,7 +71,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
                 onClick={() => setActiveTeam(team)}
                 className="gap-2 p-2 hover:bg-foreground/10 focus:bg-foreground/10 cursor-pointer transition-colors"
               >
-                <div className="flex size-6 items-center justify-center rounded-sm border border-foreground/20 bg-gradient-to-br from-violet-500/20 to-pink-500/20">
+                <div className="flex size-6 items-center justify-center rounded-sm border border-foreground/10 bg-gradient-to-br from-violet-500/50 to-pink-500/50">
                   <team.logo className="size-4 shrink-0 text-foreground" />
                 </div>
                 <span className="flex-1 text-foreground">{team.name}</span>

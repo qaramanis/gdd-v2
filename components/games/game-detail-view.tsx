@@ -19,7 +19,13 @@ import {
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/progress";
@@ -28,6 +34,8 @@ import { formatDate } from "@/lib/date-utils";
 import Image from "next/image";
 import GameScenesList from "./game-scenes-list";
 import { useUser } from "@/providers/user-context";
+import { formatDistanceToNow } from "date-fns";
+import { ShareDocumentDialog } from "../collaboration/share-document-dialog";
 
 interface GameDetailViewProps {
   game: any;
@@ -220,16 +228,34 @@ export default function GameDetailView({
               {/* Document Overview */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Game Design Document</span>
-                    <Button
-                      size="sm"
-                      onClick={() => router.push(`/games/${game.id}/document`)}
-                    >
-                      <FileText className="h-4 w-4 mr-2" />
-                      Open Document
-                    </Button>
-                  </CardTitle>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-2xl">
+                        {document.title}
+                      </CardTitle>
+                      <CardDescription>
+                        Created{" "}
+                        {formatDistanceToNow(new Date(document.created_at), {
+                          addSuffix: true,
+                        })}
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <ShareDocumentDialog
+                        documentId={document.id}
+                        documentTitle={document.title}
+                        userId={userId as string}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/editor/${document.id}`)}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Document
+                      </Button>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {document ? (
