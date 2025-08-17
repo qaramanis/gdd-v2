@@ -38,7 +38,12 @@ interface NavMainProps {
   title: string;
 }
 
-export function NavMain({ items, currentPath, title }: NavMainProps) {
+export function NavMain({
+  items,
+  currentPath,
+  title,
+  className,
+}: NavMainProps & { className?: string }) {
   const router = useRouter();
 
   const isActive = (url: string) => {
@@ -46,7 +51,7 @@ export function NavMain({ items, currentPath, title }: NavMainProps) {
   };
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className={cn(className)}>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {

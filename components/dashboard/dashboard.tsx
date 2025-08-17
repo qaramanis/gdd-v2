@@ -157,6 +157,7 @@ export default function DashboardLayout({
               items={data.quickActions}
               currentPath={pathname}
               title="Quick Actions"
+              className="h-16"
             />
           </SidebarContent>
           {/* <Separator className="bg-foreground/10 sticky top-0" /> */}
