@@ -10,7 +10,6 @@ import QuickActions from "./quick-actions";
 import RecentActivity from "./recent-activity";
 import { Component as PieChart } from "@/components/charts/pie-chart";
 import { Component as BarChart } from "@/components/charts/bar-chart-mixed";
-import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/database/supabase";
 import Notes from "./notes";
 import { useUser } from "@/providers/user-context";
@@ -150,7 +149,6 @@ export default function Home() {
           )}
         </div>
       </div>
-      <Separator className="bg-primary/10 dark:bg-gray-400/20 m-2" />
       {loading ? (
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-auto md:flex-1 flex flex-col gap-6">

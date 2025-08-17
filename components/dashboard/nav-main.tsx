@@ -61,14 +61,17 @@ export function NavMain({ items, currentPath, title }: NavMainProps) {
                   onClick={() => router.push(item.url)}
                   className={cn(
                     "cursor-pointer",
-                    active &&
-                      "bg-sidebar-accent text-sidebar-accent-foreground",
+                    active && "bg-background text-foreground",
                   )}
                 >
-                  {item.icon && <item.icon className="h-4 w-4" />}
+                  {item.icon && (
+                    <div className="flex size-6 items-center justify-center rounded-sm border border-foreground/10 bg-gradient-to-br from-violet-500/50 to-pink-500/50">
+                      <item.icon className="size-4 shrink-0 text-foreground" />
+                    </div>
+                  )}
                   <span>{item.title}</span>
                   {item.badge && (
-                    <span className="ml-auto text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
+                    <span className="ml-auto text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500">
                       {item.badge}
                     </span>
                   )}
@@ -91,11 +94,14 @@ export function NavMain({ items, currentPath, title }: NavMainProps) {
                     onClick={() => item.url && router.push(item.url)}
                     className={cn(
                       "cursor-pointer",
-                      active &&
-                        "bg-sidebar-accent text-sidebar-accent-foreground",
+                      active && "bg-background text-foreground",
                     )}
                   >
-                    {item.icon && <item.icon className="h-4 w-4" />}
+                    {item.icon && (
+                      <div className="flex size-6 items-center justify-center rounded-sm border border-foreground/10 bg-gradient-to-br from-violet-500/50 to-pink-500/50">
+                        <item.icon className="size-4 shrink-0 text-foreground" />
+                      </div>
+                    )}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
@@ -110,7 +116,7 @@ export function NavMain({ items, currentPath, title }: NavMainProps) {
                           className={cn(
                             "cursor-pointer",
                             isActive(subItem.url) &&
-                              "bg-sidebar-accent text-sidebar-accent-foreground",
+                              "bg-background text-foreground",
                           )}
                         >
                           <div>

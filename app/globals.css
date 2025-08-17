@@ -6,14 +6,14 @@
 :root {
     --background: #ffffff;
     --foreground: #000000;
-    --sidebar: hsl(0 0% 98%);
-    --sidebar-foreground: hsl(240 5.3% 26.1%);
-    --sidebar-primary: hsl(240 5.9% 10%);
-    --sidebar-primary-foreground: hsl(0 0% 98%);
-    --sidebar-accent: hsl(240 4.8% 95.9%);
-    --sidebar-accent-foreground: hsl(240 5.9% 10%);
-    --sidebar-border: hsl(220 13% 91%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+    --sidebar: #000000;
+    --sidebar-foreground: #000000;
+    --sidebar-primary: linear-gradient(to bottom right, #8b5cf6, #ec4899);
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: rgba(0, 0, 0, 0.1);
+    --sidebar-accent-foreground: #000000;
+    --sidebar-border: rgba(255, 255, 255, 0.1);
+    --sidebar-ring: #8b5cf6;
 }
 
 body {
@@ -73,14 +73,14 @@ body {
 }
 
 .dark {
-    --sidebar: hsl(240 5.9% 10%);
-    --sidebar-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-primary: hsl(224.3 76.3% 48%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(240 3.7% 15.9%);
-    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-border: hsl(240 3.7% 15.9%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+    --sidebar: #000000;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: linear-gradient(to bottom right, #8b5cf6, #ec4899);
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: rgba(255, 255, 255, 0.05);
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgba(255, 255, 255, 0.1);
+    --sidebar-ring: #8b5cf6;
 }
 
 /* TipTap Editor Styles */

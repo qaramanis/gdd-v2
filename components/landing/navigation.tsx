@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu, Quote, X } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 const Navigation = () => {
@@ -53,8 +54,8 @@ const Navigation = () => {
 
             {/* CTA Button */}
             <div className="hidden md:block">
-              <button className="bg-gradient-to-r cursor-pointer from-violet-600 to-pink-600 text-white px-6 py-2.5 rounded-full font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all transform hover:scale-105">
-                Get Started
+              <button className="h-full bg-gradient-to-r cursor-pointer from-violet-600 to-pink-600 text-white px-6 py-2.5 rounded-full font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all transform hover:scale-105">
+                <Link href="/sign-in">Get Started</Link>
               </button>
             </div>
           </div>

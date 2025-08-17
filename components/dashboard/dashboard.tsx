@@ -133,43 +133,46 @@ export default function DashboardLayout({
 
   const user = {
     name: session?.user?.name || "Guest User",
-    email: session?.user?.email || "guest@example.com",
+    email: session?.user?.email || "max@example.com",
     avatar: session?.user?.image || "/avatars/default.jpg",
   };
 
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full">
-        <Sidebar collapsible="icon" className="border-r">
+        <Sidebar collapsible="icon" className="border-r border-foreground/10 ">
           <SidebarHeader className="bg-background">
             <TeamSwitcher teams={data.teams} />
           </SidebarHeader>
 
-          <SidebarContent className="bg-background">
-            <Separator className="bg-foreground sticky top-0" />
+          <SidebarContent className="bg-background text-foreground">
+            <Separator className="bg-foreground/10 sticky top-0" />
             <NavMain
               items={data.overview}
               currentPath={pathname}
               title="Overview"
             />
-            <Separator className="bg-foreground" />
+            <Separator className="bg-foreground/10" />
             <NavMain
               items={data.quickActions}
               currentPath={pathname}
               title="Quick Actions"
             />
           </SidebarContent>
-          <Separator className="bg-foreground sticky top-0" />
-          <SidebarFooter className="bg-background">
+          {/* <Separator className="bg-foreground/10 sticky top-0" /> */}
+          <SidebarFooter className="bg-background border-t border-foreground/10">
             <NavUser user={user} />
           </SidebarFooter>
           <SidebarRail />
         </Sidebar>
 
         <SidebarInset className="flex-1">
-          <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-none bg-background px-6">
-            <SidebarTrigger className="-ml-2" />
-            <Separator orientation="vertical" className="h-6" />
+          <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-foreground/10 bg-background px-6">
+            <SidebarTrigger className="-ml-2 cursor-pointer hover:bg-foreground/10 " />
+            <Separator
+              orientation="vertical"
+              className="h-6 bg-foreground/10"
+            />
 
             <div className="flex-1">
               <BreadcrumbNav />
