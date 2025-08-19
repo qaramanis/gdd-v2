@@ -37,7 +37,7 @@ export default function QuickActions() {
         <Button
           className="w-full justify-start"
           variant="outline"
-          onClick={() => router.push("/new")}
+          onClick={() => router.push("/new-game")}
         >
           <FileText className="mr-2 h-4 w-4" />
           Create New Document

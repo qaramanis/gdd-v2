@@ -528,6 +528,7 @@ export default function DocumentEditorPage() {
               {sections.map((section) => (
                 <div
                   key={section.id}
+                  onClick={() => setActiveSection(section.id)}
                   className={cn(
                     "mb-1 rounded-lg transition-all group",
                     activeSection === section.id
@@ -552,12 +553,9 @@ export default function DocumentEditorPage() {
                         autoFocus
                       />
                     ) : (
-                      <button
-                        onClick={() => setActiveSection(section.id)}
-                        className="flex-1 text-left text-sm font-medium"
-                      >
+                      <div className="flex-1 text-left text-sm font-medium">
                         {section.title}
-                      </button>
+                      </div>
                     )}
 
                     <div className="flex items-center gap-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">

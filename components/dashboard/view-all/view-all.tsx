@@ -50,7 +50,7 @@ export default function ViewAll() {
         <h1 className="text-2xl font-bold">All Documents</h1>
         <Button
           variant="ghost"
-          onClick={() => router.push("/new")}
+          onClick={() => router.push("/new-game")}
           className={cn(
             "w-auto rounded-full justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
             "bg-black hover:bg-black/80",

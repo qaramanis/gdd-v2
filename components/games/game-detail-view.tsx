@@ -53,6 +53,20 @@ export default function GameDetailView({
   const [activeTab, setActiveTab] = useState("overview");
   const { userId } = useUser();
 
+  if (!document) {
+    console.error(
+      "Document is null - this should not happen with database triggers",
+    );
+    return (
+      <div className="game-detail-view error">
+        <div className="alert alert-error">
+          <h3>System Error</h3>
+          <p>Game document is missing</p>
+        </div>
+      </div>
+    );
+  }
+
   // Calculate document progress
   const totalSections = sections.length;
   const completedSections = sections.filter(

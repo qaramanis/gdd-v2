@@ -22,7 +22,7 @@ export function NewDocument() {
       <TooltipTrigger asChild>
         <Button
           variant="ghost"
-          onClick={() => router.push("/new")}
+          onClick={() => router.push("/new-game")}
           className={cn(
             "w-auto rounded-lg justify-between m-2 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all cursor-pointer",
             "bg-black hover:bg-black/80",

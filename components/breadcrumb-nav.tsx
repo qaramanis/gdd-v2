@@ -54,7 +54,7 @@ export function BreadcrumbNav() {
     "/teams": "Teams",
     "/settings": "Settings",
     "/playground": "Playground",
-    "/new": "New Game",
+    "/new-game": "New Game",
     "/all-games": "All Games",
     "/document": "Document",
     "/edit": "Edit",

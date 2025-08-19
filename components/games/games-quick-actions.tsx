@@ -24,7 +24,7 @@ export function GamesQuickActions({ router }: GamesQuickActionsProps) {
           <Button
             variant="outline"
             className="justify-start"
-            onClick={() => router.push("/new")}
+            onClick={() => router.push("/new-game")}
           >
             <FileText className="mr-2 h-4 w-4" />
             Create Document

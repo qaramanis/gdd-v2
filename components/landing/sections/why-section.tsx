@@ -2,10 +2,10 @@ import { Check, ArrowRight } from "lucide-react";
 
 const WhySection = () => {
   const benefits = [
-    { number: "10K+", label: "Active Projects" },
-    { number: "50K+", label: "Contributors" },
-    { number: "1M+", label: "Lines of Code" },
-    { number: "24/7", label: "Support" },
+    { number: "---", label: "Active Projects" },
+    { number: "---", label: "Contributors" },
+    { number: "---", label: "Lines of Code" },
+    { number: "---", label: "Support" },
   ];
 
   return (

@@ -119,7 +119,7 @@ export default function Home() {
               <p className="text-lg mb-4">
                 No games found. Create your first game to get started!
               </p>
-              <Button onClick={() => router.push("/new")}>
+              <Button onClick={() => router.push("/new-game")}>
                 Create New Game
               </Button>
             </div>

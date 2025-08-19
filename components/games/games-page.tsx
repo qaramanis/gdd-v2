@@ -190,7 +190,7 @@ export default function GamesPage() {
         setSearchTerm={setSearchTerm}
         viewMode={viewMode}
         setViewMode={setViewMode}
-        onNewGame={() => router.push("/new")}
+        onNewGame={() => router.push("/new-game")}
       />
 
       <div>
@@ -230,7 +230,7 @@ export default function GamesPage() {
         ) : filteredGames.length === 0 ? (
           <GamesEmpty
             searchTerm={searchTerm}
-            onNewGame={() => router.push("/new")}
+            onNewGame={() => router.push("/new-game")}
           />
         ) : (
           <>

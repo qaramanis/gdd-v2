@@ -8,24 +8,24 @@ const FAQSection = () => {
 
   const faqs = [
     {
-      question: "How do I get started with open source?",
+      question: "---",
       answer:
-        "Simply sign up, browse projects that interest you, and start contributing. We provide guides and mentorship for beginners.",
+        "---",
     },
     {
-      question: "Is the platform really free?",
+      question: "---",
       answer:
-        "Yes, our core features are completely free for open source projects. We offer premium features for enterprise teams.",
+        "---",
     },
     {
-      question: "How does project discovery work?",
+      question: "---",
       answer:
-        "Our AI-powered algorithm matches developers with projects based on their skills, interests, and contribution history.",
+        "---",
     },
     {
-      question: "Can I migrate my existing project?",
+      question: "---",
       answer:
-        "Absolutely! We support seamless migration from GitHub, GitLab, and Bitbucket with all history preserved.",
+        "---",
     },
   ];
 

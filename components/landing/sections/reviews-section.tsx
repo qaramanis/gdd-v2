@@ -6,25 +6,25 @@ const ReviewsSection = () => {
       name: "Alex Chen",
       role: "Senior Developer",
       rating: 5,
-      text: "The collaboration features are incredible. Found amazing contributors for my project within days.",
+      text: "---",
     },
     {
       name: "Sarah Williams",
       role: "Tech Lead",
       rating: 5,
-      text: "Best platform for open source development. The analytics help me understand my project's impact.",
+      text: "---",
     },
     {
       name: "Marcus Johnson",
       role: "Full Stack Dev",
       rating: 5,
-      text: "Intuitive interface and powerful features. This is how open source should be done.",
+      text: "---",
     },
     {
       name: "Emma Davis",
       role: "DevOps Engineer",
       rating: 5,
-      text: "The CI/CD integration saved us hours of setup time. Absolutely game-changing.",
+      text: "---",
     },
   ];
 

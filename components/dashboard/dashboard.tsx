@@ -67,7 +67,7 @@ const data = {
         },
         {
           title: "New Game",
-          url: "/new",
+          url: "/new-game",
         },
       ],
     },

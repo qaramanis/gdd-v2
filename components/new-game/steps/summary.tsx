@@ -1,227 +1,143 @@
-// components/new-game/steps/summary.tsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Clock } from "lucide-react";
-import { loadFromStorage, STORAGE_KEYS } from "../local-storage";
-import { sectionGroups } from "./sections";
-
-interface Template {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-}
-
-interface SectionSelection {
-  [key: string]: boolean;
-}
-
-interface GameInfo {
-  gameTitle: string;
-  concept: string;
-  platforms: {
-    pc: boolean;
-    mobile: boolean;
-    console: boolean;
-    vr: boolean;
-  };
-  startDate: string;
-  timeline: string;
-}
-
-interface ThemeData {
-  visualTheme: string;
-  typography: string;
-}
+import { useGameCreation } from "../game-creation-context";
 
 export default function Summary() {
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
-    null
-  );
-  const [selectedSections, setSelectedSections] = useState<SectionSelection>(
-    {}
-  );
-  const [gameInfo, setGameInfo] = useState<GameInfo | null>(null);
-  const [theme, setTheme] = useState<ThemeData | null>(null);
+  const { gameData } = useGameCreation();
 
-  useEffect(() => {
-    setSelectedTemplate(
-      loadFromStorage<Template | null>(STORAGE_KEYS.TEMPLATE, null)
-    );
-
-    setSelectedSections(
-      loadFromStorage<SectionSelection>(STORAGE_KEYS.SECTIONS, {
-        overview: true,
-        gameConcept: true,
-        storyline: true,
-        gameplay: true,
-        levelDesign: true,
-        assets: true,
-        technical: true,
-        ui: true,
-        monetization: false,
-        marketing: false,
-        development: true,
-        legal: false,
-      })
-    );
-
-    setGameInfo(
-      loadFromStorage<GameInfo>(STORAGE_KEYS.INFO, {
-        gameTitle: "",
-        concept: "",
-        platforms: { pc: false, mobile: false, console: false, vr: false },
-        startDate: "",
-        timeline: "6 months",
-      })
-    );
-
-    setTheme(
-      loadFromStorage<ThemeData>(STORAGE_KEYS.THEME, {
-        visualTheme: "classic",
-        typography: "sans",
-      })
-    );
-  }, []);
-
-  const countSelectedSections = () => {
-    if (!selectedSections) return 0;
-    return Object.values(selectedSections).filter((value) => value).length;
-  };
-
-  const getThemeName = () => {
-    if (!theme) return "Classic Professional";
-
-    const themeNames: { [key: string]: string } = {
-      classic: "Classic Professional",
-      dark: "Dark Modern",
-      retro: "Retro Pixel",
-      minimalist: "Minimalist",
-      fantasy: "Fantasy",
-      scifi: "Sci-Fi",
+  const getSectionName = (sectionId: string) => {
+    const sections = {
+      overview: "Game Overview",
+      gameplay: "Gameplay Mechanics",
+      story: "Story & World",
+      characters: "Characters",
+      levels: "Level Design",
+      art: "Art Direction",
+      audio: "Audio Design",
+      ui: "User Interface",
+      technical: "Technical Specs",
+      monetization: "Monetization",
+      marketing: "Marketing",
+      schedule: "Development Schedule",
     };
-
-    return themeNames[theme.visualTheme] || "Classic Professional";
+    return sections[sectionId as keyof typeof sections] || sectionId;
   };
 
-  const getTypographyName = () => {
-    if (!theme) return "Sans-serif";
-
-    const typographyNames: { [key: string]: string } = {
-      sans: "Sans-serif",
-      mono: "Monospace",
-      serif: "Serif",
+  const getPlatformName = (platformId: string) => {
+    const platforms = {
+      pc: "PC",
+      playstation: "PlayStation",
+      xbox: "Xbox",
+      nintendo: "Nintendo Switch",
+      mobile: "Mobile",
+      vr: "VR/AR",
     };
-
-    return typographyNames[theme.typography] || "Sans-serif";
+    return platforms[platformId as keyof typeof platforms] || platformId;
   };
-
-  if (!selectedSections || !gameInfo || !theme) {
-    return (
-      <div className="flex justify-center items-center p-8">
-        <p>Loading summary data...</p>
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-4 w-full max-w-full py-4">
-      <div>
-        <h2 className="text-xl font-semibold">Review Your Document</h2>
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold mb-2">Review Your Game</h2>
         <p className="text-muted-foreground">
-          Review your selections before creating your document
+          Confirm all details before creating your game
         </p>
       </div>
 
-      <div className="space-y-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-center">
-              <CardTitle>Document Summary</CardTitle>
+      <Card>
+        <CardHeader>
+          <CardTitle>Game Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-1">
+              Title
+            </p>
+            <p className="text-lg font-semibold">
+              {gameData.name || "Untitled Game"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-1">
+              Concept
+            </p>
+            <p className="text-sm">
+              {gameData.concept || "No concept provided"}
+            </p>
+          </div>
+
+          <Separator />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Start Date
+              </p>
+              <p className="text-sm">{gameData.startDate || "Not specified"}</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <div className="text-4xl">
-                    {selectedTemplate?.icon || "📝"}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg">
-                      {gameInfo.gameTitle || "Untitled Project"}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Creating a new {selectedTemplate?.name || "Custom"}{" "}
-                      document
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Clock className="h-4 w-4" />
-                    <span>Timeline</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {gameInfo.timeline} (starts{" "}
-                    {gameInfo.startDate ? `on ${gameInfo.startDate}` : "today"})
-                  </p>
-                </div>
-              </div>
-
-              <Separator className="bg-gray-200 dark:bg-gray-700" />
-
-              <div>
-                <h4 className="text-sm font-medium mb-2">
-                  Included Sections ({countSelectedSections()})
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(selectedSections).map(([key, value]) => {
-                    if (!value) return null;
-                    const sectionName = sectionGroups
-                      .flatMap((g) => g.sections)
-                      .find((s) => s.id === key)?.name;
-                    return (
-                      <div
-                        key={key}
-                        className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs"
-                      >
-                        {sectionName}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <Separator className="bg-gray-200 dark:bg-gray-700" />
-
-              <div>
-                <h4 className="text-sm font-medium mb-2">Visual Preferences</h4>
-                <div className="flex gap-10">
-                  <div className="w-40">
-                    <span className="text-xs text-muted-foreground">
-                      Theme:
-                    </span>
-                    <p className="text-sm">{getThemeName()}</p>
-                  </div>
-                  <div className="w-40">
-                    <span className="text-xs text-muted-foreground">
-                      Typography:
-                    </span>
-                    <p className="text-sm">{getTypographyName()}</p>
-                  </div>
-                </div>
-              </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Timeline
+              </p>
+              <p className="text-sm">{gameData.timeline || "Not specified"}</p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-2">
+              Target Platforms
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {gameData.platforms && gameData.platforms.length > 0 ? (
+                gameData.platforms.map((platform) => (
+                  <Badge key={platform} variant="secondary">
+                    {getPlatformName(platform)}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  No platforms selected
+                </span>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Document Structure</CardTitle>
+          <CardDescription>
+            {gameData.documentSections?.length || 0} sections will be created
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {gameData.documentSections?.map((sectionId) => (
+              <div
+                key={sectionId}
+                className="flex items-center gap-2 p-2 rounded-lg bg-muted"
+              >
+                <div className="w-2 h-2 rounded-full bg-primary" />
+                <span className="text-sm">{getSectionName(sectionId)}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
