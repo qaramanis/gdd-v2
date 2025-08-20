@@ -36,6 +36,9 @@ import GameScenesList from "./game-scenes-list";
 import { useUser } from "@/providers/user-context";
 import { formatDistanceToNow } from "date-fns";
 import { ShareDocumentDialog } from "../collaboration/share-document-dialog";
+import EditGameModal from "./game-edit-modal";
+import { toast } from "sonner";
+import { supabase } from "@/database/supabase";
 
 interface GameDetailViewProps {
   game: any;
@@ -44,7 +47,7 @@ interface GameDetailViewProps {
 }
 
 export default function GameDetailView({
-  game,
+  game: initialGame,
   document,
   sections,
 }: GameDetailViewProps) {
@@ -52,6 +55,9 @@ export default function GameDetailView({
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
   const { userId } = useUser();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [game, setGame] = useState(initialGame);
 
   if (!document) {
     console.error(
@@ -66,6 +72,88 @@ export default function GameDetailView({
       </div>
     );
   }
+
+  // Handle save game function
+  const handleSaveGame = async (updatedGame: any) => {
+    setLoading(true);
+
+    try {
+      let finalImageUrl = updatedGame.image_url;
+
+      // If there's a new image file to upload (passed as imageFile property)
+      if (updatedGame.imageFile) {
+        const file = updatedGame.imageFile;
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${game.id}-${Date.now()}.${fileExt}`;
+        const filePath = `${userId}/${fileName}`;
+
+        // Delete old image if it exists in storage
+        if (
+          game.image_url &&
+          game.image_url.includes("supabase") &&
+          game.image_url !== "/game-placeholder.jpg"
+        ) {
+          const oldImagePath = game.image_url.split("/").pop();
+          if (oldImagePath) {
+            await supabase.storage
+              .from("game-images")
+              .remove([`${userId}/${oldImagePath}`]);
+          }
+        }
+
+        // Upload new image
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("game-images")
+          .upload(filePath, file, {
+            cacheControl: "3600",
+            upsert: true,
+          });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        // Get public URL for the uploaded image
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("game-images").getPublicUrl(filePath);
+
+        finalImageUrl = publicUrl;
+      }
+
+      // Update game in database
+      const { data: savedGame, error: updateError } = await supabase
+        .from("games")
+        .update({
+          name: updatedGame.name.trim(),
+          concept: updatedGame.concept?.trim() || "",
+          image_url: finalImageUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", game.id)
+        .eq("user_id", userId)
+        .select()
+        .single();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Update local state with the saved game
+      setGame(savedGame);
+
+      // Show success message
+      toast.success("Game information updated successfully!");
+
+      // Close the modal
+      setIsEditModalOpen(false);
+    } catch (error: any) {
+      console.error("Error saving game:", error);
+      toast.error(error.message || "Failed to save game. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Calculate document progress
   const totalSections = sections.length;
@@ -106,8 +194,9 @@ export default function GameDetailView({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => router.push(`/games/${game.id}/edit`)}
+            onClick={() => setIsEditModalOpen(true)}
             className="gap-2"
+            disabled={loading}
           >
             <Edit className="h-4 w-4" />
             Edit
@@ -512,25 +601,6 @@ export default function GameDetailView({
           </Card>
         </TabsContent>
 
-        <TabsContent value="scenes" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Game Scenes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Unity and Unreal Engine scenes will be displayed here.
-              </p>
-              <Button
-                className="mt-4"
-                onClick={() => router.push(`/playground?game=${game.id}`)}
-              >
-                Open Playground
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="team" className="space-y-4">
           <Card>
             <CardHeader>
@@ -557,6 +627,15 @@ export default function GameDetailView({
           />
         </TabsContent>
       </Tabs>
+
+      {/* Edit Game Modal */}
+      <EditGameModal
+        game={game}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveGame}
+        userId={userId as string}
+      />
     </div>
   );
 }
