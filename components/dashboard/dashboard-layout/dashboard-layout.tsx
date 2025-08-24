@@ -62,7 +62,7 @@ const data = {
         },
         {
           title: "View All",
-          url: "/all-games",
+          url: "#",
         },
         {
           title: "New Game",
