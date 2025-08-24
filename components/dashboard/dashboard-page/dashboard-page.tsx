@@ -1,37 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  FileText,
-  Users,
-  Gamepad2,
-  Clock,
-  Calendar,
-  ArrowRight,
-  Plus,
-  Activity,
-  FolderOpen,
-  UserPlus,
-  Target,
-  Zap,
-  StickyNote,
-} from "lucide-react";
 import { supabase } from "@/database/supabase";
 import { useUser } from "@/providers/user-context";
-import { useRouter } from "next/navigation";
-import { format, formatDistanceToNow } from "date-fns";
 import DashboardSkeleton from "./dashboard-skeleton";
 import ActivityOverviewCard from "./activity/activity-overview-card";
 import DashboardHeader from "./dashboard-header";

@@ -102,7 +102,7 @@ export default function GameDetailView({
         }
 
         // Upload new image
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from("game-images")
           .upload(filePath, file, {
             cacheControl: "3600",

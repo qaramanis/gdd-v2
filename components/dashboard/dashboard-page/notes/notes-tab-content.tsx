@@ -3,6 +3,7 @@ import { StickyNote } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EmptyState from "../empty-state";
 import { Note } from "../dashboard-page";
+import ProjectListItem from "../projects/project-list-item";
 
 export default function NotesTabContent({ notes }: { notes: Note[] }) {
   const router = useRouter();

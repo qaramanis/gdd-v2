@@ -9,8 +9,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Gamepad2, FileText, Users, StickyNote, Activity } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ActivityItem from "./activity-item";
-import { DashboardData, ActivityLog } from "./dashboard-page";
 import { Button } from "@/components/ui/button";
+import { ActivityLog, DashboardData } from "../dashboard-page";
 
 export default function ActivityOverviewCard({
   data,

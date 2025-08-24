@@ -6,7 +6,6 @@ import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import {
   AudioWaveform,
   Bot,
-  Calendar,
   GalleryVerticalEnd,
   Home,
   Inbox,
@@ -93,11 +92,6 @@ const data = {
       icon: Users2,
     },
     {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
-    },
-    {
       title: "Settings",
       url: "/settings",
       icon: Settings2,
@@ -114,11 +108,6 @@ const data = {
       url: "#",
       icon: Inbox,
       badge: "3",
-    },
-    {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
     },
   ],
 };

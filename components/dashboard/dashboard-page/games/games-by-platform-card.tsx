@@ -53,7 +53,7 @@ export default function GamesByPlatformCard({ games }: { games: Game[] }) {
           {Object.entries(platformCounts).map(([platform, count]) => (
             <div key={platform} className="flex items-center justify-between">
               <span className="text-sm">{platform}</span>
-              <Badge variant="secondary">{count}</Badge>
+              <Badge>{count}</Badge>
             </div>
           ))}
           {unsetPlatformCount > 0 && (
@@ -61,7 +61,7 @@ export default function GamesByPlatformCard({ games }: { games: Game[] }) {
               <span className="text-sm text-muted-foreground">
                 No platform set
               </span>
-              <Badge variant="outline">{unsetPlatformCount}</Badge>
+              <Badge>{unsetPlatformCount}</Badge>
             </div>
           )}
         </div>

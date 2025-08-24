@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { X, Upload, Save, Loader2, Image, Edit2 } from "lucide-react";
+import { X, Upload, Save, Loader2, Edit2, Images } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/database/supabase";
+import Image from "next/image";
 
 // TypeScript interfaces
 interface Game {
@@ -166,13 +167,12 @@ const EditGameModal: React.FC<EditGameModalProps> = ({
           const fileName = `${game.id}-${Date.now()}.${fileExt}`;
           const filePath = `${userId}/${fileName}`;
 
-          const { data: uploadData, error: uploadError } =
-            await supabase.storage
-              .from("game-images")
-              .upload(filePath, imageFile, {
-                cacheControl: "3600",
-                upsert: true,
-              });
+          const { error: uploadError } = await supabase.storage
+            .from("game-images")
+            .upload(filePath, imageFile, {
+              cacheControl: "3600",
+              upsert: true,
+            });
 
           if (uploadError) throw uploadError;
 
@@ -193,7 +193,7 @@ const EditGameModal: React.FC<EditGameModalProps> = ({
       }
 
       // Update game in database
-      const { data: updatedGame, error: updateError } = await supabase
+      const { error: updateError } = await supabase
         .from("games")
         .update({
           name: formData.name.trim(),
@@ -322,14 +322,14 @@ const EditGameModal: React.FC<EditGameModalProps> = ({
                 <div className="flex-shrink-0">
                   <div className="w-32 h-32 rounded-lg border-2 border-gray-300 dark:border-gray-600 overflow-hidden bg-gray-100 dark:bg-gray-800">
                     {imagePreview ? (
-                      <img
+                      <Image
                         src={imagePreview}
                         alt="Game preview"
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Image className="w-12 h-12 text-gray-400" />
+                        <Images className="w-12 h-12 text-gray-400" />
                       </div>
                     )}
                   </div>
