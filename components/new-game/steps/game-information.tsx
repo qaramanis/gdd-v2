@@ -59,7 +59,7 @@ export default function GameInformation() {
     <div className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold mb-2">Game Information</h2>
-        <p className="text-muted-foreground">
+        <p className="text-accent">
           Enter essential details about your game project
         </p>
       </div>
@@ -101,7 +101,7 @@ export default function GameInformation() {
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground",
+                      !date && "text-accent",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />

@@ -2,6 +2,7 @@
 
 import { Box } from "lucide-react";
 import { useState, useEffect } from "react";
+import { fetchLandingPageStats } from "@/lib/actions/stats-actions";
 
 const HeroSection = () => {
   const [stats, setStats] = useState({
@@ -11,38 +12,10 @@ const HeroSection = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const loadStats = async () => {
       try {
-        // Dynamic import to avoid SSR issues
-        const { createClient } = await import("@supabase/supabase-js");
-
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-        if (!supabaseUrl || !supabaseAnonKey) {
-          console.error("Missing Supabase environment variables");
-          setLoading(false);
-          return;
-        }
-
-        const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-        // Fetch user count
-        const { count: userCount, error: userError } = await supabase
-          .from("user")
-          .select("*", { count: "exact", head: true });
-
-        // Fetch games count
-        const { count: gamesCount, error: gamesError } = await supabase
-          .from("games")
-          .select("*", { count: "exact", head: true });
-
-        if (!userError && !gamesError) {
-          setStats({
-            peopleJoined: userCount || 0,
-            gamesSubmitted: gamesCount || 0,
-          });
-        }
+        const data = await fetchLandingPageStats();
+        setStats(data);
       } catch (error) {
         console.error("Error fetching stats:", error);
       } finally {
@@ -50,7 +23,7 @@ const HeroSection = () => {
       }
     };
 
-    fetchStats();
+    loadStats();
   }, []);
 
   return (
@@ -91,7 +64,7 @@ const HeroSection = () => {
               <input
                 type="email"
                 placeholder="max@example.com"
-                className="px-6 py-3 bg-white/5 border border-white/10 hover:border-white/30 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 transition"
+                className="px-6 py-3 bg-white/10 border border-white/10 hover:border-white/30 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 focus:bg-white/10 transition"
               />
               <button className="px-8 py-3 bg-gradient-to-r from-violet-600 to-pink-600 text-white rounded-full font-medium hover:shadow-lg hover:shadow-violet-500/25 transition-all transform hover:scale-105 cursor-pointer">
                 Join Waitlist
@@ -124,7 +97,7 @@ const HeroSection = () => {
 
           {/* Right side - Project list */}
           {/* <div className="relative">
-            <div className="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
+            <div className="bg-gradient-to-b from-white/10 to-white/[0.02] border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
               <h3 className="text-white font-semibold mb-6 text-sm tracking-wider">
                 PROJECTS
               </h3>
@@ -140,7 +113,7 @@ const HeroSection = () => {
                 ].map((project) => (
                   <div
                     key={project.id}
-                    className="flex items-center justify-between py-2 border-b border-white/5 last:border-0"
+                    className="flex items-center justify-between py-2 border-b border-white/10 last:border-0"
                   >
                     <div className="flex items-center space-x-3">
                       <span className="text-gray-500 text-sm font-mono">
@@ -156,7 +129,7 @@ const HeroSection = () => {
                   </div>
                 ))}
               </div>
-              <button className="w-full mt-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 rounded-lg transition">
+              <button className="w-full mt-6 py-3 bg-white/10 hover:bg-white/10 border border-white/10 text-gray-300 rounded-lg transition">
                 Submit Early
               </button>
             </div>

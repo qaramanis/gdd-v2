@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -40,7 +39,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-foreground/5 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/5 transition-all duration-200"
+              className="data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/10 transition-all duration-200"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
                 <activeTeam.logo className="size-4 text-foreground" />
@@ -49,11 +48,11 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
                 <span className="truncate font-semibold text-foreground">
                   {activeTeam.name}
                 </span>
-                <span className="truncate text-xs text-gray-400">
+                <span className="truncate text-xs text-accent">
                   {activeTeam.plan}
                 </span>
               </div>
-              <ChevronsUpDown className="ml-auto text-gray-400" />
+              <ChevronsUpDown className="ml-auto text-accent" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -62,8 +61,8 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-xs text-gray-500 uppercase tracking-wider">
-              Teams
+            <DropdownMenuLabel className="text-xs text-accent uppercase tracking-wider">
+              Workspaces
             </DropdownMenuLabel>
             {teams.map((team, index) => (
               <DropdownMenuItem
@@ -71,21 +70,18 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
                 onClick={() => setActiveTeam(team)}
                 className="gap-2 p-2 hover:bg-foreground/10 focus:bg-foreground/10 cursor-pointer transition-colors"
               >
-                <div className="flex size-6 items-center justify-center rounded-sm border border-foreground/10 bg-gradient-to-br from-violet-500/50 to-pink-500/50">
+                <div className="flex size-6 items-center justify-center ">
                   <team.logo className="size-4 shrink-0 text-foreground" />
                 </div>
                 <span className="flex-1 text-foreground">{team.name}</span>
-                <DropdownMenuShortcut className="text-gray-500">
-                  ⌘{index + 1}
-                </DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator className="bg-foreground/10" />
             <DropdownMenuItem className="gap-2 p-2 hover:bg-foreground/10 focus:bg-foreground/10 cursor-pointer transition-colors">
-              <div className="flex size-6 items-center justify-center rounded-md border border-foreground/20 bg-foreground/5">
-                <Plus className="size-4 text-gray-400" />
+              <div className="flex size-6 items-center justify-center rounded-md border border-foreground/20 bg-foreground/10">
+                <Plus className="size-4 text-accent" />
               </div>
-              <div className="font-medium text-gray-400">Add team</div>
+              <div className="font-medium text-accent">Create Workspace</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

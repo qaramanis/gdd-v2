@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/database/supabase";
+import { fetchUserNotes } from "@/lib/actions/notes-actions";
 import { NotesCard } from "./notes-card";
 import { NotesSearch } from "./notes-search";
 import { ActiveFilters } from "./active-filters";
@@ -34,17 +34,9 @@ export default function NotesPage() {
       try {
         setLoading(true);
 
-        const { data: notes, error } = await supabase
-          .from("notes")
-          .select("*")
-          .eq("user_id", userId)
-          .order("created_at", { ascending: false });
+        const notesData = await fetchUserNotes(userId);
 
-        if (error) {
-          throw error;
-        }
-
-        setNotes(notes || []);
+        setNotes(notesData as Note[]);
       } catch (err) {
         console.error("Error fetching notes:", err);
         setError("Failed to load notes. Please try again later.");
@@ -146,11 +138,12 @@ export default function NotesPage() {
   return (
     <div className="flex flex-col gap-6 p-4 pt-0">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Notes</h1>
-        <Button
-          onClick={handleAddNote}
-          className="rounded-full bg-black hover:bg-black/80 dark:bg-white dark:hover:bg-white/80 text-white dark:text-black"
-        >
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-bold">Notes</h1>
+          <p className="text-accent">Keep track of your notes</p>
+        </div>
+
+        <Button onClick={handleAddNote}>
           <Plus className="mr-2 size-4" />
           New Note
         </Button>

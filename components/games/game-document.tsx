@@ -62,7 +62,7 @@ export default function GameDocument({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-accent">
                 {section.section.description || "No description provided"}
               </p>
               <div className="flex justify-end mt-4">
@@ -84,7 +84,7 @@ export default function GameDocument({
                 <Plus className="h-6 w-6 text-primary" />
               </div>
               <p className="font-medium">Add New Section</p>
-              <p className="text-xs text-muted-foreground text-center max-w-48">
+              <p className="text-xs text-accent text-center max-w-48">
                 Create a custom section for your game design document
               </p>
             </CardContent>
@@ -136,7 +136,7 @@ export default function GameDocument({
 
                 {section.content ? (
                   <>
-                    <div className="text-sm text-muted-foreground my-2">
+                    <div className="text-sm text-accent my-2">
                       {(() => {
                         try {
                           const contentObj = JSON.parse(section.content);
@@ -169,7 +169,7 @@ export default function GameDocument({
                     </div>
                   </>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-accent">
                     No content available yet.
                   </p>
                 )}
@@ -177,7 +177,7 @@ export default function GameDocument({
               </div>
             ))
           ) : (
-            <p className="text-center text-muted-foreground py-8">
+            <p className="text-center text-accent py-8">
               No sections have been added to this document yet.
             </p>
           )}

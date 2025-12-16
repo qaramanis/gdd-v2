@@ -27,7 +27,7 @@ export default function GameTeam({ team }: GameTeamProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold">Team Members</h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-accent">
             Manage collaborators for this game project
           </p>
         </div>
@@ -65,14 +65,14 @@ export default function GameTeam({ team }: GameTeamProps) {
               <Plus className="h-6 w-6 text-primary" />
             </div>
             <p className="font-medium">Add Team Member</p>
-            <p className="text-xs text-muted-foreground text-center max-w-48">
+            <p className="text-xs text-accent text-center max-w-48">
               Invite a collaborator to work on this game design document
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <p className="text-sm text-muted-foreground italic text-center">
+      <p className="text-sm text-accent italic text-center">
         This section is for demonstration purposes only. Functionality is
         limited.
       </p>
@@ -101,7 +101,7 @@ function TeamMemberCard({ member }: TeamMemberCardProps) {
 
           <div className="flex-1">
             <h3 className="font-medium">{member.name}</h3>
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1 text-sm text-accent">
               <Mail className="size-3" />
               <span>{member.email}</span>
             </div>

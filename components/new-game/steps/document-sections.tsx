@@ -193,7 +193,7 @@ export default function DocumentSections() {
     <div className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold mb-2">Document Structure</h2>
-        <p className="text-muted-foreground">
+        <p className="text-accent">
           Choose sections for your game design document
         </p>
       </div>
@@ -216,7 +216,7 @@ export default function DocumentSections() {
                   className={cn(
                     "p-4 rounded-lg border-2 cursor-pointer transition-all",
                     selectedTemplate === template.id
-                      ? "border-primary bg-primary/5"
+                      ? "border-primary bg-primary/10"
                       : "border-border hover:border-primary/50",
                   )}
                   onClick={() => handleTemplateSelect(template.id)}
@@ -228,7 +228,7 @@ export default function DocumentSections() {
                     )}
                   </div>
                   <h3 className="font-medium text-sm mb-1">{template.name}</h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-accent">
                     {template.description}
                   </p>
                   {template.sections.length > 0 && (
@@ -255,7 +255,7 @@ export default function DocumentSections() {
           <div className="space-y-6">
             {Object.entries(sectionsByCategory).map(([category, sections]) => (
               <div key={category}>
-                <h3 className="font-medium text-sm mb-3 text-muted-foreground">
+                <h3 className="font-medium text-sm mb-3 text-accent">
                   {category}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -265,7 +265,7 @@ export default function DocumentSections() {
                       className={cn(
                         "p-3 rounded-lg border cursor-pointer transition-all",
                         selectedSections.includes(section.id)
-                          ? "border-primary bg-primary/5"
+                          ? "border-primary bg-primary/10"
                           : "border-border hover:border-primary/50",
                       )}
                       onClick={() => toggleSection(section.id)}
@@ -282,7 +282,7 @@ export default function DocumentSections() {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-accent">
                             {section.description}
                           </p>
                         </div>
@@ -307,7 +307,7 @@ export default function DocumentSections() {
           </div>
 
           <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-accent">
               {selectedSections.length} sections selected
             </p>
             <div className="flex gap-2">

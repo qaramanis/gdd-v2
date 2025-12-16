@@ -64,7 +64,7 @@ export function NavUser({ user }: NavUserProps) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-foreground/5 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/5 transition-all duration-200"
+              className="data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/10 transition-all duration-200"
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />

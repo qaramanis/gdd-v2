@@ -1,22 +1,12 @@
-import { Plus, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface FiltersProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  viewMode: string;
-  setViewMode: (mode: string) => void;
-  onNewGame: () => void;
 }
 
-export function GamesFilters({
-  searchTerm,
-  setSearchTerm,
-  viewMode,
-  setViewMode,
-  onNewGame,
-}: FiltersProps) {
+export function GamesFilters({ searchTerm, setSearchTerm }: FiltersProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
       <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -29,29 +19,6 @@ export function GamesFilters({
             className="pl-10 w-full sm:w-64"
           />
         </div>
-      </div>
-
-      <div className="flex gap-2">
-        <div className="flex gap-1">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("grid")}
-          >
-            Grid
-          </Button>
-          <Button
-            variant={viewMode === "list" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("list")}
-          >
-            List
-          </Button>
-        </div>
-        <Button className="gap-2" onClick={onNewGame}>
-          <Plus className="h-4 w-4" />
-          New Game
-        </Button>
       </div>
     </div>
   );

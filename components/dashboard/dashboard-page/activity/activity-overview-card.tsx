@@ -88,8 +88,7 @@ export default function ActivityOverviewCard({
             ))}
           </div>
         ) : (
-          <div className="text-center py-4 text-muted-foreground">
-            <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
+          <div className="text-center py-4 text-accent">
             <p className="text-sm">No recent activity</p>
             <p className="text-xs mt-1">Your activity will appear here</p>
           </div>

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/database/supabase";
+import { fetchGamesPageData } from "@/lib/actions/games-page-actions";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/providers/user-context";
 import { formatDate } from "@/lib/date-utils";
@@ -19,8 +19,8 @@ import { GamesPagination } from "./games-pagination";
 interface Game {
   id: string;
   name: string;
-  concept: string;
-  updated_at: string;
+  concept: string | null;
+  updatedAt: Date | null;
   documents: { id: string; title: string }[];
 }
 
@@ -56,53 +56,10 @@ export default function GamesPage() {
       setLoading(true);
       setError(null);
 
-      // Fetch games
-      const { data: gamesData, error: gamesError } = await supabase
-        .from("games")
-        .select(
-          `
-          *,
-          documents (
-            id,
-            title
-          )
-        `,
-        )
-        .eq("user_id", userId)
-        .order("updated_at", { ascending: false });
+      const data = await fetchGamesPageData(userId!);
 
-      if (gamesError) throw gamesError;
-
-      // Fetch notes count
-      const { count: notesCount, error: notesError } = await supabase
-        .from("notes")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", userId);
-
-      if (notesError) throw notesError;
-
-      // Fetch documents count
-      const { count: docsCount, error: docsError } = await supabase
-        .from("documents")
-        .select("*", { count: "exact", head: true })
-        .in("game_id", gamesData?.map((g) => g.id) || []);
-
-      if (docsError) throw docsError;
-
-      // Calculate stats
-      const recentDate = new Date();
-      recentDate.setDate(recentDate.getDate() - 7);
-      const recentGames =
-        gamesData?.filter((game) => new Date(game.updated_at) > recentDate)
-          .length || 0;
-
-      setGames(gamesData || []);
-      setStats({
-        totalGames: gamesData?.length || 0,
-        totalDocuments: docsCount || 0,
-        totalNotes: notesCount || 0,
-        recentGames: recentGames,
-      });
+      setGames(data.games as Game[]);
+      setStats(data.stats);
     } catch (err: any) {
       console.error("Error fetching data:", err);
       setError(err.message || "An unexpected error occurred.");
@@ -139,7 +96,8 @@ export default function GamesPage() {
   }, [searchTerm, filterStatus]);
 
   // Add type annotation for the 'date' parameter
-  const getTimeAgo = (date: string) => {
+  const getTimeAgo = (date: string | Date | null) => {
+    if (!date) return "Unknown";
     const now = new Date();
     const updated = new Date(date);
     const diffMs = now.getTime() - updated.getTime();
@@ -150,7 +108,7 @@ export default function GamesPage() {
     if (diffMinutes < 60) return `${diffMinutes} minutes ago`;
     if (diffHours < 24) return `${diffHours} hours ago`;
     if (diffDays < 7) return `${diffDays} days ago`;
-    return formatDate(date);
+    return formatDate(date.toString());
   };
 
   if (userLoading) {
@@ -180,39 +138,30 @@ export default function GamesPage() {
     );
   }
 
+  // Transform games for the list component (convert to snake_case for compatibility)
+  const transformedGames = displayedGames.map((game) => ({
+    id: game.id,
+    name: game.name,
+    concept: game.concept || "",
+    updated_at: game.updatedAt?.toISOString() || new Date().toISOString(),
+    documents: game.documents,
+  }));
+
   return (
     <div className="space-y-8">
       <GamesHeader />
       <GamesStats stats={stats} />
 
-      <GamesFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        onNewGame={() => router.push("/new-game")}
-      />
+      <GamesFilters searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">Your Games</h2>
           <div className="flex items-center gap-4">
-            <p className="text-sm text-muted-foreground">
-              {showAll
-                ? `Showing all ${filteredGames.length} games`
-                : `Showing ${Math.min(displayedGames.length, gamesPerPage)} of ${filteredGames.length} games`}
+            <p className="text-sm text-accent">
+              Showing {Math.min(displayedGames.length, gamesPerPage)} of{" "}
+              {filteredGames.length} games
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setShowAll(!showAll);
-                setCurrentPage(1);
-              }}
-              className="gap-2"
-            >
-              {showAll ? "Show Pages" : "View All"}
-            </Button>
           </div>
         </div>
 
@@ -235,7 +184,7 @@ export default function GamesPage() {
         ) : (
           <>
             <GamesList
-              games={displayedGames}
+              games={transformedGames}
               viewMode={viewMode}
               getTimeAgo={getTimeAgo}
               onView={(gameId) => router.push(`/games/${gameId}`)}

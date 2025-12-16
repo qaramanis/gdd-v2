@@ -32,7 +32,12 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/database/supabase";
+import {
+  fetchGameWithDocument,
+  createSection,
+  updateSection,
+  deleteSection,
+} from "@/lib/actions/document-actions";
 import { useUser } from "@/providers/user-context";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -50,21 +55,20 @@ interface Game {
 
 interface Section {
   id: string;
-  document_id: string;
+  documentId: string;
   title: string;
-  content: string;
-  order: number;
-  created_at?: string;
-  updated_at?: string;
+  content: any;
+  orderIndex: number | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }
 
 interface Document {
-  createElement: any; //TODO: Implement createElement
   id: string;
-  game_id: number;
+  gameId: string | null;
   title: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 }
 
 interface Game {
@@ -186,53 +190,24 @@ export default function DocumentEditorPage() {
       setLoading(true);
       setError(null);
 
-      // Fetch game details
-      const { data: gameData, error: gameError } = await supabase
-        .from("games")
-        .select("*")
-        .eq("id", params.id)
-        .eq("user_id", userId)
-        .single();
+      const { game: gameData, document: documentData, sections: sectionsData } =
+        await fetchGameWithDocument(params.id as string, userId!);
 
-      if (gameError) {
-        if (gameError.code === "PGRST116") {
-          setError("Game not found or you don't have access to it");
-        } else {
-          throw gameError;
-        }
+      if (!gameData) {
+        setError("Game not found or you don't have access to it");
         return;
       }
 
-      setGame(gameData);
+      setGame(gameData as any);
 
-      // Fetch document
-      const { data: documentData, error: documentError } = await supabase
-        .from("documents")
-        .select("*")
-        .eq("game_id", params.id)
-        .single();
-
-      if (documentError) {
-        if (documentError.code === "PGRST116") {
-          router.push(`/games/${params.id}/document/new`);
-        } else {
-          throw documentError;
-        }
+      if (!documentData) {
+        router.push(`/games/${params.id}/document/new`);
         return;
       }
 
-      setDocument(documentData);
+      setDocument(documentData as any);
+      setSections((sectionsData || []) as Section[]);
 
-      // Fetch document sections
-      const { data: sectionsData, error: sectionsError } = await supabase
-        .from("document_sections")
-        .select("*")
-        .eq("document_id", documentData.id)
-        .order("order", { ascending: true });
-
-      if (sectionsError) throw sectionsError;
-
-      setSections(sectionsData || []);
       if (sectionsData && sectionsData.length > 0) {
         setActiveSection(sectionsData[0].id);
       }
@@ -247,17 +222,11 @@ export default function DocumentEditorPage() {
   // Save content to database
   const saveToDatabase = async (sectionId: string, content: any) => {
     try {
-      const { error } = await supabase
-        .from("document_sections")
-        .update({
-          content: JSON.stringify(content),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", sectionId);
+      const result = await updateSection(sectionId, {
+        content: JSON.stringify(content),
+      });
 
-      if (error) throw error;
-
-      return true;
+      return result.success;
     } catch (error) {
       console.error("Error saving to database:", error);
       toast.error("Failed to save changes");
@@ -326,27 +295,25 @@ export default function DocumentEditorPage() {
   const handleAddSection = async () => {
     if (!document) return;
 
-    const newSection: Partial<Section> = {
-      document_id: document.id,
-      title: "New Section",
-      content: "",
-      order: sections.length,
-    };
+    try {
+      const result = await createSection({
+        documentId: document.id,
+        title: "New Section",
+        content: "",
+        orderIndex: sections.length,
+      });
 
-    const { data, error } = await supabase
-      .from("document_sections")
-      .insert(newSection)
-      .select()
-      .single();
-
-    if (error) {
+      if (result.success && result.section) {
+        setSections([...sections, result.section as Section]);
+        setActiveSection(result.section.id);
+        toast.success("Section added");
+      } else {
+        toast.error("Failed to add section");
+      }
+    } catch (error) {
+      console.error("Error adding section:", error);
       toast.error("Failed to add section");
-      return;
     }
-
-    setSections([...sections, data]);
-    setActiveSection(data.id);
-    toast.success("Section added");
   };
 
   // Delete section
@@ -356,21 +323,22 @@ export default function DocumentEditorPage() {
       return;
     }
 
-    const { error } = await supabase
-      .from("document_sections")
-      .delete()
-      .eq("id", sectionId);
+    try {
+      const result = await deleteSection(sectionId);
 
-    if (error) {
+      if (result.success) {
+        setSections((prev) => prev.filter((s) => s.id !== sectionId));
+        if (activeSection === sectionId) {
+          setActiveSection(sections[0].id);
+        }
+        toast.success("Section deleted");
+      } else {
+        toast.error("Failed to delete section");
+      }
+    } catch (error) {
+      console.error("Error deleting section:", error);
       toast.error("Failed to delete section");
-      return;
     }
-
-    setSections((prev) => prev.filter((s) => s.id !== sectionId));
-    if (activeSection === sectionId) {
-      setActiveSection(sections[0].id);
-    }
-    toast.success("Section deleted");
   };
 
   // Update section title
@@ -378,23 +346,24 @@ export default function DocumentEditorPage() {
     sectionId: string,
     newTitle: string,
   ) => {
-    const { error } = await supabase
-      .from("document_sections")
-      .update({ title: newTitle })
-      .eq("id", sectionId);
+    try {
+      const result = await updateSection(sectionId, { title: newTitle });
 
-    if (error) {
+      if (result.success) {
+        setSections((prev) =>
+          prev.map((section) =>
+            section.id === sectionId ? { ...section, title: newTitle } : section,
+          ),
+        );
+        setEditingSection(null);
+        toast.success("Section title updated");
+      } else {
+        toast.error("Failed to update section title");
+      }
+    } catch (error) {
+      console.error("Error updating section title:", error);
       toast.error("Failed to update section title");
-      return;
     }
-
-    setSections((prev) =>
-      prev.map((section) =>
-        section.id === sectionId ? { ...section, title: newTitle } : section,
-      ),
-    );
-    setEditingSection(null);
-    toast.success("Section title updated");
   };
 
   // Export document
@@ -404,10 +373,10 @@ export default function DocumentEditorPage() {
     const content = editor.getHTML();
     const blob = new Blob([content], { type: "text/html" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${document.title}.html`;
-    a.click();
+    const anchor = window.document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${document.title}.html`;
+    anchor.click();
     URL.revokeObjectURL(url);
   };
 
@@ -621,8 +590,8 @@ export default function DocumentEditorPage() {
               {sections.length === 0 ? (
                 <Card>
                   <CardContent className="py-8 text-center">
-                    <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground mb-4">
+                    <FileText className="h-12 w-12 text-accent mx-auto mb-4" />
+                    <p className="text-accent mb-4">
                       No sections in this document yet
                     </p>
                     <Button onClick={handleAddSection}>

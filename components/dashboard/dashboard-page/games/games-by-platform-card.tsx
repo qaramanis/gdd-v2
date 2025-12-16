@@ -18,8 +18,8 @@ export default function GamesByPlatformCard({ games }: { games: Game[] }) {
         </CardHeader>
         <CardContent>
           <div className="text-center py-4">
-            <Gamepad2 className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">No games yet</p>
+            <Gamepad2 className="h-8 w-8 mx-auto text-accent mb-2" />
+            <p className="text-sm text-accent">No games yet</p>
           </div>
         </CardContent>
       </Card>
@@ -58,7 +58,7 @@ export default function GamesByPlatformCard({ games }: { games: Game[] }) {
           ))}
           {unsetPlatformCount > 0 && (
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-accent">
                 No platform set
               </span>
               <Badge>{unsetPlatformCount}</Badge>

@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/database/supabase";
+import {
+  fetchTeamsData,
+  createTeam,
+  acceptTeamInvitation,
+  declineTeamInvitation,
+  markNotificationRead,
+} from "@/lib/actions/collaboration-actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -136,12 +142,13 @@ export default function TeamsPage() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      await Promise.all([
-        fetchInvitations(),
-        fetchTeams(),
-        fetchSharedDocuments(),
-        fetchNotifications(),
-      ]);
+      const data = await fetchTeamsData(userId!, user?.email);
+      setPendingInvitations(data.pendingInvitations as Invitation[]);
+      setSentInvitations(data.sentInvitations as Invitation[]);
+      setMyTeams(data.teams as Team[]);
+      setSharedDocuments(data.sharedDocuments as SharedDocument[]);
+      setNotifications(data.notifications as Notification[]);
+      setUnreadCount(data.unreadCount);
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to load team data");
@@ -150,138 +157,13 @@ export default function TeamsPage() {
     }
   };
 
-  const fetchInvitations = async () => {
-    if (!user?.email) return;
-
-    // Fetch pending invitations for the user
-    const { data: received, error: receivedError } = await supabase
-      .from("invitations")
-      .select(
-        `
-        *,
-        documents(title),
-        teams(name),
-        games(name),
-        user:inviter_id(name, email)
-      `,
-      )
-      .eq("invitee_email", user.email)
-      .eq("status", "pending")
-      .order("created_at", { ascending: false });
-
-    if (receivedError) {
-      console.error("Error fetching received invitations:", receivedError);
-    } else {
-      setPendingInvitations(received || []);
-    }
-
-    // Fetch sent invitations
-    const { data: sent, error: sentError } = await supabase
-      .from("invitations")
-      .select(
-        `
-        *,
-        documents(title),
-        teams(name),
-        games(name)
-      `,
-      )
-      .eq("inviter_id", userId)
-      .order("created_at", { ascending: false });
-
-    if (sentError) {
-      console.error("Error fetching sent invitations:", sentError);
-    } else {
-      setSentInvitations(sent || []);
-    }
-  };
-
-  const fetchTeams = async () => {
-    const { data, error } = await supabase
-      .from("team_members")
-      .select(
-        `
-        *,
-        teams:team_id(
-          *,
-          user:owner_id(name, email),
-          team_members(
-            *,
-            user:user_id(name, email, image)
-          )
-        )
-      `,
-      )
-      .eq("user_id", userId)
-      .order("joined_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching teams:", error);
-    } else {
-      const teams = data?.map((item) => item.teams).filter(Boolean) || [];
-      setMyTeams(teams);
-    }
-  };
-
-  const fetchSharedDocuments = async () => {
-    const { data, error } = await supabase
-      .from("document_collaborators")
-      .select(
-        `
-        *,
-        documents:document_id(
-          id,
-          title,
-          game_id,
-          games:game_id(name)
-        ),
-        added_by_user:added_by(name)
-      `,
-      )
-      .eq("user_id", userId)
-      .order("added_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching shared documents:", error);
-    } else {
-      const docs =
-        data?.map((item) => ({
-          id: item.documents.id,
-          title: item.documents.title,
-          permission: item.permission,
-          added_at: item.added_at,
-          game_id: item.documents.game_id,
-          games: item.documents.games,
-          added_by_user: item.added_by_user,
-        })) || [];
-      setSharedDocuments(docs);
-    }
-  };
-
-  const fetchNotifications = async () => {
-    const { data, error } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    if (error) {
-      console.error("Error fetching notifications:", error);
-    } else {
-      setNotifications(data || []);
-      setUnreadCount(data?.filter((n) => !n.read).length || 0);
-    }
-  };
-
   const handleAcceptInvitation = async (invitation: Invitation) => {
     try {
-      const { error } = await supabase.rpc("accept_invitation", {
-        p_invitation_id: invitation.id,
-        p_user_id: userId,
-      });
+      const result = await acceptTeamInvitation(invitation, userId!);
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to accept invitation");
+      }
 
       toast.success("Invitation accepted successfully!");
       await fetchAllData();
@@ -293,15 +175,14 @@ export default function TeamsPage() {
 
   const handleDeclineInvitation = async (invitationId: string) => {
     try {
-      const { error } = await supabase
-        .from("invitations")
-        .update({ status: "declined", responded_at: new Date().toISOString() })
-        .eq("id", invitationId);
+      const result = await declineTeamInvitation(invitationId);
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to decline invitation");
+      }
 
       toast.success("Invitation declined");
-      await fetchInvitations();
+      await fetchAllData();
     } catch (error: any) {
       console.error("Error declining invitation:", error);
       toast.error("Failed to decline invitation");
@@ -315,35 +196,17 @@ export default function TeamsPage() {
     }
 
     try {
-      // Create team
-      const { data: teamData, error: teamError } = await supabase
-        .from("teams")
-        .insert({
-          name: newTeamName,
-          description: newTeamDescription,
-          owner_id: userId,
-        })
-        .select()
-        .single();
+      const result = await createTeam(userId!, newTeamName, newTeamDescription);
 
-      if (teamError) throw teamError;
-
-      // Add owner as team member
-      const { error: memberError } = await supabase
-        .from("team_members")
-        .insert({
-          team_id: teamData.id,
-          user_id: userId,
-          role: "owner",
-        });
-
-      if (memberError) throw memberError;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create team");
+      }
 
       toast.success("Team created successfully!");
       setCreateTeamOpen(false);
       setNewTeamName("");
       setNewTeamDescription("");
-      await fetchTeams();
+      await fetchAllData();
     } catch (error: any) {
       console.error("Error creating team:", error);
       toast.error("Failed to create team");
@@ -352,14 +215,8 @@ export default function TeamsPage() {
 
   const handleMarkNotificationRead = async (notificationId: string) => {
     try {
-      const { error } = await supabase
-        .from("notifications")
-        .update({ read: true, read_at: new Date().toISOString() })
-        .eq("id", notificationId);
-
-      if (error) throw error;
-
-      await fetchNotifications();
+      await markNotificationRead(notificationId);
+      await fetchAllData();
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -415,7 +272,7 @@ export default function TeamsPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold">Teams & Collaboration</h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-accent mt-2">
             Manage your teams, invitations, and shared documents
           </p>
         </div>
@@ -497,7 +354,7 @@ export default function TeamsPage() {
                     <span className="font-medium">
                       {invitation.user?.name || invitation.inviter_id}
                     </span>
-                    <span className="text-muted-foreground">
+                    <span className="text-accent">
                       invited you to
                     </span>
                     <span className="font-medium">
@@ -506,7 +363,7 @@ export default function TeamsPage() {
                         invitation.games?.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-4 mt-2 text-sm text-accent">
                     <Badge variant={getPermissionColor(invitation.permission)}>
                       {getPermissionIcon(invitation.permission)}
                       <span className="ml-1">{invitation.permission}</span>
@@ -519,7 +376,7 @@ export default function TeamsPage() {
                     </span>
                   </div>
                   {invitation.message && (
-                    <p className="mt-2 text-sm text-muted-foreground italic">
+                    <p className="mt-2 text-sm text-accent italic">
                       &quot;{invitation.message}&quot;
                     </p>
                   )}
@@ -564,7 +421,7 @@ export default function TeamsPage() {
             </CardHeader>
             <CardContent>
               {sentInvitations.length === 0 ? (
-                <p className="text-center py-8 text-muted-foreground">
+                <p className="text-center py-8 text-accent">
                   No invitations sent yet
                 </p>
               ) : (
@@ -596,14 +453,14 @@ export default function TeamsPage() {
                             {invitation.status}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-accent mt-1">
                           For:{" "}
                           {invitation.documents?.title ||
                             invitation.teams?.name ||
                             invitation.games?.name}
                         </p>
                       </div>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-sm text-accent">
                         {formatDistanceToNow(new Date(invitation.created_at), {
                           addSuffix: true,
                         })}
@@ -620,9 +477,9 @@ export default function TeamsPage() {
           {myTeams.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
-                <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <Users className="h-12 w-12 mx-auto mb-4 text-accent" />
                 <h3 className="text-lg font-semibold mb-2">No teams yet</h3>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-accent mb-4">
                   Create a team to collaborate with others on multiple projects
                 </p>
                 <Button onClick={() => setCreateTeamOpen(true)}>
@@ -672,7 +529,7 @@ export default function TeamsPage() {
                                   <p className="text-sm font-medium">
                                     {member.user?.name || "Unknown User"}
                                   </p>
-                                  <p className="text-xs text-muted-foreground">
+                                  <p className="text-xs text-accent">
                                     {member.user?.email}
                                   </p>
                                 </div>
@@ -700,11 +557,11 @@ export default function TeamsPage() {
           {sharedDocuments.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
-                <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <FileText className="h-12 w-12 mx-auto mb-4 text-accent" />
                 <h3 className="text-lg font-semibold mb-2">
                   No shared documents
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-accent">
                   Documents shared with you will appear here
                 </p>
               </CardContent>
@@ -717,14 +574,14 @@ export default function TeamsPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-muted-foreground" />
+                          <FileText className="h-4 w-4 text-accent" />
                           <h3 className="font-medium">{doc.title}</h3>
                           <Badge variant={getPermissionColor(doc.permission)}>
                             {getPermissionIcon(doc.permission)}
                             <span className="ml-1">{doc.permission}</span>
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-4 mt-2 text-sm text-accent">
                           <span className="flex items-center gap-1">
                             <Gamepad className="h-3 w-3" />
                             {doc.games?.name || "Unknown Game"}
@@ -758,7 +615,7 @@ export default function TeamsPage() {
             </CardHeader>
             <CardContent>
               {notifications.length === 0 ? (
-                <p className="text-center py-8 text-muted-foreground">
+                <p className="text-center py-8 text-accent">
                   No notifications yet
                 </p>
               ) : (
@@ -773,10 +630,10 @@ export default function TeamsPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <h4 className="font-medium">{notification.title}</h4>
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-sm text-accent mt-1">
                             {notification.message}
                           </p>
-                          <span className="text-xs text-muted-foreground mt-2 block">
+                          <span className="text-xs text-accent mt-2 block">
                             {formatDistanceToNow(
                               new Date(notification.created_at),
                               { addSuffix: true },

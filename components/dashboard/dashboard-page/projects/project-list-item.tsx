@@ -25,12 +25,12 @@ export default function ProjectListItem({
         </div>
         <div>
           <p className="text-sm font-medium">{title}</p>
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
+          <p className="text-xs text-accent">{subtitle}</p>
         </div>
       </div>
       <div className="flex items-center gap-2">
         {badge && <Badge variant="secondary">{badge}</Badge>}
-        <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        <ArrowRight className="h-4 w-4 text-accent" />
       </div>
     </div>
   );

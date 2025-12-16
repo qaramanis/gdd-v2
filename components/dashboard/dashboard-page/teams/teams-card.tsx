@@ -43,16 +43,8 @@ export default function TeamsCard({ teams }: { teams: Team[] }) {
           </div>
         ) : (
           <div className="text-center py-4">
-            <Users className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">No teams yet</p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-2"
-              onClick={() => router.push("/teams")}
-            >
-              Create Team
-            </Button>
+            <Users className="h-8 w-8 mx-auto text-accent mb-2" />
+            <p className="text-sm text-accent">No teams yet</p>
           </div>
         )}
       </CardContent>

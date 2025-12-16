@@ -19,7 +19,7 @@ export default function TeamItem({
         </div>
         <div>
           <p className="text-sm font-medium">{team.name}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-accent">
             {team.member_count} members
           </p>
         </div>

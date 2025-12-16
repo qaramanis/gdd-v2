@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { supabase } from "@/database/supabase";
 import { useUser } from "@/providers/user-context";
+import { fetchDashboardData as fetchData } from "@/lib/actions/dashboard-actions";
 import DashboardSkeleton from "./dashboard-skeleton";
 import ActivityOverviewCard from "./activity/activity-overview-card";
 import DashboardHeader from "./dashboard-header";
@@ -119,105 +119,8 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-
-      // Fetch games
-      const { data: gamesData, error: gamesError } = await supabase
-        .from("games")
-        .select("*")
-        .eq("user_id", userId)
-        .order("updated_at", { ascending: false });
-
-      if (gamesError) throw gamesError;
-
-      // Fetch documents
-      const { data: documentsData, error: documentsError } = await supabase
-        .from("documents")
-        .select("*")
-        .eq("user_id", userId)
-        .order("updated_at", { ascending: false });
-
-      if (documentsError) throw documentsError;
-
-      // Fetch document sections
-      let sectionsData: DocumentSection[] = [];
-      if (documentsData && documentsData.length > 0) {
-        const documentIds = documentsData.map((d) => d.id);
-        const { data, error: sectionsError } = await supabase
-          .from("document_sections")
-          .select("*")
-          .in("document_id", documentIds)
-          .order("updated_at", { ascending: false });
-
-        if (!sectionsError && data) {
-          sectionsData = data;
-        }
-      }
-
-      // Fetch teams and member count
-      const { data: teamsData, error: teamsError } = await supabase
-        .from("team_members")
-        .select(
-          `
-          team_id,
-          teams (
-            id,
-            name,
-            description,
-            created_at
-          )
-        `,
-        )
-        .eq("user_id", userId);
-
-      if (teamsError) throw teamsError;
-
-      const teamsWithCount = await Promise.all(
-        (teamsData || []).map(async (item: any) => {
-          const { count } = await supabase
-            .from("team_members")
-            .select("*", { count: "exact", head: true })
-            .eq("team_id", item.team_id);
-
-          return {
-            ...item.teams,
-            member_count: count || 0,
-          };
-        }),
-      );
-
-      // Fetch notes
-      const { data: notesData } = await supabase
-        .from("notes")
-        .select("*")
-        .eq("user_id", userId)
-        .order("updated_at", { ascending: false })
-        .limit(5);
-
-      // Fetch activity logs
-      const { data: activitiesData } = await supabase
-        .from("activity_log")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      // Set all data at once
-      setDashboardData({
-        games: gamesData || [],
-        documents: documentsData || [],
-        teams: teamsWithCount,
-        notes: notesData || [],
-        activities: activitiesData || [],
-        documentSections: sectionsData,
-        stats: {
-          totalGames: gamesData?.length || 0,
-          totalDocuments: documentsData?.length || 0,
-          totalTeams: teamsWithCount.length,
-          totalNotes: notesData?.length || 0,
-          documentSections: sectionsData.length,
-          recentActivities: activitiesData?.length || 0,
-        },
-      });
+      const data = await fetchData(userId!);
+      setDashboardData(data as DashboardData);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { capitalize } from "@/lib/utils";
 import React from "react";
-import { supabase } from "@/database/supabase";
+import { fetchGameName } from "@/lib/actions/game-actions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,19 +62,14 @@ export function BreadcrumbNav() {
 
   // Fetch game names for better display
   useEffect(() => {
-    const fetchGameName = async (gameId: string) => {
+    const loadGameName = async (gameId: string) => {
       if (gameNames[gameId]) return; // Already fetched
 
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from("games")
-          .select("name")
-          .eq("id", gameId)
-          .single();
-
-        if (data && !error) {
-          setGameNames((prev) => ({ ...prev, [gameId]: data.name }));
+        const name = await fetchGameName(gameId);
+        if (name) {
+          setGameNames((prev) => ({ ...prev, [gameId]: name }));
         }
       } catch (error) {
         console.error("Error fetching game name:", error);
@@ -89,12 +84,12 @@ export function BreadcrumbNav() {
 
     if (gamesIndex !== -1 && segments[gamesIndex + 1]) {
       const potentialGameId = segments[gamesIndex + 1];
-      // Check if it's a number (game ID)
-      if (!isNaN(Number(potentialGameId))) {
-        fetchGameName(potentialGameId);
+      // Check if it looks like a UUID or number (game ID)
+      if (potentialGameId.match(/^[0-9a-f-]+$/i)) {
+        loadGameName(potentialGameId);
       }
     }
-  }, [pathname]);
+  }, [pathname, gameNames]);
 
   const generateBreadcrumbs = (): BreadcrumbItemType[] => {
     if (pathname === "/" || pathname === "/dashboard") return [];
@@ -116,8 +111,8 @@ export function BreadcrumbNav() {
         text = override.title;
       }
       // Check if this is a game ID and we have its name
-      else if (segments[index - 1] === "games" && !isNaN(Number(segment))) {
-        text = gameNames[segment] || `Game ${segment}`;
+      else if (segments[index - 1] === "games" && segment.match(/^[0-9a-f-]+$/i)) {
+        text = gameNames[segment] || `Game`;
       }
       // Check for special page mappings
       else if (pageNameMappings[`/${segment}`]) {

@@ -32,7 +32,7 @@ export default function ProjectSummaryCard({ data }: { data: DashboardData }) {
           {summaryItems.map(({ label, value }) => (
             <div key={label}>
               <p className="text-2xl font-bold">{value}</p>
-              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="text-xs text-accent">{label}</p>
             </div>
           ))}
         </div>

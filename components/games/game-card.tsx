@@ -55,7 +55,7 @@ export function GameCard({
                     className="w-full h-full object-cover rounded-lg"
                   />
                 ) : (
-                  <Gamepad2 className="h-8 w-8 text-muted-foreground" />
+                  <Gamepad2 className="h-8 w-8 text-accent" />
                 )}
               </div>
               <div className="flex-1">
@@ -68,10 +68,10 @@ export function GameCard({
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
+                <p className="text-sm text-accent line-clamp-1 mt-1">
                   {game.concept || "No concept description"}
                 </p>
-                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-4 mt-2 text-sm text-accent">
                   <span className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
                     {getTimeAgo(game.updated_at)}
@@ -193,13 +193,13 @@ export function GameCard({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <Gamepad2 className="h-12 w-12 text-muted-foreground" />
+              <Gamepad2 className="h-12 w-12 text-accent" />
             )}
           </div>
 
           {/* Concept */}
           {game.concept && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-sm text-accent line-clamp-2">
               {game.concept}
             </p>
           )}
@@ -207,7 +207,7 @@ export function GameCard({
           {/* Metadata */}
           <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1">
+              <span className="text-accent flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 Last updated
               </span>
@@ -215,7 +215,7 @@ export function GameCard({
             </div>
             {game.start_date && (
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground flex items-center gap-1">
+                <span className="text-accent flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   Started
                 </span>
@@ -224,7 +224,7 @@ export function GameCard({
             )}
             {game.timeline && (
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Timeline</span>
+                <span className="text-accent">Timeline</span>
                 <span>{game.timeline}</span>
               </div>
             )}

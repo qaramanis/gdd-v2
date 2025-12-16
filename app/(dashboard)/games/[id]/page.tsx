@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { supabase } from "@/database/supabase";
+import { fetchGamePageData } from "@/lib/actions/game-actions";
 import { useUser } from "@/providers/user-context";
 import GameDetailView from "@/components/games/game-detail-view";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
 
 interface Game {
-  id: number;
+  id: string;
   name: string;
   concept: string;
   image_url: string;
@@ -25,7 +25,7 @@ interface Game {
 
 interface Document {
   id: string;
-  game_id: number;
+  game_id: string | null;
   title: string;
   created_at: string;
   updated_at: string;
@@ -63,48 +63,16 @@ export default function GamePage() {
       setLoading(true);
       setError(null);
 
-      // Fetch game details
-      const { data: gameData, error: gameError } = await supabase
-        .from("games")
-        .select("*")
-        .eq("id", params.id)
-        .eq("user_id", userId)
-        .single();
+      const data = await fetchGamePageData(params.id as string, userId!);
 
-      if (gameError) {
-        if (gameError.code === "PGRST116") {
-          setError("Game not found or you don't have access to it");
-        } else {
-          throw gameError;
-        }
+      if (data.error) {
+        setError(data.error);
         return;
       }
 
-      setGame(gameData);
-
-      // Fetch document
-      const { data: documentData } = await supabase
-        .from("documents")
-        .select("*")
-        .eq("game_id", params.id)
-        .single();
-
-      if (documentData) {
-        setDocument(documentData);
-
-        // Fetch document sections
-        const { data: sectionsData, error: sectionsError } = await supabase
-          .from("document_sections")
-          .select("*")
-          .eq("document_id", documentData.id)
-          .order("order", { ascending: true });
-
-        if (sectionsError) {
-          console.error("Error fetching sections:", sectionsError);
-        } else {
-          setSections(sectionsData || []);
-        }
-      }
+      setGame(data.game as Game);
+      setDocument(data.document as Document);
+      setSections(data.sections as DocumentSection[]);
     } catch (err: any) {
       console.error("Error fetching game data:", err);
       setError(err.message || "Failed to load game data");

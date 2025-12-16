@@ -9,8 +9,8 @@ export default function DashboardHeader() {
     <div className="flex items-center justify-between">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back! Here&apos;s an overview of your game development projects.
+        <p className="text-accent">
+          Welcome back! Here&apos;s an overview of your projects.
         </p>
       </div>
       <Button onClick={() => router.push("/new-game")} className="gap-2">

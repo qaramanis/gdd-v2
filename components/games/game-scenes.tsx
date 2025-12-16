@@ -24,7 +24,6 @@ const DUMMY_SCENES = [
     id: 1,
     name: "Main Level",
     description: "Primary game environment with player spawn",
-    engine: "unity", // "unity" or "unreal"
     thumbnail: "/demo/unity/scene-1.jpg",
     isStarred: true,
     lastUpdate: "2025-03-15T10:30:00Z",
@@ -33,7 +32,6 @@ const DUMMY_SCENES = [
     id: 2,
     name: "Character Controller",
     description: "Test scene for character movement and animations",
-    engine: "unity",
     thumbnail: "/demo/unity/scene-2.jpg",
     isStarred: false,
     lastUpdate: "2025-04-01T14:45:00Z",
@@ -42,7 +40,6 @@ const DUMMY_SCENES = [
     id: 3,
     name: "Combat Arena",
     description: "Environment for testing combat mechanics",
-    engine: "unreal",
     thumbnail: "/demo/unreal/scene-1.jpg",
     isStarred: true,
     lastUpdate: "2025-04-10T09:15:00Z",
@@ -53,13 +50,8 @@ export default function GameScenes({ gameId }: GameScenesProps) {
   const router = useRouter();
   const [scenes] = useState(DUMMY_SCENES);
   const [engineFilter, setEngineFilter] = useState<"all" | "unity" | "unreal">(
-    "all"
+    "all",
   );
-
-  const filteredScenes =
-    engineFilter === "all"
-      ? scenes
-      : scenes.filter((scene) => scene.engine === engineFilter);
 
   const handleViewScene = (sceneId: number) => {
     // Redirect to the playground with the specific scene
@@ -71,49 +63,12 @@ export default function GameScenes({ gameId }: GameScenesProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold">Game Scenes</h2>
-          <p className="text-sm text-muted-foreground">
-            View and manage Unity and Unreal Engine scenes
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="flex gap-2 mr-4">
-            <Button
-              variant={engineFilter === "all" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setEngineFilter("all")}
-            >
-              All
-            </Button>
-            <Button
-              variant={engineFilter === "unity" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setEngineFilter("unity")}
-            >
-              Unity
-            </Button>
-            <Button
-              variant={engineFilter === "unreal" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setEngineFilter("unreal")}
-            >
-              Unreal
-            </Button>
-          </div>
-
-          <Button variant="outline" className="gap-2">
-            <Link className="size-4" />
-            Link Scene
-          </Button>
-          <Button className="gap-2">
-            <Upload className="size-4" />
-            Upload
-          </Button>
+          <p className="text-sm text-accent">View and manage you scenes</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredScenes.map((scene) => (
+        {scenes.map((scene) => (
           <SceneCard
             key={scene.id}
             scene={scene}
@@ -128,21 +83,21 @@ export default function GameScenes({ gameId }: GameScenesProps) {
               <PlusSquare className="h-6 w-6 text-primary" />
             </div>
             <p className="font-medium">Add New Scene</p>
-            <p className="text-xs text-muted-foreground text-center max-w-48">
+            <p className="text-xs text-accent text-center max-w-48">
               Upload or link a new Unity or Unreal Engine scene
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="bg-primary/5 dark:bg-primary/10 rounded-lg p-6 mt-2">
+      <div className="bg-primary/10 dark:bg-primary/10 rounded-lg p-6 mt-2">
         <div className="flex flex-col md:flex-row gap-6 items-center">
           <div className="flex-shrink-0">
             <Square className="h-12 w-12 text-primary" />
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-medium mb-1">Scene Integration</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-accent">
               Upload your game scenes directly from Unity or Unreal Engine using
               our plugin. Connect your document elements directly to scene
               objects for seamless workflow.
@@ -171,20 +126,7 @@ function SceneCard({ scene, onView }: SceneCardProps) {
       <div className="relative h-40 bg-muted">
         {/* Scene thumbnail */}
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
-          <Square className="h-12 w-12 text-muted-foreground" />
-        </div>
-
-        {/* Engine badge */}
-        <div className="absolute top-2 left-2">
-          <span
-            className={`text-xs px-2 py-1 rounded-md ${
-              scene.engine === "unity"
-                ? "bg-blue-500/80 text-white"
-                : "bg-black/80 text-white"
-            }`}
-          >
-            {scene.engine === "unity" ? "Unity" : "Unreal"}
-          </span>
+          <Square className="h-12 w-12 text-accent" />
         </div>
 
         {/* Star indicator */}
@@ -210,11 +152,11 @@ function SceneCard({ scene, onView }: SceneCardProps) {
 
       <CardContent className="p-4">
         <h3 className="font-medium">{scene.name}</h3>
-        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+        <p className="text-sm text-accent mt-1 line-clamp-2">
           {scene.description}
         </p>
         <div className="flex justify-between items-center mt-3">
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-accent">
             Updated: {new Date(scene.lastUpdate).toLocaleDateString()}
           </span>
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

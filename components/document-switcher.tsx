@@ -60,7 +60,7 @@ export function DocumentSwitcher({
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-muted-foreground text-xs">
+            <DropdownMenuLabel className="text-accent text-xs">
               Documents
             </DropdownMenuLabel>
             {docs.map((doc, index) => (
@@ -80,7 +80,7 @@ export function DocumentSwitcher({
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                 <FolderOpen className="size-4" />
               </div>
-              <div className="text-muted-foreground font-medium">View all</div>
+              <div className="text-accent font-medium">View all</div>
               <DropdownMenuShortcut>
                 <ChevronRight />
               </DropdownMenuShortcut>
@@ -90,7 +90,7 @@ export function DocumentSwitcher({
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                 <Plus className="size-4" />
               </div>
-              <div className="text-muted-foreground font-medium">
+              <div className="text-accent font-medium">
                 Create new document
               </div>
             </DropdownMenuItem>

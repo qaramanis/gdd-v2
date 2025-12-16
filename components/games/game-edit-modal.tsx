@@ -1,7 +1,9 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { X, Upload, Save, Loader2, Edit2, Images } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/database/supabase";
+import { updateGameWithImage } from "@/lib/actions/game-actions";
 import Image from "next/image";
 
 // TypeScript interfaces
@@ -146,68 +148,40 @@ const EditGameModal: React.FC<EditGameModalProps> = ({
         return;
       }
 
-      // Otherwise, use default Supabase update logic
-      let finalImageUrl = formData.image_url || game.image_url;
+      // Otherwise, use default update logic with server action
+      let imageData: { buffer: number[]; fileName: string; contentType: string } | undefined;
 
-      // Upload image to Supabase Storage if a new file was selected
+      // Prepare image data if a new file was selected
       if (imageFile) {
         try {
-          // Delete old image if it exists in storage
-          if (game.image_url && game.image_url.includes("supabase")) {
-            const oldImagePath = game.image_url.split("/").pop();
-            if (oldImagePath) {
-              await supabase.storage
-                .from("game-images")
-                .remove([`${userId}/${oldImagePath}`]);
-            }
-          }
-
-          // Upload new image
-          const fileExt = imageFile.name.split(".").pop();
-          const fileName = `${game.id}-${Date.now()}.${fileExt}`;
-          const filePath = `${userId}/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from("game-images")
-            .upload(filePath, imageFile, {
-              cacheControl: "3600",
-              upsert: true,
-            });
-
-          if (uploadError) throw uploadError;
-
-          // Get public URL for the uploaded image
-          const {
-            data: { publicUrl },
-          } = supabase.storage.from("game-images").getPublicUrl(filePath);
-
-          finalImageUrl = publicUrl;
+          const arrayBuffer = await imageFile.arrayBuffer();
+          imageData = {
+            buffer: Array.from(new Uint8Array(arrayBuffer)),
+            fileName: imageFile.name,
+            contentType: imageFile.type,
+          };
         } catch (uploadError) {
-          console.error("Image upload error:", uploadError);
+          console.error("Image preparation error:", uploadError);
           setErrors({
-            image:
-              "Failed to upload image. Changes will be saved without image update.",
+            image: "Failed to prepare image. Changes will be saved without image update.",
           });
-          // Continue with update even if image upload fails
         }
       }
 
-      // Update game in database
-      const { error: updateError } = await supabase
-        .from("games")
-        .update({
+      // Update game using server action
+      const result = await updateGameWithImage(
+        String(game.id),
+        userId,
+        {
           name: formData.name.trim(),
           concept: formData.concept.trim(),
-          image_url: finalImageUrl,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", game.id)
-        .eq("user_id", userId)
-        .select()
-        .single();
+          currentImageUrl: game.image_url,
+        },
+        imageData
+      );
 
-      if (updateError) {
-        throw updateError;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update game");
       }
 
       // Success - close modal

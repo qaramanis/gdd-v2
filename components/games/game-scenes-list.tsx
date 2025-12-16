@@ -110,7 +110,7 @@ function getEngineColor(engine: string): string {
 
 function getStorageIcon(storageType: string) {
   switch (storageType) {
-    case "supabase":
+    case "minio":
       return <HardDrive className="h-4 w-4" />;
     case "external":
       return <Globe className="h-4 w-4" />;
@@ -159,8 +159,8 @@ export default function GameScenesList({
           scene.description
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
-          scene.scene_tags?.some((tag) =>
-            tag.tag.toLowerCase().includes(searchQuery.toLowerCase()),
+          scene.tags?.some((t) =>
+            t.tag.toLowerCase().includes(searchQuery.toLowerCase()),
           ),
       );
     }
@@ -263,7 +263,7 @@ export default function GameScenesList({
   };
 
   const handlePlayScene = (scene: Scene) => {
-    if (scene.is_playable && scene.scene_url) {
+    if (scene.isPlayable && scene.sceneUrl) {
       router.push(`/playground?scene=${scene.id}&game=${gameId}`);
     }
   };
@@ -297,7 +297,7 @@ export default function GameScenesList({
   };
 
   const uniqueEngines = Array.from(new Set(scenes.map((s) => s.engine)));
-  const uniqueStatuses = Array.from(new Set(scenes.map((s) => s.status)));
+  const uniqueStatuses = Array.from(new Set(scenes.map((s) => s.status).filter((s): s is string => s !== null)));
 
   if (loading) {
     return (
@@ -313,7 +313,7 @@ export default function GameScenesList({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold">Game Scenes</h2>
-          <p className="text-muted-foreground">
+          <p className="text-accent">
             Manage and preview all scenes for your game
           </p>
         </div>
@@ -417,9 +417,9 @@ export default function GameScenesList({
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                  <Upload className="mx-auto h-12 w-12 text-muted-foreground/50" />
-                  <p className="mt-2 text-sm text-muted-foreground">
+                <div className="border-2 border-dashed border-accent/25 rounded-lg p-8 text-center">
+                  <Upload className="mx-auto h-12 w-12 text-accent/50" />
+                  <p className="mt-2 text-sm text-accent">
                     {selectedFile
                       ? selectedFile.name
                       : "Drag and drop your scene files here, or click to browse"}
@@ -512,7 +512,7 @@ export default function GameScenesList({
       {/* Filters */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-accent" />
           <Input
             placeholder="Search scenes..."
             value={searchQuery}
@@ -558,10 +558,10 @@ export default function GameScenesList({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Scenes</p>
+                <p className="text-sm text-accent">Total Scenes</p>
                 <p className="text-2xl font-bold">{scenes.length}</p>
               </div>
-              <Layers className="h-8 w-8 text-muted-foreground/20" />
+              <Layers className="h-8 w-8 text-accent/20" />
             </div>
           </CardContent>
         </Card>
@@ -570,9 +570,9 @@ export default function GameScenesList({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Playable</p>
+                <p className="text-sm text-accent">Playable</p>
                 <p className="text-2xl font-bold">
-                  {scenes.filter((s) => s.is_playable).length}
+                  {scenes.filter((s) => s.isPlayable).length}
                 </p>
               </div>
               <Gamepad2 className="h-8 w-8 text-green-500/20" />
@@ -584,14 +584,14 @@ export default function GameScenesList({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Size</p>
+                <p className="text-sm text-accent">Total Size</p>
                 <p className="text-2xl font-bold">
                   {formatFileSize(
-                    scenes.reduce((acc, s) => acc + (s.file_size || 0), 0),
+                    scenes.reduce((acc, s) => acc + (s.fileSize || 0), 0),
                   )}
                 </p>
               </div>
-              <HardDrive className="h-8 w-8 text-muted-foreground/20" />
+              <HardDrive className="h-8 w-8 text-accent/20" />
             </div>
           </CardContent>
         </Card>
@@ -600,15 +600,15 @@ export default function GameScenesList({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Latest Version</p>
+                <p className="text-sm text-accent">Latest Version</p>
                 <p className="text-2xl font-bold">
                   v
                   {scenes.length > 0
-                    ? Math.max(...scenes.map((s) => s.version))
+                    ? Math.max(...scenes.map((s) => s.version || 1))
                     : 1}
                 </p>
               </div>
-              <FileCode className="h-8 w-8 text-muted-foreground/20" />
+              <FileCode className="h-8 w-8 text-accent/20" />
             </div>
           </CardContent>
         </Card>
@@ -623,8 +623,8 @@ export default function GameScenesList({
           <div className="divide-y">
             {filteredScenes.length === 0 ? (
               <div className="p-8 text-center">
-                <Layers className="mx-auto h-12 w-12 text-muted-foreground/20" />
-                <p className="mt-4 text-sm text-muted-foreground">
+                <Layers className="mx-auto h-12 w-12 text-accent/20" />
+                <p className="mt-4 text-sm text-accent">
                   {scenes.length === 0
                     ? "No scenes found. Upload or link your first scene to get started."
                     : "No scenes match your filters."}
@@ -638,7 +638,7 @@ export default function GameScenesList({
                 >
                   <div className="flex items-start gap-4 flex-1">
                     <div className="p-2 rounded-lg bg-muted">
-                      {getStorageIcon(scene.storage_type)}
+                      {getStorageIcon(scene.storageType || "minio")}
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
@@ -649,35 +649,35 @@ export default function GameScenesList({
                         >
                           {scene.engine}
                         </Badge>
-                        {scene.version > 1 && (
+                        {(scene.version || 1) > 1 && (
                           <Badge variant="secondary">v{scene.version}</Badge>
                         )}
                         {scene.status === "draft" && (
                           <Badge variant="outline">Draft</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-1">
+                      <p className="text-sm text-accent line-clamp-1">
                         {scene.description || "No description"}
                       </p>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-4 text-xs text-accent">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {formatDate(scene.updated_at)}
+                          {scene.updatedAt ? formatDate(scene.updatedAt.toISOString()) : "N/A"}
                         </span>
-                        {scene.file_size && (
-                          <span>{formatFileSize(scene.file_size)}</span>
+                        {scene.fileSize && (
+                          <span>{formatFileSize(scene.fileSize)}</span>
                         )}
-                        {scene.file_format && <span>{scene.file_format}</span>}
-                        {scene.document_sections && (
+                        {scene.fileFormat && <span>{scene.fileFormat}</span>}
+                        {scene.section && (
                           <span className="flex items-center gap-1">
                             <FileCode className="h-3 w-3" />
-                            {scene.document_sections.title}
+                            {scene.section.title}
                           </span>
                         )}
                       </div>
-                      {scene.scene_tags && scene.scene_tags.length > 0 && (
+                      {scene.tags && scene.tags.length > 0 && (
                         <div className="flex gap-1 mt-2">
-                          {scene.scene_tags.map(({ tag }) => (
+                          {scene.tags.map(({ tag }) => (
                             <Badge
                               key={tag}
                               variant="secondary"
@@ -692,7 +692,7 @@ export default function GameScenesList({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {scene.is_playable && (
+                    {scene.isPlayable && (
                       <Button
                         size="sm"
                         variant="outline"
@@ -710,7 +710,7 @@ export default function GameScenesList({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        {scene.is_playable && (
+                        {scene.isPlayable && (
                           <>
                             <DropdownMenuItem
                               onClick={() => handlePlayScene(scene)}
@@ -729,17 +729,17 @@ export default function GameScenesList({
                           <Edit className="mr-2 h-4 w-4" />
                           Edit Metadata
                         </DropdownMenuItem>
-                        {scene.bucket_path && (
+                        {scene.bucketPath && (
                           <DropdownMenuItem>
                             <Download className="mr-2 h-4 w-4" />
                             Download
                           </DropdownMenuItem>
                         )}
-                        {scene.scene_url &&
-                          scene.storage_type === "external" && (
+                        {scene.sceneUrl &&
+                          scene.storageType === "external" && (
                             <DropdownMenuItem
                               onClick={() =>
-                                window.open(scene.scene_url, "_blank")
+                                window.open(scene.sceneUrl!, "_blank")
                               }
                             >
                               <ExternalLink className="mr-2 h-4 w-4" />

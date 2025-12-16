@@ -49,7 +49,7 @@ export default function Summary() {
     <div className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold mb-2">Review Your Game</h2>
-        <p className="text-muted-foreground">
+        <p className="text-accent">
           Confirm all details before creating your game
         </p>
       </div>
@@ -60,7 +60,7 @@ export default function Summary() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <p className="text-sm font-medium text-muted-foreground mb-1">
+            <p className="text-sm font-medium text-accent mb-1">
               Title
             </p>
             <p className="text-lg font-semibold">
@@ -69,7 +69,7 @@ export default function Summary() {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-muted-foreground mb-1">
+            <p className="text-sm font-medium text-accent mb-1">
               Concept
             </p>
             <p className="text-sm">
@@ -81,13 +81,13 @@ export default function Summary() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">
+              <p className="text-sm font-medium text-accent mb-1">
                 Start Date
               </p>
               <p className="text-sm">{gameData.startDate || "Not specified"}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">
+              <p className="text-sm font-medium text-accent mb-1">
                 Timeline
               </p>
               <p className="text-sm">{gameData.timeline || "Not specified"}</p>
@@ -97,7 +97,7 @@ export default function Summary() {
           <Separator />
 
           <div>
-            <p className="text-sm font-medium text-muted-foreground mb-2">
+            <p className="text-sm font-medium text-accent mb-2">
               Target Platforms
             </p>
             <div className="flex flex-wrap gap-2">
@@ -108,7 +108,7 @@ export default function Summary() {
                   </Badge>
                 ))
               ) : (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-accent">
                   No platforms selected
                 </span>
               )}

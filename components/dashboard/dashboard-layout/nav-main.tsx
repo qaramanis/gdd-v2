@@ -70,13 +70,13 @@ export function NavMain({
                   )}
                 >
                   {item.icon && (
-                    <div className="flex size-6 items-center justify-center rounded-sm border border-foreground/10 bg-gradient-to-br from-violet-500/50 to-pink-500/50">
+                    <div className="flex size-6 items-center justify-center">
                       <item.icon className="size-4 shrink-0 text-foreground" />
                     </div>
                   )}
                   <span>{item.title}</span>
                   {item.badge && (
-                    <span className="ml-auto text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500">
+                    <span className="ml-auto text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
                       {item.badge}
                     </span>
                   )}
@@ -103,7 +103,7 @@ export function NavMain({
                     )}
                   >
                     {item.icon && (
-                      <div className="flex size-6 items-center justify-center rounded-sm border border-foreground/10 bg-gradient-to-br from-violet-500/50 to-pink-500/50">
+                      <div className="flex size-6 items-center justify-center">
                         <item.icon className="size-4 shrink-0 text-foreground" />
                       </div>
                     )}

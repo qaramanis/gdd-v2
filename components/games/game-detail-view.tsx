@@ -38,7 +38,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ShareDocumentDialog } from "../collaboration/share-document-dialog";
 import EditGameModal from "./game-edit-modal";
 import { toast } from "sonner";
-import { supabase } from "@/database/supabase";
+import { updateGameWithImage } from "@/lib/actions/game-actions";
 
 interface GameDetailViewProps {
   game: any;
@@ -78,69 +78,41 @@ export default function GameDetailView({
     setLoading(true);
 
     try {
-      let finalImageUrl = updatedGame.image_url;
+      let imageData: { buffer: number[]; fileName: string; contentType: string } | undefined;
 
-      // If there's a new image file to upload (passed as imageFile property)
+      // If there's a new image file to upload
       if (updatedGame.imageFile) {
         const file = updatedGame.imageFile;
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${game.id}-${Date.now()}.${fileExt}`;
-        const filePath = `${userId}/${fileName}`;
-
-        // Delete old image if it exists in storage
-        if (
-          game.image_url &&
-          game.image_url.includes("supabase") &&
-          game.image_url !== "/game-placeholder.jpg"
-        ) {
-          const oldImagePath = game.image_url.split("/").pop();
-          if (oldImagePath) {
-            await supabase.storage
-              .from("game-images")
-              .remove([`${userId}/${oldImagePath}`]);
-          }
-        }
-
-        // Upload new image
-        const { error: uploadError } = await supabase.storage
-          .from("game-images")
-          .upload(filePath, file, {
-            cacheControl: "3600",
-            upsert: true,
-          });
-
-        if (uploadError) {
-          throw uploadError;
-        }
-
-        // Get public URL for the uploaded image
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("game-images").getPublicUrl(filePath);
-
-        finalImageUrl = publicUrl;
+        const arrayBuffer = await file.arrayBuffer();
+        imageData = {
+          buffer: Array.from(new Uint8Array(arrayBuffer)),
+          fileName: file.name,
+          contentType: file.type,
+        };
       }
 
-      // Update game in database
-      const { data: savedGame, error: updateError } = await supabase
-        .from("games")
-        .update({
-          name: updatedGame.name.trim(),
-          concept: updatedGame.concept?.trim() || "",
-          image_url: finalImageUrl,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", game.id)
-        .eq("user_id", userId)
-        .select()
-        .single();
+      const result = await updateGameWithImage(
+        game.id,
+        userId as string,
+        {
+          name: updatedGame.name,
+          concept: updatedGame.concept,
+          currentImageUrl: game.image_url,
+        },
+        imageData
+      );
 
-      if (updateError) {
-        throw updateError;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update game");
       }
 
-      // Update local state with the saved game
-      setGame(savedGame);
+      // Update local state with the saved game (transform to snake_case for compatibility)
+      setGame({
+        ...result.game,
+        image_url: result.game?.imageUrl,
+        created_at: result.game?.createdAt,
+        updated_at: result.game?.updatedAt,
+      });
 
       // Show success message
       toast.success("Game information updated successfully!");
@@ -225,12 +197,12 @@ export default function GameDetailView({
               className="w-full h-full object-cover"
             />
           ) : (
-            <Gamepad2 className="h-12 w-12 text-muted-foreground" />
+            <Gamepad2 className="h-12 w-12 text-accent" />
           )}
         </div>
         <div className="flex-1">
           <h1 className="text-3xl font-bold mb-2">{game.name}</h1>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-accent mb-4">
             {game.concept || "No concept description provided"}
           </p>
           <div className="flex flex-wrap gap-2">
@@ -259,7 +231,7 @@ export default function GameDetailView({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">Active</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-accent">
               {daysSinceStart} days in development
             </p>
           </CardContent>
@@ -270,14 +242,14 @@ export default function GameDetailView({
             <CardTitle className="text-sm font-medium">
               Document Progress
             </CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {Math.round(documentProgress)}%
             </div>
             <Progress value={documentProgress} className="mt-2" />
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-accent mt-1">
               {completedSections}/{totalSections} sections
             </p>
           </CardContent>
@@ -286,11 +258,11 @@ export default function GameDetailView({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Timeline</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{game.timeline}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-accent">
               Started {game.start_date ? formatDate(game.start_date) : "N/A"}
             </p>
           </CardContent>
@@ -299,13 +271,13 @@ export default function GameDetailView({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Last Updated</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Clock className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {new Date(game.updated_at).toLocaleDateString()}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-accent">
               {new Date(game.updated_at).toLocaleTimeString()}
             </p>
           </CardContent>
@@ -367,7 +339,7 @@ export default function GameDetailView({
                         <span className="text-sm font-medium">
                           Overall Progress
                         </span>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm text-accent">
                           {Math.round(documentProgress)}%
                         </span>
                       </div>
@@ -403,8 +375,8 @@ export default function GameDetailView({
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground mb-4">
+                      <FileText className="h-12 w-12 text-accent mx-auto mb-4" />
+                      <p className="text-accent mb-4">
                         No document created yet
                       </p>
                       <Button
@@ -487,7 +459,7 @@ export default function GameDetailView({
                       <p className="text-sm font-medium">
                         Document Update Needed
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-accent">
                         Gameplay mechanics section needs review
                       </p>
                     </div>
@@ -497,7 +469,7 @@ export default function GameDetailView({
                     <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
                     <div className="flex-1">
                       <p className="text-sm font-medium">Milestone Complete</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-accent">
                         Core mechanics implemented
                       </p>
                     </div>
@@ -561,19 +533,19 @@ export default function GameDetailView({
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Created</span>
+                    <span className="text-accent">Created</span>
                     <span>{formatDate(game.created_at)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Last Modified</span>
+                    <span className="text-accent">Last Modified</span>
                     <span>{formatDate(game.updated_at)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Project ID</span>
+                    <span className="text-accent">Project ID</span>
                     <span className="font-mono text-xs">{game.id}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status</span>
+                    <span className="text-accent">Status</span>
                     <Badge variant="secondary">Active</Badge>
                   </div>
                 </CardContent>
@@ -588,7 +560,7 @@ export default function GameDetailView({
               <CardTitle>Document Management</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
+              <p className="text-accent">
                 Document editing interface will be displayed here.
               </p>
               <Button
@@ -607,7 +579,7 @@ export default function GameDetailView({
               <CardTitle>Team Members</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">
+              <p className="text-accent">
                 Team management interface will be displayed here.
               </p>
               <Button

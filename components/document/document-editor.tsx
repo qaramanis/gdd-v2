@@ -89,14 +89,14 @@ export default function DocumentEditor({
           <div>
             <h1 className="text-lg font-semibold">{documentTitle}</h1>
             {sectionTitle && (
-              <p className="text-sm text-muted-foreground">{sectionTitle}</p>
+              <p className="text-sm text-accent">{sectionTitle}</p>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           {lastSaved && (
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-accent">
               Last saved: {lastSaved.toLocaleTimeString()}
             </span>
           )}
@@ -119,7 +119,7 @@ export default function DocumentEditor({
                 <ContentEditable className="h-[calc(100vh-200px)] outline-none p-4" />
               }
               placeholder={
-                <div className="text-muted-foreground">
+                <div className="text-accent">
                   Start writing your document...
                 </div>
               }

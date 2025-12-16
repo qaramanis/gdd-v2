@@ -1,4 +1,16 @@
-import { supabase } from "@/database/supabase";
+import {
+  hasDocumentAccess as checkAccess,
+  sendDocumentInvitation as sendInvitation,
+  createTeam as createTeamData,
+  createNotification,
+  markNotificationRead as markRead,
+  getUnreadNotificationCount as getUnreadCount,
+  getSectionComments as getComments,
+  createComment as addCommentData,
+  logActivity as logActivityData,
+} from "@/lib/data/collaboration";
+import { db, schema } from "@/database/drizzle";
+import { eq } from "drizzle-orm";
 
 export interface CollaborationPermission {
   canView: boolean;
@@ -15,17 +27,10 @@ export class CollaborationService {
   static async checkDocumentAccess(
     userId: string,
     documentId: string,
-    requiredPermission: "viewer" | "commenter" | "editor" | "owner" = "viewer",
+    requiredPermission: "viewer" | "commenter" | "editor" | "owner" = "viewer"
   ): Promise<boolean> {
     try {
-      const { data, error } = await supabase.rpc("has_document_access", {
-        p_user_id: userId,
-        p_document_id: documentId,
-        p_required_permission: requiredPermission,
-      });
-
-      if (error) throw error;
-      return data || false;
+      return await checkAccess(userId, documentId, requiredPermission);
     } catch (error) {
       console.error("Error checking document access:", error);
       return false;
@@ -37,18 +42,25 @@ export class CollaborationService {
    */
   static async getDocumentPermission(
     userId: string,
-    documentId: string,
+    documentId: string
   ): Promise<string | null> {
     try {
-      const { data, error } = await supabase
-        .from("user_accessible_documents")
-        .select("permission")
-        .eq("accessor_id", userId)
-        .eq("id", documentId)
-        .single();
+      // Check if user owns the document
+      const document = await db.query.documents.findFirst({
+        where: eq(schema.documents.id, documentId),
+      });
 
-      if (error) throw error;
-      return data?.permission || null;
+      if (document?.userId === userId) {
+        return "owner";
+      }
+
+      // Check collaborator permission
+      const collaborator = await db.query.documentCollaborators.findFirst({
+        where: (cols, { and, eq }) =>
+          and(eq(cols.documentId, documentId), eq(cols.userId, userId)),
+      });
+
+      return collaborator?.permission || null;
     } catch (error) {
       console.error("Error getting document permission:", error);
       return null;
@@ -112,34 +124,19 @@ export class CollaborationService {
     inviteeEmail: string,
     permission: "viewer" | "commenter" | "editor",
     message?: string,
-    canShare: boolean = false,
+    canShare: boolean = false
   ) {
     try {
-      const { data, error } = await supabase.rpc("send_document_invitation", {
-        p_document_id: documentId,
-        p_inviter_id: inviterId,
-        p_invitee_email: inviteeEmail,
-        p_permission: permission,
-        p_message: message || null,
-      });
+      const token = await sendInvitation(
+        documentId,
+        inviterId,
+        inviteeEmail,
+        permission,
+        message,
+        canShare
+      );
 
-      if (error) throw error;
-
-      // If permission is editor and canShare is true, update the flag
-      if (permission === "editor" && canShare) {
-        const { error: updateError } = await supabase
-          .from("invitations")
-          .update({
-            data: { can_share: true },
-          })
-          .eq("id", data);
-
-        if (updateError) {
-          console.error("Error updating can_share flag:", updateError);
-        }
-      }
-
-      return { success: true, invitationId: data };
+      return { success: true, invitationId: token };
     } catch (error: any) {
       console.error("Error sending invitation:", error);
       return { success: false, error: error.message };
@@ -151,31 +148,8 @@ export class CollaborationService {
    */
   static async createTeam(name: string, description: string, ownerId: string) {
     try {
-      // Create team
-      const { data: teamData, error: teamError } = await supabase
-        .from("teams")
-        .insert({
-          name,
-          description,
-          owner_id: ownerId,
-        })
-        .select()
-        .single();
-
-      if (teamError) throw teamError;
-
-      // Add owner as team member
-      const { error: memberError } = await supabase
-        .from("team_members")
-        .insert({
-          team_id: teamData.id,
-          user_id: ownerId,
-          role: "owner",
-        });
-
-      if (memberError) throw memberError;
-
-      return { success: true, team: teamData };
+      const team = await createTeamData(name, description, ownerId);
+      return { success: true, team };
     } catch (error: any) {
       console.error("Error creating team:", error);
       return { success: false, error: error.message };
@@ -189,57 +163,50 @@ export class CollaborationService {
     teamId: string,
     userEmail: string,
     role: "admin" | "editor" | "viewer",
-    invitedBy: string,
+    invitedBy: string
   ) {
     try {
       // Check if user exists
-      const { data: userData, error: userError } = await supabase
-        .from("user")
-        .select("id")
-        .eq("email", userEmail)
-        .single();
+      const user = await db.query.user.findFirst({
+        where: eq(schema.user.email, userEmail),
+      });
 
-      if (userError || !userData) {
+      if (!user) {
         // User doesn't exist, send invitation
-        const { data: inviteData, error: inviteError } = await supabase
-          .from("invitations")
-          .insert({
-            team_id: teamId,
-            inviter_id: invitedBy,
-            invitee_email: userEmail,
+        const [invitation] = await db
+          .insert(schema.invitations)
+          .values({
+            teamId,
+            inviterId: invitedBy,
+            inviteeEmail: userEmail,
             permission: role,
           })
-          .select()
-          .single();
+          .returning();
 
-        if (inviteError) throw inviteError;
-        return { success: true, invitation: inviteData };
+        return { success: true, invitation };
       }
 
       // User exists, add as team member
-      const { data: memberData, error: memberError } = await supabase
-        .from("team_members")
-        .insert({
-          team_id: teamId,
-          user_id: userData.id,
+      const [member] = await db
+        .insert(schema.teamMembers)
+        .values({
+          teamId,
+          userId: user.id,
           role,
-          invited_by: invitedBy,
+          invitedBy,
         })
-        .select()
-        .single();
-
-      if (memberError) throw memberError;
+        .returning();
 
       // Send notification
-      await supabase.from("notifications").insert({
-        user_id: userData.id,
+      await createNotification({
+        userId: user.id,
         type: "team_added",
         title: "Added to Team",
         message: "You have been added to a new team",
-        data: { team_id: teamId },
+        data: { teamId },
       });
 
-      return { success: true, member: memberData };
+      return { success: true, member };
     } catch (error: any) {
       console.error("Error adding team member:", error);
       return { success: false, error: error.message };
@@ -255,19 +222,17 @@ export class CollaborationService {
     details: any,
     documentId?: string,
     gameId?: string,
-    teamId?: string,
+    teamId?: string
   ) {
     try {
-      const { error } = await supabase.from("activity_log").insert({
-        user_id: userId,
+      await logActivityData({
+        userId,
         action,
         details,
-        document_id: documentId,
-        game_id: gameId,
-        team_id: teamId,
+        documentId,
+        gameId,
+        teamId,
       });
-
-      if (error) throw error;
     } catch (error) {
       console.error("Error logging activity:", error);
     }
@@ -281,28 +246,26 @@ export class CollaborationService {
     userId: string,
     content: string,
     parentCommentId?: string,
-    position?: { start: number; end: number },
+    position?: { start: number; end: number }
   ) {
     try {
-      const { data, error } = await supabase
-        .from("comments")
-        .insert({
-          document_section_id: sectionId,
-          user_id: userId,
-          content,
-          parent_comment_id: parentCommentId,
-          position: position || null,
-        })
-        .select(
-          `
-          *,
-          user:user_id(name, email, image)
-        `,
-        )
-        .single();
+      const comment = await addCommentData({
+        documentSectionId: sectionId,
+        userId,
+        content,
+        parentCommentId,
+        position,
+      });
 
-      if (error) throw error;
-      return { success: true, comment: data };
+      // Fetch the comment with user info
+      const commentWithUser = await db.query.comments.findFirst({
+        where: eq(schema.comments.id, comment.id),
+        with: {
+          user: true,
+        },
+      });
+
+      return { success: true, comment: commentWithUser };
     } catch (error: any) {
       console.error("Error adding comment:", error);
       return { success: false, error: error.message };
@@ -314,24 +277,8 @@ export class CollaborationService {
    */
   static async getSectionComments(sectionId: string) {
     try {
-      const { data, error } = await supabase
-        .from("comments")
-        .select(
-          `
-          *,
-          user:user_id(name, email, image),
-          replies:comments(
-            *,
-            user:user_id(name, email, image)
-          )
-        `,
-        )
-        .eq("document_section_id", sectionId)
-        .is("parent_comment_id", null)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return { success: true, comments: data };
+      const comments = await getComments(sectionId);
+      return { success: true, comments };
     } catch (error: any) {
       console.error("Error fetching comments:", error);
       return { success: false, error: error.message };
@@ -343,15 +290,7 @@ export class CollaborationService {
    */
   static async markNotificationRead(notificationId: string) {
     try {
-      const { error } = await supabase
-        .from("notifications")
-        .update({
-          read: true,
-          read_at: new Date().toISOString(),
-        })
-        .eq("id", notificationId);
-
-      if (error) throw error;
+      await markRead(notificationId);
       return { success: true };
     } catch (error: any) {
       console.error("Error marking notification as read:", error);
@@ -364,14 +303,7 @@ export class CollaborationService {
    */
   static async getUnreadNotificationCount(userId: string): Promise<number> {
     try {
-      const { count, error } = await supabase
-        .from("notifications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .eq("read", false);
-
-      if (error) throw error;
-      return count || 0;
+      return await getUnreadCount(userId);
     } catch (error) {
       console.error("Error getting notification count:", error);
       return 0;

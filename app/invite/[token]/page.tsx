@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { supabase } from "@/database/supabase";
+import {
+  fetchInvitationByToken,
+  acceptInvitation,
+  declineInvitation,
+} from "@/lib/actions/collaboration-actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -87,31 +91,10 @@ export default function InvitePage() {
 
   const fetchInvitation = async () => {
     try {
-      const { data, error } = await supabase
-        .from("invitations")
-        .select(
-          `
-          *,
-          documents(
-            id,
-            title,
-            game_id,
-            games(name, image_url)
-          ),
-          teams(id, name, description),
-          games(id, name, image_url, concept),
-          user:inviter_id(name, email, image)
-        `,
-        )
-        .eq("token", token)
-        .single();
+      const data = await fetchInvitationByToken(token);
 
-      if (error) {
-        if (error.code === "PGRST116") {
-          setError("This invitation link is invalid or has expired.");
-        } else {
-          throw error;
-        }
+      if (!data) {
+        setError("This invitation link is invalid or has expired.");
         return;
       }
 
@@ -123,11 +106,6 @@ export default function InvitePage() {
       const expiresAt = new Date(data.expires_at);
       if (expiresAt < new Date()) {
         setError("This invitation has expired.");
-        // Update status in database
-        await supabase
-          .from("invitations")
-          .update({ status: "expired" })
-          .eq("id", data.id);
         return;
       }
 
@@ -158,12 +136,11 @@ export default function InvitePage() {
 
     setProcessing(true);
     try {
-      const { error } = await supabase.rpc("accept_invitation", {
-        p_invitation_id: invitation.id,
-        p_user_id: userId,
-      });
+      const result = await acceptInvitation(invitation.id, userId);
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to accept invitation");
+      }
 
       toast.success("Invitation accepted successfully!");
 
@@ -190,15 +167,11 @@ export default function InvitePage() {
 
     setProcessing(true);
     try {
-      const { error } = await supabase
-        .from("invitations")
-        .update({
-          status: "declined",
-          responded_at: new Date().toISOString(),
-        })
-        .eq("id", invitation.id);
+      const result = await declineInvitation(invitation.id);
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to decline invitation");
+      }
 
       toast.success("Invitation declined");
       router.push("/");
@@ -268,7 +241,7 @@ export default function InvitePage() {
             <CardTitle className="text-red-600">Invalid Invitation</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground mb-4">{error}</p>
+            <p className="text-accent mb-4">{error}</p>
             <Button onClick={() => router.push("/")} className="w-full">
               Go to Homepage
             </Button>
@@ -319,7 +292,7 @@ export default function InvitePage() {
           {/* Invitation Details */}
           <div className="bg-muted rounded-lg p-4 space-y-3">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">
+              <p className="text-sm text-accent mb-1">
                 {invitationType === "document"
                   ? "Document"
                   : invitationType === "team"
@@ -334,43 +307,43 @@ export default function InvitePage() {
                     : invitation.games?.name}
               </p>
               {invitationType === "document" && invitation.documents?.games && (
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-accent mt-1">
                   Game: {invitation.documents.games.name}
                 </p>
               )}
             </div>
 
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Your role</p>
+              <p className="text-sm text-accent mb-1">Your role</p>
               <Badge className="gap-1" variant="secondary">
                 {getPermissionIcon(invitation.permission)}
                 <span className="capitalize">{invitation.permission}</span>
               </Badge>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-accent mt-1">
                 {getPermissionDescription(invitation.permission)}
               </p>
             </div>
 
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Invited by</p>
+              <p className="text-sm text-accent mb-1">Invited by</p>
               <p className="font-medium">
                 {invitation.user?.name || "Unknown User"}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-accent">
                 {invitation.user?.email}
               </p>
             </div>
 
             {invitation.message && (
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Message</p>
+                <p className="text-sm text-accent mb-1">Message</p>
                 <p className="text-sm italic">
                   &quot;{invitation.message}&quot;
                 </p>
               </div>
             )}
 
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-accent">
               <Clock className="h-4 w-4" />
               <span>
                 Expires{" "}

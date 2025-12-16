@@ -9,11 +9,11 @@ interface GamesEmptyProps {
 export function GamesEmpty({ searchTerm, onNewGame }: GamesEmptyProps) {
   return (
     <div className="flex flex-col items-center justify-center h-64 bg-muted/50 rounded-lg">
-      <Gamepad2 className="h-12 w-12 text-muted-foreground mb-4" />
+      {/*<Gamepad2 className="h-12 w-12 text-accent mb-4" />*/}
       <p className="text-lg font-medium mb-2">
         {searchTerm ? "No games found" : "No games yet"}
       </p>
-      <p className="text-sm text-muted-foreground mb-4">
+      <p className="text-sm text-accent mb-4">
         {searchTerm
           ? "Try adjusting your search"
           : "Create your first game to get started"}

@@ -1,5 +1,3 @@
-// components/notes/notes-search.tsx
-import React from "react";
 import { Filter, GamepadIcon, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,18 +36,18 @@ export function NotesSearch({
   return (
     <div className="flex items-center gap-4 mb-4">
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 size-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-accent size-4" />
         <Input
           placeholder="Search notes..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 border-white/80"
+          className="pl-10"
         />
         {searchTerm && (
           <Button
-            variant="ghost"
+            variant="link"
             size="sm"
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 p-0"
             onClick={() => setSearchTerm("")}
           >
             <X className="size-4" />
@@ -92,11 +90,11 @@ function FiltersDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-10 gap-2">
+        <Button variant="outline" className="">
           <Filter className="size-4" />
           Filters
           {activeFiltersCount > 0 && (
-            <span className="ml-1 size-5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+            <span className="ml-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
               {activeFiltersCount}
             </span>
           )}

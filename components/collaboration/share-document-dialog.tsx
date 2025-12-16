@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/database/supabase";
+import {
+  fetchCollaborators,
+  sendDocumentInvitation,
+  updateCollaboratorPermission,
+  removeCollaborator,
+} from "@/lib/actions/collaboration-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -81,22 +86,11 @@ export function ShareDocumentDialog({
   const [shareLink, setShareLink] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
 
-  const fetchCollaborators = async () => {
+  const loadCollaborators = async () => {
     setLoadingCollaborators(true);
     try {
-      const { data, error } = await supabase
-        .from("document_collaborators")
-        .select(
-          `
-          *,
-          user:user_id(name, email, image)
-        `,
-        )
-        .eq("document_id", documentId)
-        .order("added_at", { ascending: false });
-
-      if (error) throw error;
-      setCollaborators(data || []);
+      const data = await fetchCollaborators(documentId);
+      setCollaborators(data as Collaborator[]);
     } catch (error) {
       console.error("Error fetching collaborators:", error);
       toast.error("Failed to load collaborators");
@@ -118,27 +112,23 @@ export function ShareDocumentDialog({
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc("send_document_invitation", {
-        p_document_id: documentId,
-        p_inviter_id: userId,
-        p_invitee_email: inviteEmail,
-        p_permission: invitePermission,
-        p_message: inviteMessage || null,
+      const result = await sendDocumentInvitation({
+        documentId,
+        inviterId: userId,
+        inviteeEmail: inviteEmail,
+        permission: invitePermission,
+        message: inviteMessage || undefined,
       });
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to send invitation");
+      }
 
       toast.success(`Invitation sent to ${inviteEmail}`);
       setInviteEmail("");
       setInviteMessage("");
       setInvitePermission("viewer");
       setCanShare(false);
-
-      // Generate and show share link
-      const baseUrl = window.location.origin;
-      const link = `${baseUrl}/invite/${data}`;
-      setShareLink(link);
-      setActiveTab("link");
     } catch (error: any) {
       console.error("Error sending invitation:", error);
       toast.error(error.message || "Failed to send invitation");
@@ -152,15 +142,14 @@ export function ShareDocumentDialog({
     newPermission: string,
   ) => {
     try {
-      const { error } = await supabase
-        .from("document_collaborators")
-        .update({ permission: newPermission })
-        .eq("id", collaboratorId);
+      const result = await updateCollaboratorPermission(collaboratorId, newPermission);
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update permission");
+      }
 
       toast.success("Permission updated");
-      await fetchCollaborators();
+      await loadCollaborators();
     } catch (error) {
       console.error("Error updating permission:", error);
       toast.error("Failed to update permission");
@@ -169,15 +158,14 @@ export function ShareDocumentDialog({
 
   const handleRemoveCollaborator = async (collaboratorId: string) => {
     try {
-      const { error } = await supabase
-        .from("document_collaborators")
-        .delete()
-        .eq("id", collaboratorId);
+      const result = await removeCollaborator(collaboratorId);
 
-      if (error) throw error;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to remove collaborator");
+      }
 
       toast.success("Collaborator removed");
-      await fetchCollaborators();
+      await loadCollaborators();
     } catch (error) {
       console.error("Error removing collaborator:", error);
       toast.error("Failed to remove collaborator");
@@ -229,7 +217,7 @@ export function ShareDocumentDialog({
       onOpenChange={(newOpen) => {
         setOpen(newOpen);
         if (newOpen) {
-          fetchCollaborators();
+          loadCollaborators();
         }
       }}
     >
@@ -358,11 +346,11 @@ export function ShareDocumentDialog({
 
           <TabsContent value="collaborators" className="space-y-4">
             {loadingCollaborators ? (
-              <div className="py-8 text-center text-muted-foreground">
+              <div className="py-8 text-center text-accent">
                 Loading collaborators...
               </div>
             ) : collaborators.length === 0 ? (
-              <div className="py-8 text-center text-muted-foreground">
+              <div className="py-8 text-center text-accent">
                 <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>No collaborators yet</p>
                 <p className="text-sm mt-2">
@@ -387,7 +375,7 @@ export function ShareDocumentDialog({
                         <p className="font-medium">
                           {collaborator.user?.name || "Unknown User"}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-accent">
                           {collaborator.user?.email}
                         </p>
                       </div>
@@ -427,7 +415,7 @@ export function ShareDocumentDialog({
           <TabsContent value="link" className="space-y-4">
             {shareLink ? (
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-accent">
                   Share this link with others to invite them to collaborate
                 </p>
                 <div className="flex gap-2">
@@ -440,12 +428,12 @@ export function ShareDocumentDialog({
                     )}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-accent">
                   This link will expire in 7 days
                 </p>
               </div>
             ) : (
-              <div className="py-8 text-center text-muted-foreground">
+              <div className="py-8 text-center text-accent">
                 <p>Send an invitation first to generate a share link</p>
               </div>
             )}

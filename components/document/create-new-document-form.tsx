@@ -27,7 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase } from "@/database/supabase";
+import { createNewDocument } from "@/lib/actions/document-actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/providers/user-context";
@@ -224,45 +224,30 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
     setLoading(true);
 
     try {
-      // Update game concept if description changed
-      if (documentDescription !== game.concept) {
-        const { error: gameUpdateError } = await supabase
-          .from("games")
-          .update({ concept: documentDescription })
-          .eq("id", game.id);
-
-        if (gameUpdateError) throw gameUpdateError;
-      }
-
-      // Create the document with user_id
-      const { data: documentData, error: documentError } = await supabase
-        .from("documents")
-        .insert({
-          game_id: game.id,
-          title: documentTitle,
-          user_id: userId, // Add the user_id here
-        })
-        .select()
-        .single();
-
-      if (documentError) throw documentError;
-
-      // Create document sections
-      const sectionsToCreate = selectedSections.map((sectionId, index) => {
+      // Create document sections data
+      const sectionsData = selectedSections.map((sectionId, index) => {
         const section = DOCUMENT_SECTIONS.find((s) => s.id === sectionId);
         return {
-          document_id: documentData.id,
           title: section?.name || sectionId,
           content: "",
-          order: index,
+          orderIndex: index,
         };
       });
 
-      const { error: sectionsError } = await supabase
-        .from("document_sections")
-        .insert(sectionsToCreate);
+      // Create the document using server action
+      const result = await createNewDocument(
+        String(game.id),
+        userId,
+        {
+          title: documentTitle,
+          concept: documentDescription !== game.concept ? documentDescription : undefined,
+          sections: sectionsData,
+        }
+      );
 
-      if (sectionsError) throw sectionsError;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create document");
+      }
 
       toast.success("Document created successfully!");
       router.push(`/games/${game.id}/document`);
@@ -337,7 +322,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
                   className={cn(
                     "p-4 rounded-lg border-2 cursor-pointer transition-all",
                     selectedTemplate === template.id
-                      ? "border-primary bg-primary/5"
+                      ? "border-primary bg-primary/10"
                       : "border-border hover:border-primary/50",
                   )}
                   onClick={() => handleTemplateSelect(template.id)}
@@ -349,7 +334,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
                     )}
                   </div>
                   <h3 className="font-medium text-sm mb-1">{template.name}</h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-accent">
                     {template.description}
                   </p>
                   {template.sections.length > 0 && (
@@ -384,7 +369,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
           <div className="space-y-6">
             {Object.entries(sectionsByCategory).map(([category, sections]) => (
               <div key={category}>
-                <h3 className="font-medium text-sm mb-3 text-muted-foreground">
+                <h3 className="font-medium text-sm mb-3 text-accent">
                   {category}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -394,7 +379,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
                       className={cn(
                         "p-3 rounded-lg border cursor-pointer transition-all",
                         selectedSections.includes(section.id)
-                          ? "border-primary bg-primary/5"
+                          ? "border-primary bg-primary/10"
                           : "border-border hover:border-primary/50",
                       )}
                       onClick={() => toggleSection(section.id)}
@@ -411,7 +396,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-accent">
                             {section.description}
                           </p>
                         </div>
@@ -436,7 +421,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
           </div>
 
           <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-accent">
               {selectedSections.length} sections selected
             </p>
             <div className="flex gap-2">
@@ -473,7 +458,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="autosave">Auto-Save</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-accent">
                 Automatically save changes as you type
               </p>
             </div>
@@ -487,7 +472,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="version">Version Control</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-accent">
                 Track changes and maintain version history
               </p>
             </div>
@@ -501,7 +486,7 @@ export default function CreateDocumentForm({ game }: CreateDocumentFormProps) {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="collab">Collaborative Editing</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-accent">
                 Allow team members to edit simultaneously
               </p>
             </div>

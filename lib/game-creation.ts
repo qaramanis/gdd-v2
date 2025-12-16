@@ -1,4 +1,5 @@
-import { supabase } from "@/database/supabase";
+import { createGame } from "@/lib/data/games";
+import { createDocument, createDocumentSections } from "@/lib/data/documents";
 
 interface GameData {
   name: string;
@@ -26,69 +27,57 @@ const SECTION_DETAILS = {
 
 export async function createGameWithDocument(
   gameData: GameData,
-  userId: string,
+  userId: string
 ) {
   try {
     // First, create the game
-    const { data: gameResult, error: gameError } = await supabase
-      .from("games")
-      .insert({
+    const game = await createGame(
+      {
         name: gameData.name || "Untitled Game",
         concept: gameData.concept || "",
-        start_date:
+        startDate:
           gameData.startDate || new Date().toISOString().split("T")[0],
         timeline: gameData.timeline || "6 months",
         platforms: gameData.platforms || [],
         sections: gameData.documentSections || [],
-        user_id: userId,
-        image_url: "/game-placeholder.jpg",
-      })
-      .select()
-      .single();
+        imageUrl: "/game-placeholder.jpg",
+      },
+      userId
+    );
 
-    if (gameError) {
-      console.error("Error creating game:", gameError);
-      return { success: false, error: gameError.message };
-    }
-
-    if (!gameResult) {
+    if (!game) {
       return { success: false, error: "No game data returned" };
     }
 
     // Create the document
-    const { data: documentResult, error: documentError } = await supabase
-      .from("documents")
-      .insert({
-        game_id: gameResult.id,
-        title: `${gameData.name} - Game Design Document`,
-        user_id: userId,
-        is_game_document: true,
-      })
-      .select()
-      .single();
+    const document = await createDocument({
+      gameId: game.id,
+      title: `${gameData.name} - Game Design Document`,
+      userId,
+      isGameDocument: true,
+    });
 
-    if (documentError) {
-      console.error("Error creating document:", documentError);
+    if (!document) {
       // Don't fail completely if document creation fails
       return {
         success: true,
-        gameId: gameResult.id,
+        gameId: game.id,
         warning: "Document creation failed",
       };
     }
 
     // Create document sections if document was created successfully
     if (
-      documentResult &&
+      document &&
       gameData.documentSections &&
       gameData.documentSections.length > 0
     ) {
       const sections = gameData.documentSections.map((sectionId, index) => ({
-        document_id: documentResult.id,
+        documentId: document.id,
         title:
           SECTION_DETAILS[sectionId as keyof typeof SECTION_DETAILS] ||
           sectionId,
-        content: JSON.stringify({
+        content: {
           type: "doc",
           content: [
             {
@@ -114,21 +103,19 @@ export async function createGameWithDocument(
               ],
             },
           ],
-        }),
-        order: index,
+        },
+        orderIndex: index,
       }));
 
-      const { error: sectionsError } = await supabase
-        .from("document_sections")
-        .insert(sections);
-
-      if (sectionsError) {
+      try {
+        await createDocumentSections(sections);
+      } catch (sectionsError) {
         console.error("Error creating sections:", sectionsError);
         // Don't fail completely if sections creation fails
       }
     }
 
-    return { success: true, gameId: gameResult.id };
+    return { success: true, gameId: game.id };
   } catch (error: any) {
     console.error("Unexpected error in createGameWithDocument:", error);
     return {

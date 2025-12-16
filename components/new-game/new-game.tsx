@@ -14,7 +14,7 @@ const NewGamePage = () => {
         <h1 className="text-2xl font-bold">Create New Game</h1>
       </div>
 
-      <div className="flex flex-col w-full">
+      {/*<div className="flex flex-col w-full">
         <Stepper
           initialStep={1}
           className="w-full min-w-full"
@@ -38,7 +38,7 @@ const NewGamePage = () => {
             <GameCreated />
           </Step>
         </Stepper>
-      </div>
+      </div>*/}
     </div>
   );
 };

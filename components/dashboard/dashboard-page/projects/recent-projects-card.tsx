@@ -18,28 +18,10 @@ export default function RecentProjectsCard({ data }: { data: DashboardData }) {
     <Card className="col-span-4">
       <CardHeader>
         <CardTitle>Recent Projects</CardTitle>
-        <CardDescription>Your latest games and documents</CardDescription>
+        <CardDescription>Your most recently viewed projects</CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="games" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="games">Games</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="notes">Notes</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="games">
-            <GamesTabContent games={games} />
-          </TabsContent>
-
-          <TabsContent value="documents">
-            <DocumentsTabContent documents={documents} />
-          </TabsContent>
-
-          <TabsContent value="notes">
-            <NotesTabContent notes={notes} />
-          </TabsContent>
-        </Tabs>
+        <GamesTabContent games={games} />
       </CardContent>
     </Card>
   );

@@ -14,7 +14,7 @@ export default function ActivityItem({
       </div>
       <div className="flex-1 space-y-1">
         <p className="text-sm">{action}</p>
-        <p className="text-xs text-muted-foreground">{time}</p>
+        <p className="text-xs text-accent">{time}</p>
       </div>
     </div>
   );

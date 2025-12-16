@@ -71,10 +71,10 @@ const WhySection = () => {
                 </div>
                 <div className="space-y-3">
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full w-4/5 bg-gradient-to-r from-violet-500 to-pink-500 rounded-full"></div>
+                    <div className="h-full w-4/10 bg-gradient-to-r from-violet-500 to-pink-500 rounded-full"></div>
                   </div>
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full w-3/5 bg-gradient-to-r from-violet-500 to-pink-500 rounded-full"></div>
+                    <div className="h-full w-3/10 bg-gradient-to-r from-violet-500 to-pink-500 rounded-full"></div>
                   </div>
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div className="h-full w-9/10 bg-gradient-to-r from-violet-500 to-pink-500 rounded-full"></div>
