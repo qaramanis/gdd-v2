@@ -6,21 +6,23 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  // Uncomment and add API keys to enable social login:
-  // socialProviders: {
-  //   google: {
-  //     clientId: process.env.GOOGLE_CLIENT_ID!,
-  //     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  //   },
-  //   github: {
-  //     clientId: process.env.GITHUB_CLIENT_ID!,
-  //     clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-  //   },
-  //   apple: {
-  //     clientId: process.env.APPLE_CLIENT_ID!,
-  //     clientSecret: process.env.APPLE_CLIENT_SECRET!,
-  //   },
-  // },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      enabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID || "",
+      clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
+      enabled: !!(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET),
+    },
+    gitlab: {
+      clientId: process.env.GITLAB_CLIENT_ID || "",
+      clientSecret: process.env.GITLAB_CLIENT_SECRET || "",
+      enabled: !!(process.env.GITLAB_CLIENT_ID && process.env.GITLAB_CLIENT_SECRET),
+    },
+  },
   database: new Pool({
     connectionString: process.env.DATABASE_URL!,
   }),

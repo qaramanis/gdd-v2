@@ -40,8 +40,9 @@ interface NavUserProps {
 }
 
 export function NavUser({ user }: NavUserProps) {
-  const { isMobile } = useSidebar();
+  const { isMobile, state } = useSidebar();
   const router = useRouter();
+  const isCollapsed = state === "collapsed";
 
   const handleSignOut = async () => {
     await signOut();
@@ -64,7 +65,9 @@ export function NavUser({ user }: NavUserProps) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/10 transition-all duration-200"
+              className={`data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/10 transition-all duration-200 ${
+                isCollapsed ? "!h-8 !min-h-8 !p-0 mt-0" : ""
+              }`}
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />

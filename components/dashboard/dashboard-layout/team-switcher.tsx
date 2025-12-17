@@ -29,8 +29,9 @@ interface TeamSwitcherProps {
 }
 
 export function TeamSwitcher({ teams }: TeamSwitcherProps) {
-  const { isMobile } = useSidebar();
+  const { isMobile, state } = useSidebar();
   const [activeTeam, setActiveTeam] = React.useState(teams[0]);
+  const isCollapsed = state === "collapsed";
 
   return (
     <SidebarMenu>
@@ -39,7 +40,9 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/10 transition-all duration-200"
+              className={`data-[state=open]:bg-foreground/10 data-[state=open]:text-foreground cursor-pointer hover:bg-foreground/10 transition-all duration-200 ${
+                isCollapsed ? "!h-8 !min-h-8 !p-0 mt-2" : ""
+              }`}
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg">
                 <activeTeam.logo className="size-4 text-foreground" />
